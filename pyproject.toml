@@ -8,8 +8,16 @@ authors = ["Petr <p>"]
 python = "^3.8"
 aiohttp = "^3.6.2"
 asyncpg = "^0.20.1"
+gino = {extras = ["starlette"], version = "^1.0.1"}
+fastapi = "^0.60.0"
+uvicorn = "^0.11.6"
+gunicorn = "^20.0.4"
+alembic = "^1.4.2"
+psycopg2-binary = "^2.8.5"
 
 [tool.poetry.dev-dependencies]
+pytest = "^5.4.3"
+requests = "^2.24.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

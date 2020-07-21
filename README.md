@@ -8,4 +8,4 @@ For installation run `poetry install`
 
 Activate virtual environment `source .venv/bin/activate`
 
-Run server `python3 server.py`
+Run server `uvicorn src.server.asgi:app --reload`
