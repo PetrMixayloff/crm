@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from uuid import uuid4
-from src.models.models import User
+from ..models.models import User
 
 router = APIRouter()
 

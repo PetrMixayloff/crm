@@ -7,7 +7,9 @@ logger = logging.getLogger(__name__)
 
 
 def load_modules(app=None):
-    for ep in entry_points()["src.modules"]:
+    for ep in entry_points():
+        print(ep)
+    for ep in entry_points()["main.modules"]:
         logger.info("Loading module: %s", ep.name)
         mod = ep.load()
         if app:
