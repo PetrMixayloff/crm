@@ -8,4 +8,4 @@ For installation run `poetry install`
 
 Activate virtual environment `source .venv/bin/activate`
 
-Run server `uvicorn src.asgi:app --reload`
+Run server `uvicorn src.main.asgi:app --reload`

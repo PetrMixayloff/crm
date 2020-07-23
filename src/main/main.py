@@ -1,21 +1,19 @@
 from fastapi import FastAPI
 from .models import db
 import logging
-from importlib.metadata import entry_points
+from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
+ROUTES = ['users']
+
 
 def load_modules(app=None):
-    for ep in entry_points():
-        print(ep)
-    for ep in entry_points()["main.modules"]:
-        logger.info("Loading module: %s", ep.name)
-        mod = ep.load()
+    for route in ROUTES:
+        logger.info("Loading module: %s", route)
+        module = import_module(f'src.main.views.{route}')
         if app:
-            init_app = getattr(mod, "init_app", None)
-            if init_app:
-                init_app(app)
+            module.init_app(app)
 
 
 def get_app():
