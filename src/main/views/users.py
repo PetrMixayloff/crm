@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from uuid import uuid4
+from uuid import UUID
 from ..models.models import User
 
 router = APIRouter()
 
 
 @router.get("/users/{uuid}")
-async def get_user(uuid: uuid4):
+async def get_user(uuid: UUID):
     user = await User.get_or_404(uuid)
     return user.to_dict()
 
@@ -34,7 +34,7 @@ async def add_user(user: UserModel):
 
 
 @router.delete("/users/{uuid}")
-async def delete_user(uuid: uuid4):
+async def delete_user(uuid: UUID):
     user = await User.get_or_404(uuid)
     await user.delete()
     return dict(id=uuid)
