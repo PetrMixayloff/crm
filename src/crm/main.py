@@ -11,7 +11,7 @@ ROUTES = ['users']
 def load_modules(app=None):
     for route in ROUTES:
         logger.info("Loading module: %s", route)
-        module = import_module(f'src.main.views.{route}')
+        module = import_module(f'src.crm.views.{route}')
         if app:
             module.init_app(app)
 

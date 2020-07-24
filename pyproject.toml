@@ -15,8 +15,9 @@ gunicorn = "^20.0.4"
 alembic = "^1.4.2"
 psycopg2-binary = "^2.8.5"
 
-[tool.poetry.plugins."main.modules"]
-"users" = "main.views.users"
+[tool.poetry.dev-dependencies]
+pytest = "^5.4.1"
+requests = "^2.23.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
