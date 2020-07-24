@@ -8,7 +8,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, unique=True, index=True, nullable=False, default=uuid4)
-    login = db.Column(db.String(255), nullable=False)
+    login = db.Column(db.String(255), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=True)
     full_name = db.Column(db.String(255))
     last_login = db.Column(db.DateTime, nullable=True)

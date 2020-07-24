@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from uuid import UUID
 from ..models.models import User
+from ..utils import is_none_or_space
 
 router = APIRouter()
 
@@ -16,13 +17,16 @@ class UserModel(BaseModel):
     login: str
     password: str
     full_name: str
-    is_superuser: bool
-    is_staff: bool
-    remark: str
+    is_superuser: bool = False
+    is_staff: bool = True
+    remark: str = None
 
 
 @router.post("/users")
 async def add_user(user: UserModel):
+    if is_none_or_space(user.login) or is_none_or_space(user.password):
+        raise HTTPException(status_code=409, detail='Не указан логин и/или пароль')
+
     rv = await User.create(login=user.login,
                            password=user.password,
                            full_name=user.full_name,

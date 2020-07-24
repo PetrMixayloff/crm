@@ -25,3 +25,7 @@ Create .env file in root directory and fill values for db access (see .env_examp
 Run server `uvicorn src.crm.asgi:app --reload`
 
 To see docs open in browser http://127.0.0.1:8000/docs
+
+Create migration `poetry run alembic revision --autogenerate -m 'description of migration'`
+
+DB upgrade `poetry run alembic upgrade head`
