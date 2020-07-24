@@ -1,15 +1,10 @@
-from aiohttp import web
+import os
 
+if __name__ == "__main__":
+    import uvicorn
 
-async def handle(request):
-    name = request.match_info.get('name', "Anonymous")
-    text = "Hello, " + name
-    return web.Response(text=text)
-
-
-app = web.Application()
-app.add_routes([web.get('/', handle),
-                web.get('/{name}', handle)])
-
-if __name__ == '__main__':
-    web.run_app(app)
+    uvicorn.run(
+        "src.crm.asgi:app",
+        host=os.getenv("APP_HOST", "127.0.0.1"),
+        port=int(os.getenv("APP_PORT", "8000")),
+    )

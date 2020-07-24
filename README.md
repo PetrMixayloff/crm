@@ -22,7 +22,7 @@ Activate virtual environment `source .venv/bin/activate`
 
 Create .env file in root directory and fill values for db access (see .env_example).
 
-Run server `uvicorn src.crm.asgi:app --reload`
+Run server `uvicorn src.crm.asgi:app --reload` or `python3 server.py`
 
 To see docs open in browser http://127.0.0.1:8000/docs
 
