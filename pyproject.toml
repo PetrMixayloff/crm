@@ -8,12 +8,18 @@ authors = ["Petr <p>"]
 python = "^3.8"
 aiohttp = "^3.6.2"
 asyncpg = "^0.20.1"
-gino = {extras = ["starlette"], version = "^1.0.1"}
 fastapi = "^0.60.0"
 uvicorn = "^0.11.6"
 gunicorn = "^20.0.4"
 alembic = "^1.4.2"
 psycopg2-binary = "^2.8.5"
+sqlalchemy = "^1.3.18"
+passlib = {extras = ["bcrypt"], version = "^1.7.2"}
+python-jose = {extras = ["cryptography"], version = "^3.2.0"}
+python-dotenv = "^0.14.0"
+email-validator = "^1.1.1"
+emails = "^0.6"
+python-multipart = "^0.0.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.1"
