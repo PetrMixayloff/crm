@@ -1,6 +1,9 @@
 from typing import Any
 
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
+from uuid import uuid4
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Boolean, Column
 
 
 @as_declarative()
@@ -11,3 +14,6 @@ class Base:
     @declared_attr
     def __tablename__(cls) -> str:
         return cls.__name__.lower()
+
+    id = Column(UUID(as_uuid=True), primary_key=True, unique=True, index=True, nullable=False, default=uuid4)
+    is_active = Column(Boolean, nullable=False, default=True)
