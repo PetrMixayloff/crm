@@ -38,7 +38,7 @@ def create_user(
     """
     Create new user.
     """
-    user = crud.user.get_by_email(db, email=user_in.email)
+    user = crud.user.get_by_login(db, login=user_in.email)
     if user:
         raise HTTPException(
             status_code=400,
@@ -103,7 +103,7 @@ def create_user_open(
             status_code=403,
             detail="Open user registration is forbidden on this server",
         )
-    user = crud.user.get_by_email(db, email=email)
+    user = crud.user.get_by_login(db, login=email)
     if user:
         raise HTTPException(
             status_code=400,

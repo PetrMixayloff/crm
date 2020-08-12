@@ -9,13 +9,13 @@ from app.schemas.user import UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
-    def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
-        return db.query(User).filter(User.email == email).first()
+    def get_by_login(self, db: Session, *, login: str) -> Optional[User]:
+        return db.query(User).filter(User.login == login).first()
 
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
         db_obj = User(
-            email=obj_in.email,
-            hashed_password=get_password_hash(obj_in.password),
+            login=obj_in.login,
+            password=get_password_hash(obj_in.password),
             full_name=obj_in.full_name,
             is_superuser=obj_in.is_superuser,
         )
@@ -38,7 +38,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return super().update(db, db_obj=db_obj, obj_in=update_data)
 
     def authenticate(self, db: Session, *, email: str, password: str) -> Optional[User]:
-        user = self.get_by_email(db, email=email)
+        user = self.get_by_login(db, login=email)
         if not user:
             return None
         if not verify_password(password, user.hashed_password):

@@ -36,8 +36,3 @@ class UserUpdate(UserInDBBase):
 # Additional properties to return via API
 class User(UserInDBBase):
     pass
-
-
-# Additional properties stored in DB
-class UserInDB(UserInDBBase):
-    hashed_password: str
