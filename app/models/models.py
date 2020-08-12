@@ -12,8 +12,7 @@ class User(Base):
     last_login = Column(DateTime, nullable=True)
     is_superuser = Column(Boolean, nullable=False, default=False)
     is_staff = Column(Boolean, nullable=False, default=True)
-    shops = relationship('serShopRelation')
-    remark = Column(String)
+    shops = relationship('UserShopRelation')
 
 
 class Shop(Base):
