@@ -12,7 +12,6 @@ class User(Base):
     last_login = Column(DateTime, nullable=True)
     is_superuser = Column(Boolean, nullable=False, default=False)
     is_staff = Column(Boolean, nullable=False, default=True)
-    shops = relationship('UserShopRelation')
 
 
 class Shop(Base):
@@ -40,7 +39,7 @@ class Product(Base):
     name = Column(String(255), unique=True)
     description = Column(String(255), nullable=True)
     url = Column(String(255), nullable=True)
-    images = relationship('ProductImageRelationship')
+    images = relationship('ProductImageRelation')
 
 
 class File(Base):

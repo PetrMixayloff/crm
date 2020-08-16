@@ -153,3 +153,24 @@ def update_user(
         )
     user = crud.user.update(db, db_obj=user, obj_in=user_in)
     return user
+
+
+@router.post("/init_superuser")
+def create_super_user(db: Session = Depends(deps.get_db)) -> Any:
+    """
+    Create super user.
+    """
+    user = crud.user.get_by_login(db, login=settings.FIRST_SUPERUSER)
+    if not user:
+        user_in = schemas.UserCreate(
+            login=settings.FIRST_SUPERUSER,
+            password=settings.FIRST_SUPERUSER_PASSWORD,
+            is_superuser=True,
+        )
+        user = crud.user.create(db, obj_in=user_in)
+        return 'ok'
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Super user already exists in the system.",
+        )

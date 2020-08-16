@@ -14,6 +14,11 @@ class UserBase(BaseModel):
     is_staff: Optional[bool] = True
 
 
+class UserLogin(BaseModel):
+    login: str
+    password: str
+
+
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: str

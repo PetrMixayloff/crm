@@ -20,9 +20,25 @@ from app.utils import (
 router = APIRouter()
 
 
+@router.post("/login", response_model=schemas.Token)
+def test_token(login_form: schemas.UserLogin, db: Session = Depends(deps.get_db)) -> Any:
+    user = crud.user.authenticate(db, login=login_form.login, password=login_form.password)
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect login or password")
+    elif not crud.user.is_active(user):
+        raise HTTPException(status_code=400, detail="Inactive user")
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    return {
+        "access_token": security.create_access_token(
+            user.id, expires_delta=access_token_expires
+        ),
+        "token_type": "bearer",
+    }
+
+
 @router.post("/login/access-token", response_model=schemas.Token)
 def login_access_token(
-    db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
+        db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
     """
     OAuth2 compatible token login, get an access token for future requests
@@ -49,7 +65,6 @@ def test_token(current_user: models.User = Depends(deps.get_current_user)) -> An
     Test access token
     """
     return current_user
-
 
 # @router.post("/password-recovery/{email}", response_model=schemas.Msg)
 # def recover_password(email: str, db: Session = Depends(deps.get_db)) -> Any:
