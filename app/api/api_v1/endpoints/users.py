@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -10,6 +10,7 @@ from app.models import models
 from app.api import deps
 from app.core.config import settings
 from app.utils import send_new_account_email
+
 
 router = APIRouter()
 

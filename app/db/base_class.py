@@ -8,7 +8,6 @@ from sqlalchemy import Boolean, Column
 
 @as_declarative()
 class Base:
-    id: Any
     __name__: str
     # Generate __tablename__ automatically
     @declared_attr

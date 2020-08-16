@@ -13,8 +13,18 @@ class ShopBase(BaseModel):
     products: List[Product] = []
 
 
+class UserShopBase(BaseModel):
+    user_id: UUID
+    shop_id: UUID
+    position: str = None
+
+
 # Properties to receive via API on creation
 class ShopCreate(ShopBase):
+    pass
+
+
+class UserShopCreate(UserShopBase):
     pass
 
 
@@ -26,10 +36,25 @@ class ShopInDBBase(ShopBase):
         orm_mode = True
 
 
+class UserShopInDBBase(UserShopBase):
+    id: UUID
+
+    class Config:
+        orm_mode = True
+
+
 class ShopUpdate(ShopInDBBase):
+    pass
+
+
+class UserShopUpdate(UserShopInDBBase):
     pass
 
 
 # Additional properties to return via API
 class Shop(ShopInDBBase):
+    pass
+
+
+class UserShop(ShopInDBBase):
     pass

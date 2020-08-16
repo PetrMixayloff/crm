@@ -26,7 +26,7 @@ class UserShopRelation(Base):
     """ Таблица отношений М-М сотрудников и магазинов"""
     user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
-    position = Column(String(255), comment='Должность сотрудника')
+    position = Column(String(255), nullable=True, comment='Должность сотрудника')
 
 
 class ProductCategory(Base):
