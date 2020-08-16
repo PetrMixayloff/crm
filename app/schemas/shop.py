@@ -1,8 +1,8 @@
 from typing import Optional, List
-from .user import User
+from . import User
 from .product import Product
 from pydantic import BaseModel
-from sqlalchemy.dialects.postgresql import UUID
+from uuid import UUID
 
 
 # Shared properties
