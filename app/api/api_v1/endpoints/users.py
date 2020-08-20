@@ -20,7 +20,7 @@ def read_users(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Retrieve users.
@@ -34,22 +34,22 @@ def create_user(
     *,
     db: Session = Depends(deps.get_db),
     user_in: schemas.UserCreate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_active_admin_user),
 ) -> Any:
     """
     Create new user.
     """
-    user = crud.user.get_by_login(db, login=user_in.email)
+    user = crud.user.get_by_login(db, login=user_in.login)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this username already exists in the system.",
         )
     user = crud.user.create(db, obj_in=user_in)
-    if settings.EMAILS_ENABLED and user_in.email:
-        send_new_account_email(
-            email_to=user_in.email, username=user_in.email, password=user_in.password
-        )
+    # if settings.EMAILS_ENABLED and user_in.email:
+    #     send_new_account_email(
+    #         email_to=user_in.email, username=user_in.email, password=user_in.password
+    #     )
     return user
 
 
@@ -167,6 +167,25 @@ def create_super_user(db: Session = Depends(deps.get_db)) -> Any:
             password=settings.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True,
         )
+        user = crud.user.create(db, obj_in=user_in)
+        return 'ok'
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Super user already exists in the system.",
+        )
+
+
+@router.post("/create_admin")
+def create_admin(
+        user_in: schemas.UserCreate,
+        db: Session = Depends(deps.get_db),
+        current_user: models.User = Depends(deps.get_current_active_superuser)) -> Any:
+    """
+    Create admin.
+    """
+    user = crud.user.get_by_login(db, login=user_in.login)
+    if not user:
         user = crud.user.create(db, obj_in=user_in)
         return 'ok'
     else:
