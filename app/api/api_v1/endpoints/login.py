@@ -1,11 +1,13 @@
 from datetime import timedelta
 from typing import Any
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Header
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from starlette.responses import RedirectResponse
 
 from app import crud, schemas
+from app.api.deps import reusable_oauth2
 from app.models import models
 from app.api import deps
 from app.core import security
@@ -21,7 +23,7 @@ router = APIRouter()
 
 
 @router.post("/login", response_model=schemas.Token)
-def test_token(login_form: schemas.UserLogin, db: Session = Depends(deps.get_db)) -> Any:
+def login(login_form: schemas.UserLogin, db: Session = Depends(deps.get_db)) -> Any:
     user = crud.user.authenticate(db, login=login_form.username, password=login_form.password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect login or password")

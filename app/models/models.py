@@ -66,7 +66,7 @@ class BlacklistToken(Base):
     Token Model for storing JWT tokens
     """
     token = Column(String, unique=True, index=True, nullable=False)
-    blacklisted_on = Column(DateTime, nullable=False)
+    blacklisted_on = Column(DateTime, default=datetime.datetime.utcnow())
 
     @staticmethod
     def check_blacklist(auth_token):
