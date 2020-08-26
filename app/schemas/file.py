@@ -1,9 +1,10 @@
 from pydantic import BaseModel
-from uuid import UUID
+from sqlalchemy.dialects.postgresql import UUID
 
 
 # Shared properties
 class FileBase(BaseModel):
+    product_id: UUID(as_uuid=True)
     path: str
 
 
@@ -14,7 +15,7 @@ class FileCreate(FileBase):
 
 # Properties to receive via API on update
 class FileInDBBase(FileBase):
-    id: UUID
+    id: UUID(as_uuid=True)
 
     class Config:
         orm_mode = True

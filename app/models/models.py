@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 
 
 class User(Base):
-    login = Column(String(255), nullable=False, unique=True)
+    login = Column(String(255), nullable=False)
     password = Column(String(255))
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
     full_name = Column(String(255))
@@ -17,22 +17,23 @@ class User(Base):
 
 
 class Shop(Base):
-    name = Column(String(255), unique=True)
+    name = Column(String(255), nullable=False)
     address = Column(String(255))
     users = relationship("User")
     products = relationship('Product')
 
 
 class ProductCategory(Base):
-    name = Column(String(255), unique=True)
+    name = Column(String(255))
     description = Column(String(255))
     products = relationship('Product')
+    show_on_store = Column(Boolean, nullable=False, default=True)
 
 
 class Product(Base):
-    category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'))
-    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
-    name = Column(String(255), unique=True)
+    category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'), nullable=False)
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    name = Column(String(255), nullable=False)
     description = Column(String(255))
     url = Column(String(255))
     images = relationship('File')
@@ -43,8 +44,8 @@ class Product(Base):
 
 
 class File(Base):
-    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
-    path = Column(String(255), unique=True)
+    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'), nullable=False)
+    path = Column(String(255), unique=True, nullable=False)
 
 
 class BlacklistToken(Base):

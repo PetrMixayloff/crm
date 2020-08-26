@@ -1,7 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel
-from uuid import UUID
-from .product import Product
+from sqlalchemy.dialects.postgresql import UUID
+from app.models.models import Product
 
 
 # Shared properties
@@ -9,7 +9,8 @@ class ProductCategoryBase(BaseModel):
     name: str
     is_active: Optional[bool] = True
     description: Optional[str] = None
-    products: List[Product] = []
+    show_on_store: Optional[bool] = True
+    products: Optional[List[Product]] = []
 
 
 # Properties to receive via API on creation
@@ -19,7 +20,7 @@ class ProductCategoryCreate(ProductCategoryBase):
 
 # Properties to receive via API on update
 class ProductCategoryInDBBase(ProductCategoryBase):
-    id: UUID
+    id: UUID(as_uuid=True)
 
     class Config:
         orm_mode = True
