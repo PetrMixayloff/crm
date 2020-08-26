@@ -9,7 +9,7 @@ class ShopBase(BaseModel):
     name: str
     is_active: Optional[bool] = True
     address: Optional[str] = None
-    user: Optional[List[User]] = []
+    users: Optional[List[User]] = []
     products: Optional[List[Product]] = []
 
 

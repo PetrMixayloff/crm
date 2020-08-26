@@ -39,7 +39,8 @@ def create_user(
     """
     Create new user.
     """
-    user = crud.user.get_by_login(db, login=user_in.login)
+    shop_id = user_in.shop_id
+    user = crud.user.check_user_login(db=db, login=user_in.login, shop_id=shop_id)
     if user:
         raise HTTPException(
             status_code=400,
@@ -66,7 +67,7 @@ def read_user_me(
 
 @router.get("/{user_id}", response_model=schemas.User)
 def read_user_by_id(
-    user_id: int,
+    user_id: str,
     current_user: models.User = Depends(deps.get_current_active_user),
     db: Session = Depends(deps.get_db),
 ) -> Any:
@@ -87,9 +88,9 @@ def read_user_by_id(
 def update_user(
     *,
     db: Session = Depends(deps.get_db),
-    user_id: int,
+    user_id: str,
     user_in: schemas.UserUpdate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: models.User = Depends(deps.get_current_active_admin_user),
 ) -> Any:
     """
     Update a user.
