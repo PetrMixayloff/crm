@@ -1,13 +1,13 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 from pydantic import BaseModel
-from sqlalchemy.dialects.postgresql import UUID
-from app.models.models import File
+from uuid import UUID
+from .file import File
 
 
 # Shared properties
 class ProductBase(BaseModel):
-    category_id: UUID(as_uuid=True)
-    shop_id: UUID(as_uuid=True)
+    category_id: Union[UUID, str]
+    shop_id: Union[UUID, str]
     name: str
     is_active: Optional[bool] = True
     description: Optional[str] = None
@@ -24,16 +24,16 @@ class ProductCreate(ProductBase):
     pass
 
 
+class ProductUpdate(ProductBase):
+    id: str
+
+
 # Properties to receive via API on update
 class ProductInDBBase(ProductBase):
-    id: UUID(as_uuid=True)
+    id: UUID
 
     class Config:
         orm_mode = True
-
-
-class ProductUpdate(ProductInDBBase):
-    pass
 
 
 # Additional properties to return via API

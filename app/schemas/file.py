@@ -1,10 +1,11 @@
 from pydantic import BaseModel
-from sqlalchemy.dialects.postgresql import UUID
+from typing import Union
+from uuid import UUID
 
 
 # Shared properties
 class FileBase(BaseModel):
-    product_id: UUID(as_uuid=True)
+    product_id: Union[UUID, str]
     path: str
 
 
@@ -13,16 +14,16 @@ class FileCreate(FileBase):
     pass
 
 
+class FileUpdate(FileBase):
+    id: str
+
+
 # Properties to receive via API on update
 class FileInDBBase(FileBase):
-    id: UUID(as_uuid=True)
+    id: UUID
 
     class Config:
         orm_mode = True
-
-
-class FileUpdate(FileInDBBase):
-    pass
 
 
 # Additional properties to return via API

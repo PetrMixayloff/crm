@@ -1,7 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel
-from sqlalchemy.dialects.postgresql import UUID
-from app.models.models import Product
+from uuid import UUID
+from .product import Product
 
 
 # Shared properties
@@ -18,16 +18,16 @@ class ProductCategoryCreate(ProductCategoryBase):
     pass
 
 
+class ProductCategoryUpdate(ProductCategoryBase):
+    id: str
+
+
 # Properties to receive via API on update
 class ProductCategoryInDBBase(ProductCategoryBase):
-    id: UUID(as_uuid=True)
+    id: UUID
 
     class Config:
         orm_mode = True
-
-
-class ProductCategoryUpdate(ProductCategoryInDBBase):
-    pass
 
 
 # Additional properties to return via API

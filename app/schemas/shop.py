@@ -1,7 +1,8 @@
 from typing import Optional, List
 from pydantic import BaseModel
-from sqlalchemy.dialects.postgresql import UUID
-from app.models.models import Product, User
+from uuid import UUID
+from .user import User
+from .product import Product
 
 
 # Shared properties
@@ -18,16 +19,16 @@ class ShopCreate(ShopBase):
     pass
 
 
+class ShopUpdate(ShopBase):
+    id: str
+
+
 # Properties to receive via API on update
 class ShopInDBBase(ShopBase):
-    id: UUID(as_uuid=True)
+    id: UUID
 
     class Config:
         orm_mode = True
-
-
-class ShopUpdate(ShopInDBBase):
-    pass
 
 
 # Additional properties to return via API

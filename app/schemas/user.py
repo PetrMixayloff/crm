@@ -1,13 +1,13 @@
 from datetime import datetime
-from typing import Optional, List
-from sqlalchemy.dialects.postgresql import UUID
+from typing import Optional, List, Union
+from uuid import UUID
 from pydantic import BaseModel
 
 
 # Shared properties
 class UserBase(BaseModel):
     login: str
-    shop_id: Optional[UUID(as_uuid=True)] = None
+    shop_id: Union[UUID, str, None] = None
     full_name: Optional[str] = None
     last_login: Optional[datetime] = None
     is_active: Optional[bool] = True
@@ -25,16 +25,17 @@ class UserCreate(UserBase):
     password: str
 
 
+class UserUpdate(UserBase):
+    id: str
+    password: Optional[str] = None
+
+
 # Properties to receive via API on update
 class UserInDBBase(UserBase):
-    id: UUID(as_uuid=True)
+    id: UUID
 
     class Config:
         orm_mode = True
-
-
-class UserUpdate(UserInDBBase):
-    password: Optional[str] = None
 
 
 # Additional properties to return via API
