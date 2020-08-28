@@ -9,7 +9,7 @@ from .product import Product
 class ShopBase(BaseModel):
     name: str
     is_active: Optional[bool] = True
-    address: Optional[str] = None
+    address: str
     users: Optional[List[User]] = []
     products: Optional[List[Product]] = []
 
