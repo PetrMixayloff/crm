@@ -23,6 +23,7 @@ def init_superuser(db: Session = Depends(deps.get_db)) -> None:
             login=settings.FIRST_SUPERUSER,
             password=settings.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True,
+            is_staff=False
         )
         user = crud.user.create(db, obj_in=user_in)  # noqa: F841
 
