@@ -34,8 +34,7 @@ def create_shop(
     """
     Create new shop.
     """
-    shop_in.users.append(current_user)
-    shop = crud.shop.create(db, obj_in=shop_in)
+    shop = crud.shop.create_with_owner(db, obj_in=shop_in, owner=current_user)
     return shop
 
 

@@ -55,7 +55,7 @@ def get_current_active_user(
 def get_current_active_admin_user(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
-    if crud.user.is_staff(current_user):
+    if crud.user.is_staff(current_user) or crud.user.is_superuser(current_user):
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
         )
