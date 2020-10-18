@@ -2,6 +2,7 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
 from .user import User
+from .product_category import ProductCategory
 from .product import Product
 
 
@@ -25,6 +26,7 @@ class ShopUpdate(ShopBase):
 class ShopInDBBase(ShopBase):
     id: UUID
     users: Optional[List[User]] = []
+    products_categories: Optional[List[ProductCategory]] = []
     products: Optional[List[Product]] = []
 
     class Config:

@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
 from .product import Product
@@ -7,6 +7,7 @@ from .product import Product
 # Shared properties
 class ProductCategoryBase(BaseModel):
     name: str
+    shop_id: Union[str, UUID]
     is_active: Optional[bool] = True
     description: Optional[str] = None
     show_on_store: Optional[bool] = True

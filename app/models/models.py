@@ -20,11 +20,13 @@ class Shop(Base):
     name = Column(String(255), nullable=False)
     address = Column(String(255))
     users = relationship("User")
+    products_categories = relationship('ProductCategory')
     products = relationship('Product')
 
 
 class ProductCategory(Base):
     name = Column(String(255))
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     description = Column(String(255))
     products = relationship('Product')
     show_on_store = Column(Boolean, nullable=False, default=True)
