@@ -1,13 +1,15 @@
 from .crud_user import user
 from .crud_shop import shop
+from .crud_product import product
+from .crud_product_category import product_category
 from .base import CRUDBase
 from app.models.models import ProductCategory, Product, File
 from app.schemas import ProductCategoryCreate, ProductCategoryUpdate, ProductCreate, \
     ProductUpdate, FileCreate, FileUpdate
 
 
-product_category = CRUDBase[ProductCategory, ProductCategoryCreate, ProductCategoryUpdate](ProductCategory)
-product = CRUDBase[Product, ProductCreate, ProductUpdate](Product)
+# product_category = CRUDBase[ProductCategory, ProductCategoryCreate, ProductCategoryUpdate](ProductCategory)
+# product = CRUDBase[Product, ProductCreate, ProductUpdate](Product)
 file = CRUDBase[File, FileCreate, FileUpdate](File)
 
 # For a new basic set of CRUD operations you could just do

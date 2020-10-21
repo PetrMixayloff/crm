@@ -9,17 +9,14 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[schemas.Product])
-def read_product(
-        db: Session = Depends(deps.get_db)
-
-) -> Any:
+def read_product(db: Session = Depends(deps.get_db)) -> Any:
     """
     Get current product.
     """
     return crud.product.get_multi(db)
 
 
-@router.get("/{product_id}", response_model=List[schemas.Product])
+@router.get("/{product_id}", response_model=schemas.Product)
 def read_product_by_id(
         product_id: str,
         db: Session = Depends(deps.get_db)
@@ -31,11 +28,11 @@ def read_product_by_id(
     return product
 
 
-@router.post("/create_product", response_model=List[schemas.Product])
+@router.post("/create_product", response_model=schemas.Product)
 def create_product(*,
                    db: Session = Depends(deps.get_db),
-                   product_add: schemas.ProductCreate)\
-        -> Any:
+                   product_add: schemas.ProductCreate,
+                   ) -> Any:
     """
     Create new product.
     """
@@ -43,7 +40,7 @@ def create_product(*,
     return product
 
 
-@router.put("/{product_id}", response_model=List[schemas.ProductUpdate])
+@router.put("/{product_id}", response_model=schemas.ProductUpdate)
 def update_product_by_id(
         *,
         db: Session = Depends(deps.get_db),
@@ -54,7 +51,7 @@ def update_product_by_id(
     """
     Update product.
     """
-    product = crud.product.get(db, id=product_id)
+    product = crud.product.update(db, id=product_id)
     if not product:
         raise HTTPException(
             status_code=404,
@@ -64,7 +61,7 @@ def update_product_by_id(
     return product
 
 
-@router.delete("/{product_id}", response_model=List[schemas.Product])
+@router.delete("/{product_id}", response_model=schemas.Product)
 def delete_product(
         *,
         db: Session = Depends(deps.get_db),
@@ -76,4 +73,4 @@ def delete_product(
     """
     product = crud.product.get(db, id=product_id)
     product = crud.product.remove(db, db_obj=product)
-    return 'done!'
+    return product
