@@ -39,8 +39,7 @@ def create_user(
     """
     Create new user.
     """
-    shop_id = user_in.shop_id
-    user = crud.user.check_user_login(db=db, login=user_in.login, shop_id=shop_id)
+    user = crud.user.check_user_login(db=db, login=user_in.login)
     if user:
         raise HTTPException(
             status_code=400,

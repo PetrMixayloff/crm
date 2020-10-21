@@ -12,8 +12,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def get_by_login(self, db: Session, *, login: str) -> Optional[User]:
         return db.query(User).filter(User.login == login).first()
 
-    def check_user_login(self, db: Session, *, login: str, shop_id: str) -> Optional[User]:
-        return db.query(User).filter(User.login == login, str(User.shop_id) == shop_id).first()
+    def check_user_login(self, db: Session, *, login: str) -> Optional[User]:
+        return db.query(User).filter(User.login == login).first()
 
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
         obj_in.password = get_password_hash(obj_in.password)
