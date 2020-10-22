@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Dict, Optional, Union
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -15,18 +15,19 @@ from app.utils import send_new_account_email
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.User])
+@router.get("/", response_model=Dict[str, Union[int, List[schemas.User]]])
 def read_users(
     db: Session = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
     current_user: models.User = Depends(deps.get_current_active_user),
+    skip: int = 0,
+    take: int = 100,
+    filter: str = ''
 ) -> Any:
     """
     Retrieve users.
     """
-    users = crud.user.get_multi(db, skip=skip, limit=limit)
-    return users
+    data = crud.user.get_multi(db, skip=skip, take=take, filter=filter)
+    return data
 
 
 @router.post("/", response_model=schemas.User)
