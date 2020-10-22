@@ -31,9 +31,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db.query(self.model).filter(self.model.id == id).first()
 
     def get_multi(
-            self, db: Session, *, skip: int = 0, take: int = 100, filter: str = None
+            self, db: Session, shop_id: str, skip: int = 0, take: int = 100, filter: str = None
     ) -> Dict[str, Union[int, Any]]:
-        users = db.query(self.model)
+        users = db.query(self.model).filter(self.model.is_active.is_(True),
+                                            self.model.shop_id == shop_id)
         if filter is not None:
             users = self.filter_query(users, filter)
         users = users.offset(skip).limit(take).all()
@@ -161,5 +162,4 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 query_mod = query_mod.filter(_attr >= _value)
             elif _rule == "<":
                 query_mod = query_mod.filter(_attr < _value)
-
         return query_mod
