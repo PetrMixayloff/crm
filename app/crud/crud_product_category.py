@@ -15,7 +15,6 @@ from app.schemas import ProductCategoryCreate, ProductCategoryUpdate
 class CRUDProductCategory(CRUDBase[ProductCategory, ProductCategoryCreate, ProductCategoryUpdate]):
     def create_product_category(self, db: Session,
                                 obj_in: ProductCategoryCreate,
-                                current_user: models.User = Depends(deps.get_current_active_admin_user),
                                 ) -> ProductCategory:
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)  # type: ignore
