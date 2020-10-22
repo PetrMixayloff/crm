@@ -21,13 +21,12 @@ def create_product_category(*, db: Session = Depends(deps.get_db),
 @router.put("/update_product_category", response_model=schemas.ProductCategory)
 def update_product_category(*, db: Session = Depends(deps.get_db),
                             product_category_add: schemas.ProductCategoryUpdate,
-                            category_id: str,
                             ) -> Any:
     """
     Update product category.
     """
-    product_category = crud.product_category.update(db, obj_in=product_category_add)
-    return 'ok'
+    product_category = crud.product_category.update_product_category(db, obj_in=product_category_add)
+    return product_category
 
 
 @router.get("/", response_model=List[schemas.ProductCategory])
