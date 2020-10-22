@@ -34,6 +34,11 @@ def create_shop(
     """
     Create new shop.
     """
+    if current_user.shop_id:
+        raise HTTPException(
+            status_code=404,
+            detail="The user has already created shop",
+        )
     shop = crud.shop.create_with_owner(db, obj_in=shop_in, owner=current_user)
     return shop
 

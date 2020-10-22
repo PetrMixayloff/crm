@@ -12,6 +12,9 @@ from app.core import security
 from app.core.config import settings
 from app.db.session import SessionLocal
 
+import copy
+from app.db.session import inspector
+
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
 )
@@ -70,3 +73,48 @@ def get_current_active_superuser(
             status_code=400, detail="The user doesn't have enough privileges"
         )
     return current_user
+
+
+def get_all_schemas_models():
+
+    schemas_models = dict()
+
+    schemas = inspector.get_schema_names()
+
+    for schema in schemas:
+        tables = inspector.get_table_names(schema)
+        for tab in tables:
+            mapped_columns = [mapping_column(c) for c in inspector.get_columns(tab, schema)]
+
+            schemas_models['{}.{}'.format(schema, tab)] = mapped_columns
+
+    return schemas_models
+
+
+def mapping_column(col):
+    mapped = copy.copy(col)
+    mapped['type'] = mapping_types(type(col['type']).__name__)
+    del mapped['default']
+    del mapped['autoincrement']
+    return mapped
+
+
+def mapping_types(type_str):
+    res = ''
+    if type_str.find('VARCHAR') != -1:
+        res = 'string'
+    elif type_str.find('TEXT') != -1:
+        res = 'string'
+    elif type_str.find('INTEGER') != -1:
+        res = 'number'
+    elif type_str.find('TIMESTAMP') != -1:
+        res = 'date'
+    elif type_str.find('BOOLEAN') != -1:
+        res = 'boolean'
+    elif type_str.find('ENUM') != -1:
+        res = 'string'
+    elif type_str.find('JSON') != -1:
+        res = 'string'
+    else:
+        print(type_str)
+    return res

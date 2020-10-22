@@ -6,13 +6,13 @@ from sqlalchemy.orm import relationship
 
 
 class User(Base):
-    login = Column(String(255), nullable=False)
-    password = Column(String(255))
+    login = Column(String(255), nullable=False, comment='Логин')
+    password = Column(String(255), comment='Пароль')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
-    full_name = Column(String(255))
-    last_login = Column(DateTime)
-    is_superuser = Column(Boolean, nullable=False, default=False)
-    is_staff = Column(Boolean, nullable=False, default=True)
+    full_name = Column(String(255), comment='ФИО')
+    last_login = Column(DateTime, comment='Последний вход')
+    is_superuser = Column(Boolean, nullable=False, default=False, comment='Права суперпользователя')
+    is_staff = Column(Boolean, nullable=False, default=True, comment='Владелец магазина')
     position = Column(String(255), comment='Должность сотрудника')
 
 
