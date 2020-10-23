@@ -129,7 +129,7 @@ def create_super_user(db: Session = Depends(deps.get_db)) -> Any:
 
 @router.post("/create_admin")
 def create_admin(
-        user_in: schemas.UserCreate,
+        user_in: schemas.AdminCreate,
         db: Session = Depends(deps.get_db)) -> Any:
     """
     Create admin.
