@@ -1,14 +1,9 @@
-from typing import List
-from uuid import UUID
-from fastapi import Depends
+from typing import Dict, Union, Any
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-
 from app import crud
-from app.api import deps
 from app.crud.base import CRUDBase
-from app.models import models
-from app.models.models import ProductCategory
+from app.models.models import ProductCategory, User
 from app.schemas import ProductCategoryCreate, ProductCategoryUpdate
 
 
@@ -23,13 +18,8 @@ class CRUDProductCategory(CRUDBase[ProductCategory, ProductCategoryCreate, Produ
         db.refresh(db_obj)
         return db_obj
 
-    def get_multi_by_product(
-            self, db: Session, category_id: UUID) -> ProductCategory:
-        return db.query(self.model).filter(ProductCategory.category_id == category_id).all()
-
     def update_product_category(self, db: Session, *,
-                                obj_in: ProductCategoryUpdate,
-                                ) -> ProductCategory:
+                                obj_in: ProductCategoryUpdate) -> ProductCategory:
         db_obj = crud.product_category.get(db, id=obj_in.id)
         obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
@@ -43,6 +33,32 @@ class CRUDProductCategory(CRUDBase[ProductCategory, ProductCategoryCreate, Produ
         db.commit()
         db.refresh(db_obj)
         return db_obj
+
+    def get_multi_product_category(
+            self, db: Session, shop_id: str, skip: int = 0, take: int = 100, filter: str = None
+    ) -> Dict[str, Union[int, Any]]:
+        product_category = db.query(self.model).filter(self.model.shop_id == shop_id)
+        if filter is not None:
+            product_category = self.filter_query(product_category, filter)
+        product_category = product_category.offset(skip).limit(take).all()
+        data = {
+            'totalCount': len(product_category),
+            'data': product_category
+        }
+        return data
+
+    def get_multi_product_category_by_id(
+            self, db: Session, category_id: str, skip: int = 0, take: int = 100, filter: str = None
+    ) -> Dict[str, Union[int, Any]]:
+        product_category_by_id = db.query(self.model).filter(self.model.id == category_id)
+        if filter is not None:
+            product_category_by_id = self.filter_query(product_category_by_id, filter)
+        product_category_by_id = product_category_by_id.offset(skip).limit(take).all()
+        data = {
+            'totalCount': len(product_category_by_id),
+            'data': product_category_by_id
+        }
+        return data
 
 
 product_category = CRUDProductCategory(ProductCategory)
