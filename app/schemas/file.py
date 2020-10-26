@@ -1,17 +1,19 @@
 from pydantic import BaseModel
-from typing import Union
+from typing import Union, Optional
 from uuid import UUID
 
 
 # Shared properties
 class FileBase(BaseModel):
-    product_id: Union[UUID, str]
+    id: str
+    product_id: Optional[Union[UUID, str]] = None
+    user_id: Optional[Union[UUID, str]] = None
     path: str
 
 
 # Properties to receive via API on creation
 class FileCreate(FileBase):
-    pass
+    id: Union[UUID, str]
 
 
 class FileUpdate(FileBase):

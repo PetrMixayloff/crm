@@ -9,11 +9,8 @@ from app.schemas import UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
-    def get_by_login(self, db: Session, *, login: str) -> Optional[User]:
-        return db.query(User).filter(User.login == login).first()
-
-    def check_user_login(self, db: Session, *, login: str) -> Optional[User]:
-        return db.query(User).filter(User.login == login).first()
+    def get_by_phone(self, db: Session, *, phone: str) -> Optional[User]:
+        return db.query(User).filter(User.phone == phone).first()
 
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
         obj_in.password = get_password_hash(obj_in.password)
@@ -27,7 +24,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return super().update(db, db_obj=db_obj, obj_in=obj_in)
 
     def authenticate(self, db: Session, *, login: str, password: str) -> Optional[User]:
-        user = self.get_by_login(db, login=login)
+        user = self.get_by_phone(db, login=login)
         if not user:
             return None
         if not verify_password(password, user.password):

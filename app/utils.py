@@ -1,10 +1,12 @@
 import logging
+import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 import emails
 from emails.template import JinjaTemplate
+from fastapi import UploadFile
 from jose import jwt
 
 from app.core.config import settings
@@ -104,3 +106,11 @@ def verify_password_reset_token(token: str) -> Optional[str]:
         return decoded_token["email"]
     except jwt.JWTError:
         return None
+
+
+def save_upload_file(upload_file: UploadFile, destination: str) -> None:
+    try:
+        with open(destination, "wb") as buffer:
+            shutil.copyfileobj(upload_file.file, buffer)
+    finally:
+        upload_file.file.close()
