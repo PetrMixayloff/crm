@@ -79,7 +79,7 @@ class Settings(BaseSettings):
     #     )
     #
     # EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
-    FIRST_SUPERUSER: str = 'super'
+    FIRST_SUPERUSER: str = '+79005555555'
     FIRST_SUPERUSER_PASSWORD: str = 'super'
     # USERS_OPEN_REGISTRATION: bool = False
 

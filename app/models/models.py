@@ -15,7 +15,7 @@ class User(Base):
     is_staff = Column(Boolean, nullable=False, default=True, comment='Владелец магазина')
     position = Column(String(255), comment='Должность сотрудника')
     description = Column(String(255), comment='Данные')
-    avatar = relationship("File", uselist=False, comment='Аватар')
+    avatar = relationship("File", uselist=False)
 
 
 class Shop(Base):

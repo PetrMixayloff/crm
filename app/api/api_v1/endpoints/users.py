@@ -153,7 +153,7 @@ def create_super_user(db: Session = Depends(deps.get_db)) -> Any:
             password=settings.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True
         )
-        user = crud.user.create(db, obj_in=user_in)
+        crud.user.create(db, obj_in=user_in)
         return 'ok'
     else:
         raise HTTPException(
