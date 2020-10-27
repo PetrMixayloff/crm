@@ -1,12 +1,12 @@
 import datetime
 from app.db.base_class import Base
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, Float
+from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, Float, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 
 class User(Base):
-    login = Column(String(255), nullable=False, comment='Логин')
+    phone = Column(String(255), nullable=False, comment='Номер телефона')
     password = Column(String(255), comment='Пароль')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
     full_name = Column(String(255), comment='ФИО')
@@ -14,6 +14,8 @@ class User(Base):
     is_superuser = Column(Boolean, nullable=False, default=False, comment='Права суперпользователя')
     is_staff = Column(Boolean, nullable=False, default=True, comment='Владелец магазина')
     position = Column(String(255), comment='Должность сотрудника')
+    description = Column(String(255), comment='Данные')
+    avatar = relationship("File", uselist=False)
 
 
 class Shop(Base):
@@ -46,7 +48,9 @@ class Product(Base):
 
 
 class File(Base):
-    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'), nullable=False)
+    __table_args__ = (UniqueConstraint('product_id', 'user_id', name='_product_user_uc'),)
+    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
+    user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
     path = Column(String(255), unique=True, nullable=False)
 
 

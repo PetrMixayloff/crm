@@ -17,7 +17,7 @@ def init_superuser(db: Session = Depends(deps.get_db)) -> None:
     # the tables un-commenting the next line
     # Base.metadata.create_all(bind=engine)
 
-    user = crud.user.get_by_login(db, login=settings.FIRST_SUPERUSER)
+    user = crud.user.get_by_phone(db, login=settings.FIRST_SUPERUSER)
     if not user:
         user_in = schemas.UserCreate(
             login=settings.FIRST_SUPERUSER,
