@@ -24,7 +24,7 @@ router = APIRouter()
 
 @router.post("/login", response_model=schemas.Token)
 def login(login_form: schemas.UserLogin, db: Session = Depends(deps.get_db)) -> Any:
-    user = crud.user.authenticate(db, login=login_form.username, password=login_form.password)
+    user = crud.user.authenticate(db, phone=login_form.phone, password=login_form.password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect login or password")
     elif not crud.user.is_active(user):
@@ -46,7 +46,7 @@ def login_access_token(
     OAuth2 compatible token login, get an access token for future requests
     """
     user = crud.user.authenticate(
-        db, login=form_data.username, password=form_data.password
+        db, phone=form_data.username, password=form_data.password
     )
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")

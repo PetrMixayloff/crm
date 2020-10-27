@@ -38,7 +38,7 @@ def create_user(
     *,
     db: Session = Depends(deps.get_db),
     user_in: schemas.UserCreate,
-    avatar: UploadFile = None,
+    avatar: Optional[bytes] = None,
     current_user: models.User = Depends(deps.get_current_active_admin_user),
 ) -> Any:
     """
@@ -104,7 +104,7 @@ def update_user(
     db: Session = Depends(deps.get_db),
     user_id: str,
     user_in: schemas.UserUpdate,
-    avatar: UploadFile = None,
+    avatar: Optional[bytes] = None,
     current_user: models.User = Depends(deps.get_current_active_admin_user),
 ) -> Any:
     """

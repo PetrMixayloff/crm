@@ -23,8 +23,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             obj_in.password = get_password_hash(obj_in.password)
         return super().update(db, db_obj=db_obj, obj_in=obj_in)
 
-    def authenticate(self, db: Session, *, login: str, password: str) -> Optional[User]:
-        user = self.get_by_phone(db, login=login)
+    def authenticate(self, db: Session, *, phone: str, password: str) -> Optional[User]:
+        user = self.get_by_phone(db, phone=phone)
         if not user:
             return None
         if not verify_password(password, user.password):

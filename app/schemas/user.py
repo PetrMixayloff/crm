@@ -12,7 +12,7 @@ class UserBase(BaseModel):
 
     @validator('phone')
     def valid_phone(cls, v):
-        if re.match(r'(\+)(7)(\s)?(9)(\d{2})(\s)?(\d{7})', v) is not None:
+        if re.match(r'(\+)(7)(9)(\d{9})', v) is None:
             raise ValueError('Not valid phone number')
         return v.title()
 
@@ -41,15 +41,19 @@ class UserCreate(UserLogin):
 
 
 class UserUpdate(UserCreate):
-    id: str
+    id: Optional[str] = None
     password: Optional[str] = None
     is_active: Optional[bool] = True
 
 
 # Properties to receive via API on update
-class UserInDBBase(UserCreate):
-    id: UUID
-    shop_id: UUID
+class UserInDBBase(UserBase):
+    id: Optional[UUID] = None
+    full_name: str
+    position: str
+    description: Optional[str] = None
+    avatar: Optional[File] = None
+    shop_id: Optional[UUID] = None
     last_login: Optional[datetime] = None
     is_superuser: Optional[bool] = False
     is_staff: Optional[bool] = True
@@ -61,3 +65,8 @@ class UserInDBBase(UserCreate):
 # Additional properties to return via API
 class User(UserInDBBase):
     pass
+
+
+# Additional properties stored in DB
+class UserInDB(UserInDBBase):
+    password: str
