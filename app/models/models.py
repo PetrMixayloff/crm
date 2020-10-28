@@ -30,13 +30,14 @@ class ProductCategory(Base):
     name = Column(String(255))
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     description = Column(String(255))
-    products = relationship('Product')
+    products = relationship('Product', back_populates="productcategory", cascade="all, delete-orphan")
     show_on_store = Column(Boolean, nullable=False, default=True)
 
 
 class Product(Base):
     category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'), nullable=False)
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    productcategory = relationship("ProductCategory", back_populates="products")
     name = Column(String(255), nullable=False)
     description = Column(String(255))
     url = Column(String(255))
