@@ -5,7 +5,6 @@ from uuid import UUID
 
 # Shared properties
 class FileBase(BaseModel):
-    id: str
     product_id: Optional[Union[UUID, str]] = None
     user_id: Optional[Union[UUID, str]] = None
     path: str
@@ -13,7 +12,7 @@ class FileBase(BaseModel):
 
 # Properties to receive via API on creation
 class FileCreate(FileBase):
-    id: Union[UUID, str]
+    pass
 
 
 class FileUpdate(FileBase):

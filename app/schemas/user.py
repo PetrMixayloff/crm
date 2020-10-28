@@ -37,7 +37,6 @@ class UserCreate(UserLogin):
     position: str
     shop_id: str
     description: Optional[str] = None
-    avatar: Optional[File] = None
 
 
 class UserUpdate(UserCreate):

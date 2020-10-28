@@ -14,17 +14,16 @@ from app.core.config import settings
 from app.utils import send_new_account_email
 from uuid import uuid4
 
-
 router = APIRouter()
 
 
 @router.get("/", response_model=Dict[str, Union[int, List[schemas.User]]])
 def read_users(
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(deps.get_current_active_user),
-    skip: int = 0,
-    take: int = 100,
-    filter: str = None
+        db: Session = Depends(deps.get_db),
+        current_user: models.User = Depends(deps.get_current_active_user),
+        skip: int = 0,
+        take: int = 100,
+        filter: str = None
 ) -> Any:
     """
     Retrieve users.
@@ -35,11 +34,10 @@ def read_users(
 
 @router.post("/", response_model=schemas.User)
 def create_user(
-    *,
-    db: Session = Depends(deps.get_db),
-    user_in: schemas.UserCreate,
-    avatar: Optional[bytes] = None,
-    current_user: models.User = Depends(deps.get_current_active_admin_user),
+        *,
+        db: Session = Depends(deps.get_db),
+        user_in: schemas.UserCreate,
+        current_user: models.User = Depends(deps.get_current_active_admin_user),
 ) -> Any:
     """
     Create new user.
@@ -50,16 +48,6 @@ def create_user(
             status_code=400,
             detail="The user with this phone number already exists in the system.",
         )
-    if avatar is not None:
-        avatar = File(avatar)
-        try:
-            file_id = uuid4()
-            save_upload_file(avatar, f'app/static/avatars/{str(file_id)}.png')
-            file_in = schemas.FileCreate(id=avatar.id, path=avatar.path)
-            crud.file.create(db=db, obj_in=file_in)
-            user_in.avatar = file_in
-        except Exception:
-            raise HTTPException(status_code=500, detail="Can't save photo")
     user = crud.user.create(db, obj_in=user_in)
     # if settings.EMAILS_ENABLED and user_in.email:
     #     send_new_account_email(
@@ -70,8 +58,8 @@ def create_user(
 
 @router.get("/me", response_model=schemas.User)
 def read_user_me(
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(deps.get_current_active_user),
+        db: Session = Depends(deps.get_db),
+        current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Get current user.
@@ -81,9 +69,9 @@ def read_user_me(
 
 @router.get("/{user_id}", response_model=schemas.User)
 def read_user_by_id(
-    user_id: str,
-    current_user: models.User = Depends(deps.get_current_active_user),
-    db: Session = Depends(deps.get_db),
+        user_id: str,
+        current_user: models.User = Depends(deps.get_current_active_user),
+        db: Session = Depends(deps.get_db),
 ) -> Any:
     """
     Get a specific user by id.
@@ -100,38 +88,16 @@ def read_user_by_id(
 
 @router.put("/{user_id}", response_model=schemas.User)
 def update_user(
-    *,
-    db: Session = Depends(deps.get_db),
-    user_id: str,
-    user_in: schemas.UserUpdate,
-    avatar: Optional[bytes] = None,
-    current_user: models.User = Depends(deps.get_current_active_admin_user),
+        *,
+        db: Session = Depends(deps.get_db),
+        user_id: str,
+        user_in: schemas.UserUpdate,
+        current_user: models.User = Depends(deps.get_current_active_admin_user),
 ) -> Any:
     """
     Update a user.
     """
     user = crud.user.get(db, id=user_id)
-    if avatar is not None:
-        avatar = File(avatar)
-        if user_in.avatar.id:
-            try:
-                os.remove(user_in.avatar.path)
-                save_upload_file(avatar, f'app/static/avatars/{user_in.avatar.id}.png')
-                user_in.avatar.path = f'app/static/avatars/{user_in.avatar.id}.png'
-                old_avatar = crud.file.get(db=db, id=user_in.avatar.id)
-                avatar = crud.file.update(db=db, db_obj=old_avatar, obj_in=user_in.avatar.path)
-            except Exception:
-                traceback.format_exc()
-                raise HTTPException(status_code=500, detail="Can't save photo")
-        else:
-            try:
-                file_id = uuid4()
-                save_upload_file(avatar, f'app/static/avatars/{str(file_id)}.png')
-                avatar = crud.file.create(id=file_id, path=f'app/static/avatars/{str(file_id)}.png')
-                file_in = schemas.FileCreate(id=avatar.id, path=avatar.path)
-                user_in.avatar = file_in
-            except Exception:
-                raise HTTPException(status_code=500, detail="Can't save photo")
     if not user:
         raise HTTPException(
             status_code=404,
@@ -177,4 +143,20 @@ def create_admin(
         raise HTTPException(
             status_code=400,
             detail="Super user already exists in the system.",
+        )
+
+
+@router.delete("/{user_id}", response_model=schemas.User)
+def delete_user(user_id: str,
+                db: Session = Depends(deps.get_db),
+                current_user: models.User = Depends(deps.get_current_active_admin_user)
+                ) -> None:
+    """
+    Delete user.
+    """
+    user = crud.user.remove(db, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user does not exist in the system",
         )

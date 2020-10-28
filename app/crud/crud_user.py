@@ -19,8 +19,10 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def update(
         self, db: Session, *, db_obj: User, obj_in: UserUpdate
     ) -> User:
-        if obj_in.password:
+        if obj_in.password is not None:
             obj_in.password = get_password_hash(obj_in.password)
+        else:
+            obj_in.password = db_obj.password
         return super().update(db, db_obj=db_obj, obj_in=obj_in)
 
     def authenticate(self, db: Session, *, phone: str, password: str) -> Optional[User]:
