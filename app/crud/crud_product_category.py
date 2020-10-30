@@ -34,31 +34,5 @@ class CRUDProductCategory(CRUDBase[ProductCategory, ProductCategoryCreate, Produ
         db.refresh(db_obj)
         return db_obj
 
-    def get_multi_product_category(
-            self, db: Session, shop_id: str, skip: int = 0, take: int = 100, filter: str = None
-    ) -> Dict[str, Union[int, Any]]:
-        product_category = db.query(self.model).filter(self.model.shop_id == shop_id)
-        if filter is not None:
-            product_category = self.filter_query(product_category, filter)
-        product_category = product_category.offset(skip).limit(take).all()
-        data = {
-            'totalCount': len(product_category),
-            'data': product_category
-        }
-        return data
-
-    def get_multi_product_category_by_id(
-            self, db: Session, category_id: str, skip: int = 0, take: int = 100, filter: str = None
-    ) -> Dict[str, Union[int, Any]]:
-        product_category_by_id = db.query(self.model).filter(self.model.id == category_id)
-        if filter is not None:
-            product_category_by_id = self.filter_query(product_category_by_id, filter)
-        product_category_by_id = product_category_by_id.offset(skip).limit(take).all()
-        data = {
-            'totalCount': len(product_category_by_id),
-            'data': product_category_by_id
-        }
-        return data
-
 
 product_category = CRUDProductCategory(ProductCategory)

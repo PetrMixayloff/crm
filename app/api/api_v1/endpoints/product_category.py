@@ -3,11 +3,24 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import Any, List, Dict, Union
 from app.api import deps
+from app.models import models
 
 router = APIRouter()
 
 
-@router.post("/create_product_category", response_model=schemas.ProductCategory)
+@router.get("/", response_model=Dict[str, Union[int, List[schemas.ProductCategory]]])
+def read_product_categories(db: Session = Depends(deps.get_db),
+                            current_user: models.User = Depends(deps.get_current_active_user)
+                            ) -> Any:
+    """
+    Get product categories for current user.
+    """
+    shop_id = str(current_user.shop_id)
+    product_category = crud.product_category.get_multi(db, shop_id=shop_id)
+    return product_category
+
+
+@router.post("/", response_model=schemas.ProductCategory)
 def create_product_category(*, db: Session = Depends(deps.get_db),
                             product_category_add: schemas.ProductCategoryCreate
                             ) -> Any:
@@ -26,17 +39,6 @@ def update_product_category(*, db: Session = Depends(deps.get_db),
     Update product category.
     """
     product_category = crud.product_category.update_product_category(db, obj_in=product_category_in)
-    return product_category
-
-
-@router.get("/", response_model=Dict[str, Union[int, List[schemas.ProductCategory]]])
-def read_product_category(db: Session = Depends(deps.get_db),
-                          shop_id: str = None,
-                          ) -> Any:
-    """
-    Get current product.
-    """
-    product_category = crud.product_category.get_multi_product_category(db, shop_id=shop_id)
     return product_category
 
 
