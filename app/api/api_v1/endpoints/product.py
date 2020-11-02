@@ -63,6 +63,7 @@ def update_product(*, db: Session = Depends(deps.get_db),
 
 @router.delete("/delete", response_model=schemas.Product)
 def delete_product(*, db: Session = Depends(deps.get_db),
+                   current_user: models.User = Depends(deps.get_current_active_user),
                    product_id: str) -> Any:
     """
     Delete product
