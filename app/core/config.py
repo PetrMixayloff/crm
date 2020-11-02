@@ -82,6 +82,9 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: str = '+79005555555'
     FIRST_SUPERUSER_PASSWORD: str = 'super'
     # USERS_OPEN_REGISTRATION: bool = False
+    AWS_ACCESS_KEY_ID: str = ''
+    AWS_ACCESS_SECRET_KEY: str = ''
+    AWS_BUCKET_NAME: str = ''
 
     class Config:
         env_file = '.env'

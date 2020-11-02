@@ -1,8 +1,10 @@
 import logging
 import shutil
+import boto3
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional
+from botocore.exceptions import NoCredentialsError
 
 import emails
 from emails.template import JinjaTemplate
@@ -114,3 +116,19 @@ def save_upload_file(upload_file: UploadFile, destination: str) -> None:
             shutil.copyfileobj(upload_file.file, buffer)
     finally:
         upload_file.file.close()
+
+
+def upload_image_to_aws(file: bytes, file_name: str):
+    # S3 Connect
+    s3 = boto3.resource(
+        's3',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_ACCESS_SECRET_KEY
+    )
+    try:
+        s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=file, ACL='public-read')
+        print("Upload Successful")
+        return True
+    except NoCredentialsError:
+        print("Credentials not available")
+        return False
