@@ -21,9 +21,9 @@ def read_product_categories(db: Session = Depends(deps.get_db),
 
 
 @router.post("/", response_model=schemas.ProductCategory)
-def create_product_category(*, db: Session = Depends(deps.get_db),
+def create_product_category(product_category_add: schemas.ProductCategoryCreate,
                             current_user: models.User = Depends(deps.get_current_active_user),
-                            product_category_add: schemas.ProductCategoryCreate
+                            db: Session = Depends(deps.get_db)
                             ) -> Any:
     """
     Create new create product category.
@@ -33,10 +33,10 @@ def create_product_category(*, db: Session = Depends(deps.get_db),
 
 
 @router.put("/{category_id}", response_model=schemas.ProductCategory)
-def update_product_category(*, db: Session = Depends(deps.get_db),
-                            category_id: str,
-                            current_user: models.User = Depends(deps.get_current_active_user),
-                            product_category_in: schemas.ProductCategoryUpdate
+def update_product_category(category_id: str,
+                            product_category_in: schemas.ProductCategoryUpdate,
+                            db: Session = Depends(deps.get_db),
+                            current_user: models.User = Depends(deps.get_current_active_user)
                             ) -> Any:
     """
     Update product category.
@@ -46,21 +46,15 @@ def update_product_category(*, db: Session = Depends(deps.get_db),
     return product_category
 
 
-@router.get("/{category_id}", response_model=Dict[str, Union[int, List[schemas.ProductCategory]]])
-def read_product_category_by_id(db: Session = Depends(deps.get_db),
-                                category_id: str = None,
-                                skip: int = 0,
-                                take: int = 100,
-                                filter: str = None
+@router.get("/{category_id}", response_model=schemas.ProductCategory)
+def read_product_category_by_id(category_id: str,
+                                db: Session = Depends(deps.get_db),
+                                current_user: models.User = Depends(deps.get_current_active_user)
                                 ) -> Any:
     """
-    Get current product by category_id.
+    Get product category by id.
     """
-    product_category = crud.product_category.get_multi_product_category_by_id(
-        db,
-        category_id=category_id,
-        skip=skip, take=take, filter=filter
-    )
+    product_category = crud.product_category.get(db, category_id=category_id)
     return product_category
 
 
@@ -69,7 +63,7 @@ def delete_product_category_by_id(db: Session = Depends(deps.get_db),
                                   category_id: str = None,
                                   ) -> Any:
     """
-    Delete product by category_id.
+    Delete product category by id.
     """
     product_category = crud.product_category.remove(db, id=category_id)
     return product_category
