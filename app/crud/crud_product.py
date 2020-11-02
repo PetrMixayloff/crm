@@ -21,23 +21,6 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
         db.refresh(db_obj)
         return db_obj
 
-    def update_product(self, db: Session, *,
-                       obj_in: ProductUpdate) -> Product:
-
-        db_obj = crud.product.get(db, id=obj_in.id)
-        obj_data = jsonable_encoder(db_obj)
-        if isinstance(obj_in, dict):
-            update_data = obj_in
-        else:
-            update_data = obj_in.dict(exclude_unset=True)
-        for field in obj_data:
-            if field in update_data:
-                setattr(db_obj, field, update_data[field])
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
     def get_multi_product(
             self, db: Session, shop_id: str, category_id: str, skip: int = 0, take: int = 100, filter: str = None
     ) -> Dict[str, Union[int, Any]]:
