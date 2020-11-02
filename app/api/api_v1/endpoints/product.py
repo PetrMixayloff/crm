@@ -9,30 +9,37 @@ router = APIRouter()
 
 
 @router.get("/", response_model=Dict[str, Union[int, List[schemas.Product]]])
-def read_product(db: Session = Depends(deps.get_db),
-                 current_user: models.User = Depends(deps.get_current_active_user),
-                 category_id: str = None) -> Any:
+def read_product_by_shop_id(*, db: Session = Depends(deps.get_db),
+                            current_user: models.User = Depends(deps.get_current_active_user)
+                            ) -> Any:
     """
-    Get current product.
+    Get current product by shop id.
     """
-    shop_id = current_user.shop_id
-    product = crud.product.get_multi_product(db, shop_id=shop_id, category_id=category_id)
+    shop_id = str(current_user.shop_id)
+    product = crud.product.get_multi(db, shop_id=shop_id)
     return product
 
 
-@router.get("/{product_id}", response_model=List[schemas.Product])
+@router.get("/{category_id}", response_model=Dict[str, Union[int, List[schemas.Product]]])
+def read_product_by_category_id(*, db: Session = Depends(deps.get_db),
+                                current_user: models.User = Depends(deps.get_current_active_user),
+                                category_id: str) -> Any:
+    """
+    Get current product by category id.
+    """
+    product = crud.product.get_multi_by_category_id(db, category_id=category_id)
+    return product
+
+
+@router.get("/{product_id}", response_model=schemas.Product)
 def read_product_by_id(*,
                        db: Session = Depends(deps.get_db),
                        current_user: models.User = Depends(deps.get_current_active_user),
-                       category_id: str,
                        product_id: str) -> Any:
     """
     Get current product by id.
     """
-    shop_id = current_user.shop_id
-    product = crud.product.get_multi_product_by_id(db, shop_id=shop_id,
-                                                   category_id=category_id,
-                                                   product_id=product_id)
+    product = crud.product.get(db, id=product_id)
     return product
 
 
@@ -49,7 +56,7 @@ def create_product(*,
     return product
 
 
-@router.put("/update", response_model=schemas.Product)
+@router.put("/update{product_id}", response_model=schemas.Product)
 def update_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    product_update_in: schemas.ProductUpdate) -> Any:
@@ -61,7 +68,7 @@ def update_product(*, db: Session = Depends(deps.get_db),
     return product
 
 
-@router.delete("/delete", response_model=schemas.Product)
+@router.delete("/delete{product_id}", response_model=schemas.Product)
 def delete_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    product_id: str) -> Any:
