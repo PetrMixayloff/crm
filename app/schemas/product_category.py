@@ -11,7 +11,6 @@ class ProductCategoryBase(BaseModel):
     is_active: Optional[bool] = True
     description: Optional[str] = None
     show_on_store: Optional[bool] = True
-    products: Optional[List[Product]] = []
 
 
 # Properties to receive via API on creation
@@ -20,12 +19,13 @@ class ProductCategoryCreate(ProductCategoryBase):
 
 
 class ProductCategoryUpdate(ProductCategoryBase):
-    id: str
+    pass
 
 
 # Properties to receive via API on update
 class ProductCategoryInDBBase(ProductCategoryBase):
     id: UUID
+    products: Optional[List[Product]] = []
 
     class Config:
         orm_mode = True

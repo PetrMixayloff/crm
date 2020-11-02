@@ -22,23 +22,27 @@ def read_product_categories(db: Session = Depends(deps.get_db),
 
 @router.post("/", response_model=schemas.ProductCategory)
 def create_product_category(*, db: Session = Depends(deps.get_db),
+                            current_user: models.User = Depends(deps.get_current_active_user),
                             product_category_add: schemas.ProductCategoryCreate
                             ) -> Any:
     """
     Create new create product category.
     """
-    product_category = crud.product_category.create_product_category(db, obj_in=product_category_add)
+    product_category = crud.product_category.create(db, obj_in=product_category_add)
     return product_category
 
 
-@router.put("/update_product_category", response_model=schemas.ProductCategory)
+@router.put("/{category_id}", response_model=schemas.ProductCategory)
 def update_product_category(*, db: Session = Depends(deps.get_db),
+                            category_id: str,
+                            current_user: models.User = Depends(deps.get_current_active_user),
                             product_category_in: schemas.ProductCategoryUpdate
                             ) -> Any:
     """
     Update product category.
     """
-    product_category = crud.product_category.update_product_category(db, obj_in=product_category_in)
+    category_obj = crud.product_category.get(db, id=category_id)
+    product_category = crud.product_category.update(db, db_obj=category_obj, obj_in=product_category_in)
     return product_category
 
 
@@ -69,6 +73,3 @@ def delete_product_category_by_id(db: Session = Depends(deps.get_db),
     """
     product_category = crud.product_category.remove(db, id=category_id)
     return product_category
-
-
-
