@@ -54,7 +54,7 @@ def read_product_category_by_id(category_id: str,
     """
     Get product category by id.
     """
-    product_category = crud.product_category.get(db, category_id=category_id)
+    product_category = crud.product_category.get(db, id=category_id)
     return product_category
 
 
