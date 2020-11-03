@@ -14,7 +14,6 @@ class ProductBase(BaseModel):
     url: Optional[str] = None
     price: Optional[float] = 0
     old_price: Optional[float] = 0
-    quantity: Optional[int] = 0
     show_on_store: Optional[bool] = True
     images: Optional[List[File]] = []
 
