@@ -27,7 +27,7 @@ def read_raw_by_category_id(*, db: Session = Depends(deps.get_db),
     """
     Get current raw by category id.
     """
-    raw = crud.raw.get_multi_by_category_id(db, category_id=category_id)
+    raw = crud.product.get_multi_by_category_id(db, category_id=category_id)
     return raw
 
 

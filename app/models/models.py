@@ -84,11 +84,14 @@ class Raw(Base):
     green_signal = Column(Integer, default=0)
     yellow_signal = Column(Integer, default=0)
     red_signal = Column(Integer, default=0)
+    unit = Column(String(255))
+    images = relationship('File')
 
 
 class File(Base):
     __table_args__ = (UniqueConstraint('product_id', 'user_id', name='_product_user_uc'),)
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
     user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
     path = Column(String(255), unique=True, nullable=False)
 
