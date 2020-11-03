@@ -31,6 +31,8 @@ class Shop(Base):
     users = relationship("User")
     products_categories = relationship('ProductCategory')
     products = relationship('Product')
+    raw_categories = relationship('RawCategory')
+    raw = relationship('Raw')
 
 
 class ProductCategory(Base):
@@ -71,7 +73,7 @@ class RawCategory(Base):
 
 class Raw(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    rawcategory = relationship("RawCategory", back_populates="raw")
+    category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False)
     products = relationship("ProductRawRelation", back_populates="raw", cascade="all, delete-orphan")
     name = Column(String(255), nullable=False)
     description = Column(String(255))
