@@ -5,6 +5,13 @@ from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, F
 from sqlalchemy.orm import relationship
 
 
+class Orders(Base):
+    created_by = Column(UUID(as_uuid=True), ForeignKey('user.id'))
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
+    date_created = Column(DateTime, default=datetime.datetime.now)
+    date_of_order = Column(DateTime, nullable=False)
+
+
 class User(Base):
     phone = Column(String(255), nullable=False, comment='Номер телефона')
     password = Column(String(255), comment='Пароль')
@@ -35,11 +42,10 @@ class ProductCategory(Base):
 
 
 class Product(Base):
-    product_id = Column(UUID(as_uuid=True), primary_key=True)
-    raws = relationship('Association')
-    category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'), nullable=False)
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'), nullable=False)
     productcategory = relationship("ProductCategory", back_populates="products")
+    raw = relationship('ProductRawRelation')
     name = Column(String(255), nullable=False)
     description = Column(String(255))
     url = Column(String(255))
@@ -49,27 +55,26 @@ class Product(Base):
     show_on_store = Column(Boolean, nullable=False, default=True)
 
 
-class Association(Base):
-    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), primary_key=True)
-    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'), primary_key=True)
-    extra_data = Column(String(50))
-    child = relationship("Raw")
+class ProductRawRelation(Base):
+    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
+    quantity = Column(Integer, default=0)
+    raw = relationship("Raw", back_populates="products")
 
 
 class RawCategory(Base):
     name = Column(String(255))
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    raws = relationship('Raw', back_populates="rawcategory", cascade="all, delete-orphan")
+    raw = relationship('Raw', back_populates="rawcategory", cascade="all, delete-orphan")
     description = Column(String(255))
 
 
 class Raw(Base):
-    raw_id = Column(UUID(as_uuid=True), primary_key=True)
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    rawcategory = relationship("RawCategory", back_populates="raws")
+    rawcategory = relationship("RawCategory", back_populates="raw")
+    products = relationship("ProductRawRelation", back_populates="raw", cascade="all, delete-orphan")
     name = Column(String(255), nullable=False)
     description = Column(String(255))
-    images = relationship('File')
     price = Column(Float, default=0)
     quantity = Column(Integer, default=0)
     per_pack = Column(Integer, default=0)
