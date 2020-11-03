@@ -35,6 +35,8 @@ class ProductCategory(Base):
 
 
 class Product(Base):
+    product_id = Column(UUID(as_uuid=True), primary_key=True)
+    raws = relationship('Association')
     category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'), nullable=False)
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     productcategory = relationship("ProductCategory", back_populates="products")
@@ -44,8 +46,36 @@ class Product(Base):
     images = relationship('File')
     price = Column(Float, default=0)
     old_price = Column(Float, default=0)
-    quantity = Column(Integer, default=0)
     show_on_store = Column(Boolean, nullable=False, default=True)
+
+
+class Association(Base):
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), primary_key=True)
+    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'), primary_key=True)
+    extra_data = Column(String(50))
+    child = relationship("Raw")
+
+
+class RawCategory(Base):
+    name = Column(String(255))
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    raws = relationship('Raw', back_populates="rawcategory", cascade="all, delete-orphan")
+    description = Column(String(255))
+
+
+class Raw(Base):
+    raw_id = Column(UUID(as_uuid=True), primary_key=True)
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    rawcategory = relationship("RawCategory", back_populates="raws")
+    name = Column(String(255), nullable=False)
+    description = Column(String(255))
+    images = relationship('File')
+    price = Column(Float, default=0)
+    quantity = Column(Integer, default=0)
+    per_pack = Column(Integer, default=0)
+    green_signal = Column(Integer, default=0)
+    yellow_signal = Column(Integer, default=0)
+    red_signal = Column(Integer, default=0)
 
 
 class File(Base):
