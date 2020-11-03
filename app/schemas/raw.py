@@ -1,7 +1,6 @@
-from typing import Optional, List, Union
+from typing import Optional, Union
 from pydantic import BaseModel
 from uuid import UUID
-from .file import File
 
 
 # Shared properties
@@ -17,7 +16,7 @@ class RawBase(BaseModel):
     yellow_signal: Optional[int] = 0
     red_signal: Optional[int] = 0
     description: Optional[str] = None
-    photo: Union[UUID, str]
+    photo: Union[UUID, str] = None
 
 
 # Properties to receive via API on creation
