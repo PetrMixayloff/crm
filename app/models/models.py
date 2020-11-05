@@ -31,7 +31,7 @@ class Orders(Base):
 class OrdersProductsRelation(Base):
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id', ondelete="CASCADE"))
     order_id = Column(UUID(as_uuid=True), ForeignKey('orders.id'))
-    quantity = Column(Integer, default=0)
+    quantity = Column(Integer, nullable=False)
 
 
 class Client(Base):
@@ -39,7 +39,7 @@ class Client(Base):
     phone = Column(String(255), nullable=False, comment='Номер телефона')
     name = Column(String(255), nullable=False, comment='Имя')
     address = Column(String(255), comment='Адрес')
-    orders = relationship("Order")
+    orders = relationship("Orders")
     discount = Column(String(255), comment='Дисконтная карта')
     comment = Column(String(255), comment='Примечание')
 
