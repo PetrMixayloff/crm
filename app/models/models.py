@@ -6,10 +6,42 @@ from sqlalchemy.orm import relationship
 
 
 class Orders(Base):
-    created_by = Column(UUID(as_uuid=True), ForeignKey('user.id'))
+    created_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
+    created_by = relationship("User", foreign_keys='Orders.created_by_id')
+    make_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
+    make_by = relationship("User", foreign_keys='Orders.make_by_id')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
+    client_id = Column(UUID(as_uuid=True), ForeignKey('client.id'))
+    products = relationship('OrdersProductsRelation')
+    delivery = Column(Boolean, nullable=False, default=False, comment='Доставка/самовывоз')
+    courier_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
+    courier = relationship("User", foreign_keys='Orders.courier_id')
+    total_cost = Column(Float, nullable=False, comment='Сумма заказа')
+    prepay = Column(Float, default=0, comment='Предоплата')
+    prepay_type = Column(String(255), comment='Тип внесения предоплаты')
+    amount = Column(Float, nullable=False, comment='К оплате с учетом предоплаты')
+    amount_type = Column(String(255), comment='Тип внесения оплаты')
+    discount = Column(Float, default=0, comment='Скидка')
+    rating = Column(Integer, comment='Оценка от клиента')
+    status = Column(String(255), comment='Статус')
     date_created = Column(DateTime, default=datetime.datetime.now)
     date_of_order = Column(DateTime, nullable=False)
+
+
+class OrdersProductsRelation(Base):
+    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id', ondelete="CASCADE"))
+    order_id = Column(UUID(as_uuid=True), ForeignKey('orders.id'))
+    quantity = Column(Integer, default=0)
+
+
+class Client(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
+    phone = Column(String(255), nullable=False, comment='Номер телефона')
+    name = Column(String(255), nullable=False, comment='Имя')
+    address = Column(String(255), comment='Адрес')
+    orders = relationship("Order")
+    discount = Column(String(255), comment='Дисконтная карта')
+    comment = Column(String(255), comment='Примечание')
 
 
 class User(Base):
