@@ -59,7 +59,7 @@ class Product(Base):
 
 class ProductRawRelation(Base):
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id', ondelete="CASCADE"))
-    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id', ondelete="CASCADE"))
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
     quantity = Column(Integer, default=0)
     raw = relationship("Raw", back_populates="products")
 
@@ -73,7 +73,7 @@ class RawCategory(Base):
 
 class Raw(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id', ondelete="CASCADE"), nullable=False)
+    category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False)
     raw_category = relationship("RawCategory", back_populates="raw")
     products = relationship("ProductRawRelation", back_populates="raw", cascade="all, delete-orphan")
     name = Column(String(255), nullable=False)
