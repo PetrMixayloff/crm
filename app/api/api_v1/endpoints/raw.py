@@ -43,7 +43,7 @@ def read_raw_by_id(*,
     return raw
 
 
-@router.post("/create", response_model=schemas.Raw)
+@router.post("/", response_model=schemas.Raw)
 def create_raw(*,
                db: Session = Depends(deps.get_db),
                current_user: models.User = Depends(deps.get_current_active_user),
@@ -56,7 +56,7 @@ def create_raw(*,
     return raw
 
 
-@router.put("/update{raw_id}", response_model=schemas.Raw)
+@router.put("/{raw_id}", response_model=schemas.Raw)
 def update_raw(*, db: Session = Depends(deps.get_db),
                current_user: models.User = Depends(deps.get_current_active_user),
                raw_update_in: schemas.RawUpdate) -> Any:
@@ -68,7 +68,7 @@ def update_raw(*, db: Session = Depends(deps.get_db),
     return raw
 
 
-@router.delete("/delete{raw_id}", response_model=schemas.Raw)
+@router.delete("/{raw_id}", response_model=schemas.Raw)
 def delete_raw(*, db: Session = Depends(deps.get_db),
                current_user: models.User = Depends(deps.get_current_active_user),
                raw_id: str) -> Any:

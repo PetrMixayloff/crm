@@ -43,7 +43,7 @@ def read_product_by_id(*,
     return product
 
 
-@router.post("/create", response_model=schemas.Product)
+@router.post("/", response_model=schemas.Product)
 def create_product(*,
                    db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
@@ -56,7 +56,7 @@ def create_product(*,
     return product
 
 
-@router.put("/update{product_id}", response_model=schemas.Product)
+@router.put("/{product_id}", response_model=schemas.Product)
 def update_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    product_update_in: schemas.ProductUpdate) -> Any:
@@ -68,7 +68,7 @@ def update_product(*, db: Session = Depends(deps.get_db),
     return product
 
 
-@router.delete("/delete{product_id}", response_model=schemas.Product)
+@router.delete("/{product_id}", response_model=schemas.Product)
 def delete_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    product_id: str) -> Any:

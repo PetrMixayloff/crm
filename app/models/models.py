@@ -99,14 +99,14 @@ class ProductRawRelation(Base):
 class RawCategory(Base):
     name = Column(String(255))
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    raw = relationship('Raw', back_populates="raw_category", cascade="all, delete-orphan")
+    raws = relationship('Raw', back_populates="raw_category", cascade="all, delete-orphan")
     description = Column(String(255))
 
 
 class Raw(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False)
-    raw_category = relationship("RawCategory", back_populates="raw")
+    raw_category = relationship("RawCategory", back_populates="raws")
     products = relationship("ProductRawRelation", back_populates="raw", cascade="all, delete-orphan")
     name = Column(String(255), nullable=False)
     description = Column(String(255))
