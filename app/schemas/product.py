@@ -2,7 +2,7 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
 from .file import File
-from .raw import Raw
+from .product_raw_relation import ProductRawRelation
 
 
 # Shared properties
@@ -31,7 +31,7 @@ class ProductUpdate(ProductBase):
 # Properties to receive via API on update
 class ProductInDBBase(ProductBase):
     id: UUID
-    raws: Optional[List[Raw]] = []
+    raws: Optional[List[ProductRawRelation]] = []
 
     class Config:
         orm_mode = True

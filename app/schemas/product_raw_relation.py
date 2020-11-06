@@ -5,7 +5,7 @@ from uuid import UUID
 
 # Shared properties
 class ProductRawRelationBase(BaseModel):
-    product_id: Union[UUID, str]
+    product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
     quantity: Optional[int] = 0
 
