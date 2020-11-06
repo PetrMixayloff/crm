@@ -48,11 +48,12 @@ def create_product(*,
                    db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    product_add: schemas.ProductCreate,
+                   raws: List[schemas.ProductRawRelationCreate]
                    ) -> Any:
     """
     Create new product.
     """
-    product = crud.product.create(db, obj_in=product_add)
+    product = crud.product.create_product(db, obj_in=product_add, raws=raws)
     return product
 
 
