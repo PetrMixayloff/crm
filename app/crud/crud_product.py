@@ -1,4 +1,6 @@
 from typing import Dict, Union, Any, List
+from uuid import uuid4
+
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
@@ -11,7 +13,9 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
 
     def create_product(self, db: Session, *, obj_in: ProductCreate,
                        raws: List[ProductRawRelationCreate]) -> Product:
+
         obj_in_data = jsonable_encoder(obj_in)
+        obj_in_data['id'] = uuid4()
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
         for raw in raws:

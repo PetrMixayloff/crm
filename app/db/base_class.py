@@ -16,6 +16,3 @@ class Base:
 
     id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid4)
     is_active = Column(Boolean, nullable=False, default=True)
-
-    def __init__(self):
-        self.id = uuid4()

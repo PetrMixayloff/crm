@@ -1,4 +1,6 @@
 import datetime
+from uuid import uuid4
+
 from app.db.base_class import Base
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, Float, UniqueConstraint
@@ -87,6 +89,10 @@ class Product(Base):
     price = Column(Float, default=0)
     old_price = Column(Float, default=0)
     show_on_store = Column(Boolean, nullable=False, default=True)
+    #
+    # def __init__(self):
+    #     self.id = uuid4()
+    #
 
 
 class ProductRawRelation(Base):
