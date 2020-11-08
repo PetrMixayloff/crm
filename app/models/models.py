@@ -81,7 +81,7 @@ class Product(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'), nullable=False)
     productcategory = relationship("ProductCategory", back_populates="products")
-    raw = relationship('ProductRawRelation')
+    raw = relationship('ProductRawRelation', cascade="all, delete-orphan")
     name = Column(String(255), nullable=False)
     description = Column(String(255))
     url = Column(String(255))
@@ -89,17 +89,14 @@ class Product(Base):
     price = Column(Float, default=0)
     old_price = Column(Float, default=0)
     show_on_store = Column(Boolean, nullable=False, default=True)
-    #
-    # def __init__(self):
-    #     self.id = uuid4()
-    #
 
 
 class ProductRawRelation(Base):
-    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id', ondelete="CASCADE"))
-    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
+    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'), primary_key=True)
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), primary_key=True)
     quantity = Column(Integer, default=0)
     raw = relationship("Raw", back_populates="products")
+    product = relationship("Product", back_populates="raw")
 
 
 class RawCategory(Base):
@@ -113,7 +110,7 @@ class Raw(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False)
     raw_category = relationship("RawCategory", back_populates="raws")
-    products = relationship("ProductRawRelation", back_populates="raw", cascade="all, delete-orphan")
+    products = relationship("ProductRawRelation", cascade="all, delete-orphan")
     name = Column(String(255), nullable=False)
     description = Column(String(255))
     price = Column(Float, default=0)
