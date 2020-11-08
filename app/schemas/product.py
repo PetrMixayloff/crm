@@ -31,7 +31,7 @@ class ProductUpdate(ProductBase):
 # Properties to receive via API on update
 class ProductInDBBase(ProductBase):
     id: UUID
-    raws: Optional[List[ProductRawRelation]] = []
+    raw: Optional[List[ProductRawRelation]] = []
 
     class Config:
         orm_mode = True
