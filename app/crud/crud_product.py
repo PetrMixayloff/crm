@@ -1,6 +1,5 @@
 from typing import Dict, Union, Any, List
 from uuid import uuid4
-
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase

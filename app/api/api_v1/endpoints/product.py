@@ -20,7 +20,7 @@ def read_product_by_shop_id(*, db: Session = Depends(deps.get_db),
     return product
 
 
-@router.get("/{category_id}", response_model=Dict[str, Union[int, List[schemas.Product]]])
+@router.get("/product_by/{category_id}", response_model=Dict[str, Union[int, List[schemas.Product]]])
 def read_product_by_category_id(*, db: Session = Depends(deps.get_db),
                                 current_user: models.User = Depends(deps.get_current_active_user),
                                 category_id: str) -> Any:

@@ -20,14 +20,14 @@ def read_raw_by_shop_id(*, db: Session = Depends(deps.get_db),
     return raw
 
 
-@router.get("/{category_id}", response_model=Dict[str, Union[int, List[schemas.Raw]]])
+@router.get("/raw_by/{category_id}", response_model=Dict[str, Union[int, List[schemas.Raw]]])
 def read_raw_by_category_id(*, db: Session = Depends(deps.get_db),
                             current_user: models.User = Depends(deps.get_current_active_user),
                             category_id: str) -> Any:
     """
     Get current raw by category id.
     """
-    raw = crud.product.get_multi_by_category_id(db, category_id=category_id)
+    raw = crud.raw.get_multi_by_category_id(db, category_id=category_id)
     return raw
 
 
