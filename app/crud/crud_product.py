@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.models import Product, ProductRawRelation
-from app.schemas import ProductCreate, ProductUpdate, ProductRawRelationCreate
+from app.schemas import ProductCreate, ProductUpdate, ProductRawRelationCreate, ProductRawRelationUpdate, RawUpdate
 from app import crud
 
 
@@ -22,6 +22,31 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
             raw_in_data = jsonable_encoder(raw)
             raw_obj = ProductRawRelation(**raw_in_data)
             db.add(raw_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
+    def update_product(self, db: Session, *, db_obj: Product,
+                       obj_in: ProductUpdate,
+                       raw_update: List[RawUpdate],
+                       raw_relation: List[ProductRawRelationUpdate]
+                       ) -> Product:
+        obj_data = jsonable_encoder(db_obj)
+        update_data = obj_in.dict(exclude_unset=True)
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+                for k in raw_update:
+                    raw = crud.raw.get(db, id=k.id)
+                    setattr(raw, 'name', k.name)
+                    setattr(raw, 'quantity', k.quantity)
+                    db.add(raw)
+                    for el in raw_relation:
+                        product_raw_relation = crud.product_raw_relation.get(db, id=el.id)
+                        setattr(product_raw_relation, 'quantity', k.quantity)
+                        db.add(product_raw_relation)
+
+        db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj

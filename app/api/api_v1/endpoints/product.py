@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from typing import Any, Dict, Union, List
 from app.api import deps
 from app.models import models
+from app.schemas import ProductRawRelationUpdate, RawUpdate
 
 router = APIRouter()
 
@@ -47,25 +48,29 @@ def read_product_by_id(*,
 def create_product(*,
                    db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
-                   product_add: schemas.ProductCreate,
+                   product_in: schemas.ProductCreate,
                    raws: List[schemas.ProductRawRelationCreate]
                    ) -> Any:
     """
     Create new product.
     """
-    product = crud.product.create_product(db, obj_in=product_add, raws=raws)
+    product = crud.product.create_product(db, obj_in=product_in, raws=raws)
     return product
 
 
 @router.put("/{product_id}", response_model=schemas.Product)
 def update_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
-                   product_update_in: schemas.ProductUpdate) -> Any:
+                   product_update_in: schemas.ProductUpdate,
+                   raw_update: List[RawUpdate],
+                   raw_relation: List[ProductRawRelationUpdate]
+                   ) -> Any:
     """
     Update product.
     """
     product = crud.product.get(db, id=product_update_in.id)
-    product = crud.product.update(db, obj_in=product_update_in, db_obj=product)
+    product = crud.product.update_product(db, obj_in=product_update_in, db_obj=product,
+                                          raw_relation=raw_relation, raw_update=raw_update)
     return product
 
 
