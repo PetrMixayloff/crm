@@ -1,7 +1,6 @@
 from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
-from .file import File
 from .product_raw_relation import ProductRawRelation
 
 
@@ -16,7 +15,7 @@ class ProductBase(BaseModel):
     price: Optional[float] = 0
     old_price: Optional[float] = 0
     show_on_store: Optional[bool] = True
-    images: Optional[List[File]] = []
+    images: Optional[List[str]] = []
 
 
 # Properties to receive via API on creation

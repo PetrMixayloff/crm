@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel, validator
-from .file import File
 import re
 
 
@@ -51,7 +50,7 @@ class UserInDBBase(UserBase):
     full_name: str
     position: str
     description: Optional[str] = None
-    avatar: Optional[File] = None
+    avatar: Optional[str] = None
     shop_id: Optional[UUID] = None
     last_login: Optional[datetime] = None
     is_superuser: Optional[bool] = False
