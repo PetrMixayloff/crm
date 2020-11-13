@@ -21,6 +21,7 @@ email-validator = "^1.1.1"
 emails = "^0.6"
 python-multipart = "^0.0.5"
 boto3 = "^1.16.9"
+dadata = "^20.7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.1"

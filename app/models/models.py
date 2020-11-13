@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from app.db.base_class import Base
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, Float, UniqueConstraint
+from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, Float, ARRAY
 from sqlalchemy.orm import relationship
 
 
@@ -56,7 +56,7 @@ class User(Base):
     is_staff = Column(Boolean, nullable=False, default=True, comment='Владелец магазина')
     position = Column(String(255), comment='Должность сотрудника')
     description = Column(String(255), comment='Данные')
-    avatar = relationship("File", uselist=False)
+    avatar = Column(String(255))
 
 
 class Shop(Base):
@@ -85,7 +85,7 @@ class Product(Base):
     name = Column(String(255), nullable=False)
     description = Column(String(255))
     url = Column(String(255))
-    images = relationship('File')
+    images = Column(ARRAY(String))
     price = Column(Float, default=0)
     old_price = Column(Float, default=0)
     show_on_store = Column(Boolean, nullable=False, default=True)
@@ -120,15 +120,7 @@ class Raw(Base):
     yellow_signal = Column(Integer, default=0)
     red_signal = Column(Integer, default=0)
     unit = Column(String(255))
-    images = relationship('File')
-
-
-class File(Base):
-    __table_args__ = (UniqueConstraint('product_id', 'user_id', name='_product_user_uc'),)
-    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
-    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
-    user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
-    path = Column(String(255), unique=True, nullable=False)
+    image = Column(String(255))
 
 
 class BlacklistToken(Base):

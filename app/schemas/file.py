@@ -5,8 +5,6 @@ from uuid import UUID
 
 # Shared properties
 class FileBase(BaseModel):
-    product_id: Optional[Union[UUID, str]] = None
-    user_id: Optional[Union[UUID, str]] = None
     path: str
 
 

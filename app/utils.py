@@ -118,7 +118,7 @@ def save_upload_file(upload_file: UploadFile, destination: str) -> None:
         upload_file.file.close()
 
 
-def upload_image_to_aws(file: bytes, file_name: str):
+def upload_image_to_aws(upload_file: UploadFile, file_name: str):
     # S3 Connect
     s3 = boto3.resource(
         's3',
@@ -126,7 +126,7 @@ def upload_image_to_aws(file: bytes, file_name: str):
         aws_secret_access_key=settings.AWS_ACCESS_SECRET_KEY
     )
     try:
-        s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=file, ACL='public-read')
+        s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=upload_file.file, ACL='public-read')
         print("Upload Successful")
         return True
     except NoCredentialsError:
