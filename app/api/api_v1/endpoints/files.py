@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
 from typing import Any
 from app.api import deps
 from app.models import models
-from app.utils import upload_image_to_aws
+from app.utils import upload_image_to_aws, delete_image_from_aws
 
 router = APIRouter()
 
@@ -11,7 +11,7 @@ router = APIRouter()
 @router.post("/")
 def upload_file(file: UploadFile = File(...),
                 current_user: models.User = Depends(deps.get_current_active_user)
-                ) -> Any:
+                ) -> str:
     """
     Upload file.
     """
@@ -28,3 +28,16 @@ def upload_file(file: UploadFile = File(...),
             detail="Error while upload file to cloud.",
         )
     return file_name
+
+
+@router.delete("/{file_name}")
+def delete_file(file_name: str, current_user: models.User = Depends(deps.get_current_active_user)) -> str:
+    """
+    Delete file.
+    """
+    if not delete_image_from_aws(file_name):
+        raise HTTPException(
+            status_code=500,
+            detail="Error while delete file in cloud.",
+        )
+    return 'ok'

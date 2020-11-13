@@ -8,7 +8,7 @@ from botocore.exceptions import NoCredentialsError
 
 import emails
 from emails.template import JinjaTemplate
-from fastapi import UploadFile
+from fastapi import UploadFile, Depends
 from jose import jwt
 
 from app.core.config import settings
@@ -118,13 +118,15 @@ def save_upload_file(upload_file: UploadFile, destination: str) -> None:
         upload_file.file.close()
 
 
-def upload_image_to_aws(upload_file: UploadFile, file_name: str):
-    # S3 Connect
-    s3 = boto3.resource(
+def init_s3():
+    return boto3.resource(
         's3',
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_ACCESS_SECRET_KEY
     )
+
+
+def upload_image_to_aws(upload_file: UploadFile, file_name: str, s3=Depends(init_s3)):
     try:
         s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=upload_file.file, ACL='public-read')
         print("Upload Successful")
@@ -132,3 +134,13 @@ def upload_image_to_aws(upload_file: UploadFile, file_name: str):
     except NoCredentialsError:
         print("Credentials not available")
         return False
+
+
+def delete_image_from_aws(file_name: str, s3=Depends(init_s3)):
+    try:
+        s3.Bucket(settings.AWS_BUCKET_NAME).delete_object(Key=file_name)
+        return True
+    except NoCredentialsError:
+        print("Credentials not available")
+        return False
+
