@@ -1,9 +1,6 @@
 import secrets
-
-from app import crud, schemas
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
-from sqlalchemy.orm import Session
-from typing import Any, Dict, Union, List
+from typing import Any
 from app.api import deps
 from app.models import models
 from app.utils import upload_image_to_aws
@@ -11,10 +8,9 @@ from app.utils import upload_image_to_aws
 router = APIRouter()
 
 
-@router.post("/", response_model=schemas.File)
+@router.post("/")
 def upload_file(file: UploadFile = File(...),
-                current_user: models.User = Depends(deps.get_current_active_user),
-                db: Session = Depends(deps.get_db)
+                current_user: models.User = Depends(deps.get_current_active_user)
                 ) -> Any:
     """
     Upload file.
@@ -31,6 +27,4 @@ def upload_file(file: UploadFile = File(...),
             status_code=500,
             detail="Error while upload file to cloud.",
         )
-    file_in = schemas.FileCreate(path=file_name)
-    file = crud.file.create(db, obj_in=file_in)
-    return file
+    return file_name
