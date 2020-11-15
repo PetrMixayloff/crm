@@ -1,10 +1,9 @@
 from app import crud, schemas
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import Any, Dict, Union, List
+from typing import Any, Dict, Union, List, Optional
 from app.api import deps
 from app.models import models
-from app.schemas import ProductRawRelationUpdate, RawUpdate
 
 router = APIRouter()
 
@@ -62,8 +61,8 @@ def create_product(*,
 def update_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    product_update_in: schemas.ProductUpdate,
-                   raw_update: List[RawUpdate],
-                   raw_relation: List[ProductRawRelationUpdate]
+                   raw_update: schemas.RawUpdate,
+                   raw_relation: schemas.ProductRawRelationUpdate
                    ) -> Any:
     """
     Update product.

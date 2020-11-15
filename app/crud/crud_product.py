@@ -1,17 +1,17 @@
-from typing import Dict, Union, Any, List
+from typing import Dict, Union, Any, List, Optional
 from uuid import uuid4
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
 from app.models.models import Product, ProductRawRelation
-from app.schemas import ProductCreate, ProductUpdate, ProductRawRelationCreate, ProductRawRelationUpdate, RawUpdate
+from app import schemas
 from app import crud
 
 
-class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
+class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate]):
 
-    def create_product(self, db: Session, *, obj_in: ProductCreate,
-                       raws: List[ProductRawRelationCreate]) -> Product:
+    def create_product(self, db: Session, *, obj_in: schemas.ProductCreate,
+                       raws: List[schemas.ProductRawRelationCreate]) -> Product:
 
         obj_in_data = jsonable_encoder(obj_in)
         obj_in_data['id'] = uuid4()
@@ -27,24 +27,25 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
         return db_obj
 
     def update_product(self, db: Session, *, db_obj: Product,
-                       obj_in: ProductUpdate,
-                       raw_update: List[RawUpdate],
-                       raw_relation: List[ProductRawRelationUpdate]
+                       obj_in: schemas.ProductUpdate,
+                       raw_update: schemas.RawUpdate,
+                       raw_relation: schemas.ProductRawRelationUpdate
                        ) -> Product:
         obj_data = jsonable_encoder(db_obj)
         update_data = obj_in.dict(exclude_unset=True)
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
-                for k in raw_update:
-                    raw = crud.raw.get(db, id=k.id)
-                    setattr(raw, 'name', k.name)
-                    setattr(raw, 'quantity', k.quantity)
-                    db.add(raw)
-                    for el in raw_relation:
-                        product_raw_relation = crud.product_raw_relation.get(db, id=el.id)
-                        setattr(product_raw_relation, 'quantity', k.quantity)
-                        db.add(product_raw_relation)
+                raw_update_data = raw_update.dict(exclude_unset=True)
+                raw_table = crud.raw.get(db, id=raw_update_data['id'])
+                for raw in raw_update_data:
+                    if raw in raw_update_data:
+                        setattr(raw_table, raw, raw_update_data[raw])
+                    db.add(raw_table)
+                    raw_relation_data = raw_relation.dict(exclude_unset=True)
+                    product_raw_relation = crud.product_raw_relation.get(db, id=raw_relation_data['id'])
+                    setattr(product_raw_relation, 'quantity', raw_update_data['quantity'])
+                    db.add(product_raw_relation)
 
         db.add(db_obj)
         db.commit()
