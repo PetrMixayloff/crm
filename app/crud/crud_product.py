@@ -28,6 +28,7 @@ class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate
 
     def update_product(self, db: Session, *, db_obj: Product,
                        obj_in: schemas.ProductUpdate,
+                       raw_create: schemas.RawCreate,
                        raw_update: schemas.RawUpdate,
                        raw_relation: schemas.ProductRawRelationUpdate
                        ) -> Product:
@@ -36,16 +37,26 @@ class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
-                raw_update_data = raw_update.dict(exclude_unset=True)
-                raw_table = crud.raw.get(db, id=raw_update_data['id'])
-                for raw in raw_update_data:
-                    if raw in raw_update_data:
-                        setattr(raw_table, raw, raw_update_data[raw])
-                    db.add(raw_table)
+                if raw_create is not None:
+                    raw = crud.raw.create(db, obj_in=raw_create)
+                    raw_data = raw.dict(exclude_unset=True)
                     raw_relation_data = raw_relation.dict(exclude_unset=True)
                     product_raw_relation = crud.product_raw_relation.get(db, id=raw_relation_data['id'])
-                    setattr(product_raw_relation, 'quantity', raw_update_data['quantity'])
+                    setattr(product_raw_relation, 'quantity', raw_data['quantity'])
+                    setattr(product_raw_relation, 'raw_id', raw_data['id'])
                     db.add(product_raw_relation)
+
+                if raw_update and raw_relation is not None:
+                    raw_update_data = raw_update.dict(exclude_unset=True)
+                    raw_table = crud.raw.get(db, id=raw_update_data['id'])
+                    for raw in raw_update_data:
+                        if raw in raw_update_data:
+                            setattr(raw_table, raw, raw_update_data[raw])
+                        db.add(raw_table)
+                        raw_relation_data = raw_relation.dict(exclude_unset=True)
+                        product_raw_relation = crud.product_raw_relation.get(db, id=raw_relation_data['id'])
+                        setattr(product_raw_relation, 'quantity', raw_update_data['quantity'])
+                        db.add(product_raw_relation)
 
         db.add(db_obj)
         db.commit()

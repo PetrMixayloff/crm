@@ -120,7 +120,7 @@ class Raw(Base):
     yellow_signal = Column(Integer, default=0)
     red_signal = Column(Integer, default=0)
     unit = Column(String(255))
-    image = Column(String(255))
+    images = Column(String(255))
 
 
 class BlacklistToken(Base):
