@@ -61,17 +61,17 @@ def create_product(*,
 def update_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    product_update_in: schemas.ProductUpdate,
-                   raw_create: Optional[schemas.RawCreate] = None,
-                   raw_update: Optional[schemas.RawUpdate] = None,
-                   raw_relation: Optional[schemas.ProductRawRelationUpdate] = None
+                   raw_relation_create: List[schemas.ProductRawRelationCreate] = [],
+                   raw_relation_update: List[schemas.ProductRawRelationUpdate] = [],
+                   raw_relation_delete: List[schemas.ProductRawRelation] = []
                    ) -> Any:
     """
     Update product.
     """
     product = crud.product.get(db, id=product_update_in.id)
     product = crud.product.update_product(db, obj_in=product_update_in, db_obj=product,
-                                          raw_relation=raw_relation, raw_update=raw_update,
-                                          raw_create=raw_create)
+                                          raw_relation_create=raw_relation_create, raw_relation_update=raw_relation_update,
+                                          raw_relation_delete=raw_relation_delete)
     return product
 
 
