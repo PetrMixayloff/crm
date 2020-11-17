@@ -16,7 +16,7 @@ class RawBase(BaseModel):
     yellow_signal: Optional[int] = 0
     red_signal: Optional[int] = 0
     description: Optional[str] = None
-    images: Optional[str] = None
+    image: Optional[str] = None
 
 
 # Properties to receive via API on creation
