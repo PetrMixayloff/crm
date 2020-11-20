@@ -8,7 +8,6 @@ from .raw import Raw
 class RawCategoryBase(BaseModel):
     name: str
     shop_id: Union[str, UUID]
-    is_active: Optional[bool] = True
     description: Optional[str] = None
 
 
