@@ -6,3 +6,4 @@ from .product_category import ProductCategory, ProductCategoryCreate, ProductCat
 from .raw_category import RawCategory, RawCategoryCreate, RawCategoryUpdate
 from .raw import Raw, RawCreate, RawUpdate
 from .product_raw_relation import ProductRawRelation, ProductRawRelationCreate, ProductRawRelationUpdate
+from .client import Client, ClientCreate, ClientUpdate
