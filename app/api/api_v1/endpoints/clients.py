@@ -23,30 +23,43 @@ def read_clients(
     return clients
 
 
-@router.post("/", response_model=schemas.Client)
-def create_client(client_in: schemas.ClientCreate,
-                        current_user: models.User = Depends(deps.get_current_active_user),
-                        db: Session = Depends(deps.get_db)
-                        ) -> Any:
+@router.get("/{client_id}", response_model=schemas.Client)
+def read_client_by_id(
+        db: Session = Depends(deps.get_db),
+        client_id: str = None,
+        current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
     """
-    Create client.
+    Get client by id.
     """
-    client = crud.client.create(db, obj_in=client_in)
+    client = crud.client.get(db, id=client_id)
     return client
 
 
-@router.put("/", response_model=schemas.Client)
-def update_client(client_in: schemas.ClientUpdate,
-                  client_id: str,
-                  current_user: models.User = Depends(deps.get_current_active_user),
-                  db: Session = Depends(deps.get_db)
-                  ) -> Any:
-    """
-    Update client.
-    """
-    client_in_base = crud.client.get(db, id=client_id)
-    client = crud.client.update(db, obj_in=client_in, db_obj=client_in_base)
-    return client
+# @router.post("/", response_model=schemas.Client)
+# def create_client(client_in: schemas.ClientCreate,
+#                         current_user: models.User = Depends(deps.get_current_active_user),
+#                         db: Session = Depends(deps.get_db)
+#                         ) -> Any:
+#     """
+#     Create client.
+#     """
+#     client = crud.client.create(db, obj_in=client_in)
+#     return client
+#
+#
+# @router.put("/", response_model=schemas.Client)
+# def update_client(client_in: schemas.ClientUpdate,
+#                   client_id: str,
+#                   current_user: models.User = Depends(deps.get_current_active_user),
+#                   db: Session = Depends(deps.get_db)
+#                   ) -> Any:
+#     """
+#     Update client.
+#     """
+#     client_in_base = crud.client.get(db, id=client_id)
+#     client = crud.client.update(db, obj_in=client_in, db_obj=client_in_base)
+#     return client
 
 
 @router.delete("/", response_model=schemas.Client)
