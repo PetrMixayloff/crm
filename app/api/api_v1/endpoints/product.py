@@ -70,7 +70,8 @@ def update_product(*, db: Session = Depends(deps.get_db),
     """
     product = crud.product.get(db, id=product_update_in.id)
     product = crud.product.update_product(db, obj_in=product_update_in, db_obj=product,
-                                          raw_relation_create=raw_relation_create, raw_relation_update=raw_relation_update,
+                                          raw_relation_create=raw_relation_create,
+                                          raw_relation_update=raw_relation_update,
                                           raw_relation_delete=raw_relation_delete)
     return product
 

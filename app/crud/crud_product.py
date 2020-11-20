@@ -38,22 +38,19 @@ class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
 
-        if raw_relation_create is not None:
-            for raw in raw_relation_create:
-                raw.product_id = update_data['id']
-                raw_in_data = jsonable_encoder(raw)
-                raw_obj = ProductRawRelation(**raw_in_data)
-                db.add(raw_obj)
+        for raw in raw_relation_create:
+            raw.product_id = update_data['id']
+            raw_in_data = jsonable_encoder(raw)
+            raw_obj = ProductRawRelation(**raw_in_data)
+            db.add(raw_obj)
 
-        if raw_relation_update is not None:
-            for raw in raw_relation_update:
-                product_raw_relation = crud.product_raw_relation.get(db, id=raw.id)
-                setattr(product_raw_relation, 'quantity', raw.quantity)
-                setattr(product_raw_relation, 'raw_id', raw.raw_id)
+        for raw in raw_relation_update:
+            product_raw_relation = crud.product_raw_relation.get(db, id=raw.id)
+            setattr(product_raw_relation, 'quantity', raw.quantity)
+            setattr(product_raw_relation, 'raw_id', raw.raw_id)
 
-        if raw_relation_delete is not None:
-            for raw in raw_relation_delete:
-                crud.product_raw_relation.remove(db, id=raw.id)
+        for raw in raw_relation_delete:
+            crud.product_raw_relation.remove(db, id=raw.id)
 
         db.add(db_obj)
         db.commit()
