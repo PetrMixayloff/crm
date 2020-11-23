@@ -10,13 +10,16 @@ router = APIRouter()
 
 @router.get("/", response_model=Dict[str, Union[int, List[schemas.Raw]]])
 def read_raw_by_shop_id(*, db: Session = Depends(deps.get_db),
-                        current_user: models.User = Depends(deps.get_current_active_user)
+                        current_user: models.User = Depends(deps.get_current_active_user),
+                        skip: int = 0,
+                        take: int = 100,
+                        filter: str = None
                         ) -> Any:
     """
     Get current raw by shop id.
     """
     shop_id = str(current_user.shop_id)
-    raw = crud.raw.get_multi(db, shop_id=shop_id)
+    raw = crud.raw.get_multi(db, shop_id=shop_id, skip=skip, take=take, filter=filter)
     return raw
 
 
