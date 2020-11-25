@@ -75,6 +75,16 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.commit()
         return obj
 
+    def recursive_remove(self, db: Session, id: str) -> List[ModelType]:
+        deleted_objects = []
+        obj = db.query(self.model).get(id)
+        deleted_objects.append(obj)
+        deleted_objects.extend(self.get_daughter_objects(db, id))
+        for obj in deleted_objects:
+            db.delete(obj)
+        db.commit()
+        return deleted_objects
+
     def disable(self, db: Session, *, id: str) -> ModelType:
         obj = db.query(self.model).get(id)
         obj.is_active = False
@@ -82,6 +92,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.commit()
         db.refresh(obj)
         return obj
+
+    def get_daughter_objects(self, db: Session, id: str) -> List[ModelType]:
+        daughter_objects = []
+        daughters = db.query(self.model).filter(self.model.parent_id == id).all()
+        for daughter in daughters:
+            daughter_objects.extend(self.get_daughter_objects(db, str(daughter.id)))
+        daughter_objects.extend(daughters)
+        return daughter_objects
+
 
     def filter_query(self, _query, _filter):
         """

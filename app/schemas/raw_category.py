@@ -7,6 +7,7 @@ from .raw import Raw
 # Shared properties
 class RawCategoryBase(BaseModel):
     name: str
+    parent_id: Optional[Union[str, UUID]] = None
     shop_id: Union[str, UUID]
     description: Optional[str] = None
 

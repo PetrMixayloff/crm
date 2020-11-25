@@ -58,12 +58,12 @@ def read_raw_category_by_id(category_id: str,
     return raw_category
 
 
-@router.delete("/{category_id}", response_model=schemas.RawCategory)
+@router.delete("/{category_id}", response_model=List[schemas.RawCategory])
 def delete_raw_category_by_id(db: Session = Depends(deps.get_db),
                               category_id: str = None,
                               ) -> Any:
     """
-    Delete raw category by id.
+    Delete raw category and all subcategories by id.
     """
-    raw_category = crud.raw_category.remove(db, id=category_id)
-    return raw_category
+    raw_categories = crud.raw_category.recursive_remove(db, id=category_id)
+    return raw_categories
