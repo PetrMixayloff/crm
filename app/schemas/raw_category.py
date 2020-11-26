@@ -31,5 +31,9 @@ class RawCategoryInDBBase(RawCategoryBase):
 
 
 # Additional properties to return via API
-class RawCategory(RawCategoryInDBBase):
-    pass
+class RawCategoryInDB(RawCategoryInDBBase):
+    subcategories: Optional[List[RawCategoryInDBBase]] = []
+
+
+class RawCategory(RawCategoryInDB):
+    subcategories: Optional[List[RawCategoryInDB]] = []
