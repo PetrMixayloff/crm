@@ -114,14 +114,42 @@ class Raw(Base):
     products = relationship("ProductRawRelation", cascade="all, delete-orphan")
     name = Column(String(255), nullable=False, comment='Название')
     description = Column(String(255), comment='Описание')
-    price = Column(Float, default=0, comment='Суммарная стоимость остатка')
-    quantity = Column(Integer, default=0, comment='Общий остаток')
+    cost = Column(Float, default=0, comment='Стоимость остатка')
+    quantity = Column(Float, default=0, comment='Общий остаток')
+    reserved = Column(Float, default=0, comment='Зарезервировано')
     per_pack = Column(Integer, default=0, comment='В упаковке')
     green_signal = Column(Integer, default=0, comment='Зеленая метка')
     yellow_signal = Column(Integer, default=0, comment='Желтая метка')
     red_signal = Column(Integer, default=0, comment='Красная метка')
     unit = Column(String(255), comment='Ед. измерения')
     image = Column(String(255), comment='Изображение')
+
+
+class RawRemainsDetail(Base):
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
+    invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
+    price = Column(Float, default=0, comment='Цена за ед.')
+    quantity = Column(Float, default=0, comment='Количество')
+    total = Column(Float, default=0, comment='Сумма')
+
+
+class Invoice(Base):
+    number = Column(String(255), comment='Номер')
+    date = Column(DateTime, comment='Дата')
+    supplier = Column(String(255), comment='Поставщик')
+    remark = Column(String(255), comment='Примечание')
+    payment_method = Column(String(255), comment='Способ оплаты')
+    records = relationship('InvoiceRecord', back_populates="invoice", cascade="all, delete-orphan")
+
+
+class InvoiceRecord(Base):
+    invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
+    invoice = relationship("Invoice", back_populates="records")
+    category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False, comment='Категория')
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
+    price = Column(Float, default=0, comment='Цена за ед.')
+    quantity = Column(Float, default=0, comment='Количество')
+    total = Column(Float, default=0, comment='Сумма')
 
 
 class BlacklistToken(Base):
