@@ -1,0 +1,36 @@
+from typing import Optional, List, Union
+from pydantic import BaseModel
+from uuid import UUID
+from datetime import datetime
+
+
+# Shared properties
+class InvoiceBase(BaseModel):
+    shop_id: Union[UUID, str]
+    number: str
+    date: datetime = datetime.utcnow()
+    supplier: str
+    remark: str = None
+    payment_method: str = "Наличные"
+
+
+# Properties to receive via API on creation
+class InvoiceCreate(InvoiceBase):
+    pass
+
+
+class InvoiceUpdate(InvoiceBase):
+    id: str
+
+
+# Properties to receive via API on update
+class InvoiceInDBBase(InvoiceBase):
+    id: UUID
+
+    class Config:
+        orm_mode = True
+
+
+# Additional properties to return via API
+class Invoice(InvoiceInDBBase):
+    pass

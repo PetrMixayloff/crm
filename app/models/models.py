@@ -127,6 +127,7 @@ class Raw(Base):
 
 
 class RawRemainsDetail(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
     invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
     price = Column(Float, default=0, comment='Цена за ед.')
@@ -135,6 +136,7 @@ class RawRemainsDetail(Base):
 
 
 class Invoice(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     number = Column(String(255), comment='Номер')
     date = Column(DateTime, comment='Дата')
     supplier = Column(String(255), comment='Поставщик')
@@ -144,6 +146,7 @@ class Invoice(Base):
 
 
 class InvoiceRecord(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
     invoice = relationship("Invoice", back_populates="records")
     category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False, comment='Категория')

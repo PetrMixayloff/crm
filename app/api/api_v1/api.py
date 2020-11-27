@@ -3,7 +3,7 @@ from app.api import deps
 from fastapi import APIRouter, Depends
 
 from app.api.api_v1.endpoints import login, users, shop, product, product_category, raw, \
-    raw_category, files, clients
+    raw_category, files, clients, invoice, invoice_record
 from app.models import models
 
 api_router = APIRouter()
@@ -16,6 +16,8 @@ api_router.include_router(raw.router, prefix="/raw", tags=["raw"])
 api_router.include_router(raw_category.router, prefix="/raw_category", tags=["raw_category"])
 api_router.include_router(files.router, prefix="/files", tags=["files"])
 api_router.include_router(clients.router, prefix="/clients", tags=["clients"])
+api_router.include_router(invoice.router, prefix="/invoice", tags=["invoice"])
+api_router.include_router(invoice_record.router, prefix="/invoice_record", tags=["invoice_record"])
 
 @api_router.get("/meta")
 def get_meta(current_user: models.User = Depends(deps.get_current_active_user)) -> Any:
