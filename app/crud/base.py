@@ -31,7 +31,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db.query(self.model).filter(self.model.id == id).first()
 
     def get_multi(
-            self, db: Session, shop_id: str, skip: int = 0, take: int = 1000000, filter: str = None
+            self, db: Session, shop_id: str, skip: int = 0, take: int = 1000000, filter: Union[str, list] = None
     ) -> Dict[str, Union[int, Any]]:
         users = db.query(self.model).filter(self.model.is_active.is_(True),
                                             self.model.shop_id == shop_id)

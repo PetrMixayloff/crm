@@ -80,3 +80,13 @@ def delete_raw(*, db: Session = Depends(deps.get_db),
     """
     raw = crud.raw.remove(db, id=raw_id)
     return raw
+
+
+@router.get("/details/{raw_id}", response_model=Dict[str, Union[int, List[schemas.RawRemainsDetail]]])
+def raw_remains_details(raw_id: str,
+                        db: Session = Depends(deps.get_db),
+                        current_user: models.User = Depends(deps.get_current_active_user)) -> Any:
+    raw_details = crud.raw_remains_detail.get_multi(db=db,
+                                                    shop_id=str(current_user.shop_id),
+                                                    filter=['raw_id', '=', raw_id])
+    return raw_details
