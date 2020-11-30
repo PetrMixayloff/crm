@@ -149,11 +149,9 @@ class InvoiceRecord(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
     invoice = relationship("Invoice", back_populates="records")
-    category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False, comment='Категория')
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
     price = Column(Float, default=0, comment='Цена за ед.')
     quantity = Column(Float, default=0, comment='Количество')
-    total = Column(Float, default=0, comment='Сумма')
 
 
 class BlacklistToken(Base):

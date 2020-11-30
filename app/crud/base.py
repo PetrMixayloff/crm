@@ -177,6 +177,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 query_mod = query_mod.filter(_attr != _value)
             elif _rule == "in":
                 query_mod = query_mod.filter(_attr.in_(_value))
+            elif _rule == "not_in":
+                query_mod = query_mod.filter(_attr.notin_(_value))
             elif _rule == ">=":
                 query_mod = query_mod.filter(_attr >= _value)
             elif _rule == "<":

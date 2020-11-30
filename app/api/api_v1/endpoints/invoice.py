@@ -11,11 +11,11 @@ router = APIRouter()
 
 @router.get("/", response_model=Dict[str, Union[int, List[schemas.Invoice]]])
 def read_invoice_by_shop_id(*, db: Session = Depends(deps.get_db),
-                        current_user: models.User = Depends(deps.get_current_active_user),
-                        skip: int = 0,
-                        take: int = 100,
-                        filter: str = None
-                        ) -> Any:
+                            current_user: models.User = Depends(deps.get_current_active_user),
+                            skip: int = 0,
+                            take: int = 100,
+                            filter: str = None
+                            ) -> Any:
     """
     Get Invoice by shop id.
     """
