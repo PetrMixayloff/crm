@@ -19,6 +19,7 @@ api_router.include_router(clients.router, prefix="/clients", tags=["clients"])
 api_router.include_router(invoice.router, prefix="/invoice", tags=["invoice"])
 api_router.include_router(invoice_record.router, prefix="/invoice_record", tags=["invoice_record"])
 
+
 @api_router.get("/meta")
 def get_meta(current_user: models.User = Depends(deps.get_current_active_user)) -> Any:
     """
