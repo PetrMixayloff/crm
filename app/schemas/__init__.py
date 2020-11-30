@@ -10,3 +10,5 @@ from .client import Client, ClientCreate, ClientUpdate
 from .invoice import Invoice, InvoiceCreate, InvoiceUpdate
 from .invoice_record import InvoiceRecord, InvoiceRecordCreate, InvoiceRecordUpdate
 from .raw_remains_detail import RawRemainsDetail, RawRemainsDetailCreate, RawRemainsDetailUpdate
+from .inventory import Inventory, InventoryCreate, InventoryUpdate
+from .inventory_record import InventoryRecord, InventoryRecordCreate, InventoryRecordUpdate

@@ -3,13 +3,15 @@ from .crud_shop import shop
 from .crud_product import product
 from .crud_raw import raw
 from .crud_invoice_record import invoice_record
+from .crud_inventory_record import inventory_record
 from .base import CRUDBase
-from app.models.models import ProductCategory, ProductRawRelation, RawCategory, RawRemainsDetail, Client, Invoice
+from app.models.models import ProductCategory, ProductRawRelation, RawCategory, RawRemainsDetail, Client, Invoice,\
+    Inventory
 from app.schemas import ProductCategoryCreate, ProductCategoryUpdate, ProductRawRelationCreate, ProductRawRelationUpdate, \
-    RawCategoryCreate, RawCategoryUpdate, ClientCreate, ClientUpdate, InvoiceCreate, InvoiceUpdate,RawRemainsDetailCreate,\
-    RawRemainsDetailUpdate
+    RawCategoryCreate, RawCategoryUpdate, ClientCreate, ClientUpdate, InvoiceCreate, InvoiceUpdate,\
+    RawRemainsDetailCreate, RawRemainsDetailUpdate, InventoryCreate, InventoryUpdate
 
-
+inventory = CRUDBase[Inventory, InventoryCreate, InventoryUpdate](Inventory)
 raw_remains_detail = CRUDBase[RawRemainsDetail, RawRemainsDetailCreate, RawRemainsDetailUpdate](RawRemainsDetail)
 invoice = CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate](Invoice)
 product_raw_relation = CRUDBase[ProductRawRelation, ProductRawRelationCreate, ProductRawRelationUpdate](ProductRawRelation)
