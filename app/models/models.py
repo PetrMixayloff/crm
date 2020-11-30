@@ -141,7 +141,7 @@ class Inventory(Base):
     number = Column(String(255), comment='Номер')
     date = Column(DateTime, comment='Дата')
     remark = Column(String(255), comment='Примечание')
-    inventory_records = relationship('InventoryRecords', back_populates='inventory', cascade="all, delete-orphan")
+    inventory_records = relationship("InventoryRecord", back_populates='inventory', cascade="all, delete-orphan")
 
 
 class InventoryRecord(Base):

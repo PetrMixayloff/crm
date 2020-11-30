@@ -1,8 +1,8 @@
 """add model Inventory and InventoryRecord
 
-Revision ID: 51868080f447
+Revision ID: 8d22211864cb
 Revises: fe0adf41a254
-Create Date: 2020-11-30 19:28:06.261334
+Create Date: 2020-11-30 20:06:59.387607
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '51868080f447'
+revision = '8d22211864cb'
 down_revision = 'fe0adf41a254'
 branch_labels = None
 depends_on = None
