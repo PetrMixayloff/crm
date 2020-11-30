@@ -135,6 +135,23 @@ class RawRemainsDetail(Base):
     total = Column(Float, default=0, comment='Сумма')
 
 
+class Inventory(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Ответственный сотрудник')
+    number = Column(String(255), comment='Номер')
+    date = Column(DateTime, comment='Дата')
+    remark = Column(String(255), comment='Примечание')
+    inventory_records = relationship('InventoryRecords', back_populates='inventory', cascade="all, delete-orphan")
+
+
+class InventoryRecord(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    inventory_id = Column(UUID(as_uuid=True), ForeignKey('inventory.id'), nullable=False, comment='ИНВ Опись')
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
+    quantity = Column(Float, default=0, comment='Количество')
+    inventory = relationship('Inventory', back_populates='inventory_records')
+
+
 class Invoice(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     number = Column(String(255), comment='Номер')
