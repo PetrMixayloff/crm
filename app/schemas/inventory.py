@@ -26,7 +26,7 @@ class InventoryUpdate(InventoryBase):
 # Properties to receive via API on update
 class InventoryInDBBase(InventoryBase):
     id: UUID
-    records: Optional[List[InventoryRecord]] = []
+    inventory_records: Optional[List[InventoryRecord]] = []
 
     class Config:
         orm_mode = True

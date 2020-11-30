@@ -15,11 +15,11 @@ class CRUDInventoryRecord(CRUDBase[InventoryRecord, schemas.InventoryRecordCreat
         obj_in_data = jsonable_encoder(obj_in)
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
+        for quantity in raw_remains_update:
+            raw_remains_detail = crud.raw_remains_detail.get(db, id=quantity.id)
+            setattr(raw_remains_detail, 'quantity', quantity.quantity)
         db.commit()
         db.refresh(db_obj)
-        raw_remains_detail = crud.raw_remains_detail.get(db, id=db_obj.raw_id)
-        for quantity in raw_remains_update:
-            setattr(raw_remains_detail, 'quantity', quantity.quantity)
         return db_obj
 
 
