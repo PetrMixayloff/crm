@@ -9,9 +9,9 @@ class InvoiceBase(BaseModel):
     shop_id: Union[UUID, str]
     number: str
     date: datetime = datetime.utcnow()
-    supplier: str
-    remark: str = None
-    payment_method: str = "Наличные"
+    supplier: Optional[str]
+    remark: Optional[str]
+    payment_method: Optional[str] = "Наличные"
 
 
 # Properties to receive via API on creation

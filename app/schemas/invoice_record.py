@@ -7,11 +7,9 @@ from uuid import UUID
 class InvoiceRecordBase(BaseModel):
     shop_id: Union[UUID, str]
     invoice_id: Union[UUID, str]
-    category_id: Union[UUID, str]
     raw_id: Union[UUID, str]
     price: Optional[float] = 0
     quantity: Optional[float] = 0
-    total: Optional[float] = 0
 
 
 # Properties to receive via API on creation
