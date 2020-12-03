@@ -2,6 +2,7 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
+from .invoice_record import InvoiceRecord
 
 
 # Shared properties
@@ -26,6 +27,7 @@ class InvoiceUpdate(InvoiceBase):
 # Properties to receive via API on update
 class InvoiceInDBBase(InvoiceBase):
     id: UUID
+    records: Optional[List[InvoiceRecord]] = []
 
     class Config:
         orm_mode = True
