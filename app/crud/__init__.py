@@ -8,7 +8,7 @@ from app.models.models import ProductCategory, ProductRawRelation, RawCategory, 
     InvoiceRecord, Inventory
 from app.schemas import ProductCategoryCreate, ProductCategoryUpdate, ProductRawRelationCreate, ProductRawRelationUpdate, \
     RawCategoryCreate, RawCategoryUpdate, ClientCreate, ClientUpdate, InvoiceRecordUpdate,\
-    InvoiceRecordCreate, InventoryRecordUpdate, RawRemainsDetailCreate, RawRemainsDetailUpdate, InventoryCreate,\
+    InvoiceRecordCreate, RawRemainsDetailCreate, RawRemainsDetailUpdate, InventoryCreate,\
     InventoryUpdate
 
 inventory = CRUDBase[Inventory, InventoryCreate, InventoryUpdate](Inventory)

@@ -39,14 +39,11 @@ def read_invoice_by_id(*, db: Session = Depends(deps.get_db),
 def create_invoice(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    invoice_in: schemas.InvoiceCreate,
-                   invoice_record_create: List[schemas.InvoiceRecordCreate],
-                   raw_remains_create: List[schemas.RawRemainsDetailCreate] = []) -> Any:
+                   ) -> Any:
     """
     Create new invoice.
     """
-    invoice = crud.invoice.create_invoice(db, obj_in=invoice_in,
-                                          invoice_record_create=invoice_record_create,
-                                          raw_remains_create=raw_remains_create)
+    invoice = crud.invoice.create_invoice(db, obj_in=invoice_in)
     return invoice
 
 
