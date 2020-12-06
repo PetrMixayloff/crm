@@ -1,6 +1,7 @@
 from .crud_user import user
 from .crud_shop import shop
 from .crud_product import product
+from .crud_product_category import product_category
 from .crud_raw import raw
 from .crud_raw_category import raw_category
 from .crud_invoice import invoice
@@ -17,7 +18,6 @@ raw_remains_detail = CRUDBase[RawRemainsDetail, RawRemainsDetailCreate, RawRemai
 invoice_record = CRUDBase[InvoiceRecord, InvoiceRecordCreate, InvoiceRecordUpdate](InvoiceRecord)
 product_raw_relation = CRUDBase[ProductRawRelation, ProductRawRelationCreate, ProductRawRelationUpdate](ProductRawRelation)
 client = CRUDBase[Client, ClientCreate, ClientUpdate](Client)
-product_category = CRUDBase[ProductCategory, ProductCategoryCreate, ProductCategoryUpdate](ProductCategory)
 # product = CRUDBase[Product, ProductCreate, ProductUpdate](Product)
 
 # For a new basic set of CRUD operations you could just do

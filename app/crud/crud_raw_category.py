@@ -6,7 +6,7 @@ from app.models.models import RawCategory
 from app.schemas import RawCategoryCreate, RawCategoryUpdate
 
 
-class CRUDRaw(CRUDBase[RawCategory, RawCategoryCreate, RawCategoryUpdate]):
+class CRUDRawCategory(CRUDBase[RawCategory, RawCategoryCreate, RawCategoryUpdate]):
 
     def recursive_disable(self, db: Session, id: str) -> List[RawCategory]:
         deleted_objects = []
@@ -24,4 +24,4 @@ class CRUDRaw(CRUDBase[RawCategory, RawCategoryCreate, RawCategoryUpdate]):
         return deleted_objects
 
 
-raw_category = CRUDRaw(RawCategory)
+raw_category = CRUDRawCategory(RawCategory)

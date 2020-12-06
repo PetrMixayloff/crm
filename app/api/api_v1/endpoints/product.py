@@ -83,5 +83,5 @@ def delete_product(*, db: Session = Depends(deps.get_db),
     """
     Delete product
     """
-    product = crud.product.remove(db, id=product_id)
+    product = crud.product.disable(db, id=product_id)
     return product

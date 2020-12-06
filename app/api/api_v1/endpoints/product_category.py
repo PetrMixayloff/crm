@@ -65,5 +65,5 @@ def delete_product_category_by_id(db: Session = Depends(deps.get_db),
     """
     Delete product category by id.
     """
-    product_category = crud.product_category.remove(db, id=category_id)
+    product_category = crud.product_category.recursive_disable(db, id=category_id)
     return product_category
