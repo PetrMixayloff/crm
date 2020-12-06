@@ -102,7 +102,8 @@ class ProductRawRelation(Base):
 class RawCategory(Base):
     name = Column(String(255), comment='Название категории')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    parent_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), comment='Id родительской категории')
+    parent_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), comment='Id родительской категории',
+                       default='00000000-0000-0000-0000-000000000000')
     raws = relationship('Raw', back_populates="raw_category", cascade="all, delete-orphan")
     description = Column(String(255), comment='Описание')
     subcategories = relationship("RawCategory", primaryjoin="RawCategory.id==RawCategory.parent_id")
@@ -166,7 +167,8 @@ class InvoiceRecord(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
     invoice = relationship("Invoice", back_populates="records")
-    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Id сырья')
+    raw = relationship("Raw", primaryjoin="InvoiceRecord.raw_id==Raw.id")
     price = Column(Float, default=0, comment='Цена за ед.')
     quantity = Column(Float, default=0, comment='Количество')
 

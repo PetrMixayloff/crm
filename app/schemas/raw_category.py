@@ -24,7 +24,6 @@ class RawCategoryUpdate(RawCategoryBase):
 # Properties to receive via API on update
 class RawCategoryInDBBase(RawCategoryBase):
     id: UUID
-    raws: Optional[List[Raw]] = []
 
     class Config:
         orm_mode = True

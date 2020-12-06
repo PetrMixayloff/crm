@@ -1,6 +1,7 @@
 from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
+from .raw import Raw
 
 
 # Shared properties
@@ -24,6 +25,7 @@ class InvoiceRecordUpdate(InvoiceRecordBase):
 # Properties to receive via API on update
 class InvoiceRecordInDBBase(InvoiceRecordBase):
     id: UUID
+    raw: Raw
 
     class Config:
         orm_mode = True

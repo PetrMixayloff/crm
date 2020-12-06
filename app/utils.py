@@ -126,8 +126,9 @@ def init_s3():
     )
 
 
-def upload_image_to_aws(upload_file: UploadFile, file_name: str, s3=Depends(init_s3)):
+def upload_image_to_aws(upload_file: UploadFile, file_name: str):
     try:
+        s3 = init_s3()
         s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=upload_file.file, ACL='public-read')
         print("Upload Successful")
         return True
@@ -136,8 +137,9 @@ def upload_image_to_aws(upload_file: UploadFile, file_name: str, s3=Depends(init
         return False
 
 
-def delete_image_from_aws(file_name: str, s3=Depends(init_s3)):
+def delete_image_from_aws(file_name: str):
     try:
+        s3 = init_s3()
         s3.Bucket(settings.AWS_BUCKET_NAME).delete_object(Key=file_name)
         return True
     except NoCredentialsError:
