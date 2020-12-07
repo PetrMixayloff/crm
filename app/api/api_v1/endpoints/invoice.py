@@ -42,9 +42,7 @@ def create_invoice(*, db: Session = Depends(deps.get_db),
     """
     Create new invoice.
     """
-    invoice = crud.invoice.create_invoice(db, obj_in=invoice_in,
-                                          invoice_record_create=invoice_record_create,
-                                          raw_remains_create=raw_remains_create)
+    invoice = crud.invoice.create_invoice(db, obj_in=invoice_in)
     return invoice
 
 

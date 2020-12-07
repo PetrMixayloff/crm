@@ -78,7 +78,7 @@ def delete_raw(*, db: Session = Depends(deps.get_db),
     """
     Delete raw
     """
-    raw = crud.raw.remove(db, id=raw_id)
+    raw = crud.raw.disable(db, id=raw_id)
     return raw
 
 

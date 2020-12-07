@@ -65,5 +65,5 @@ def delete_raw_category_by_id(db: Session = Depends(deps.get_db),
     """
     Delete raw category and all subcategories by id.
     """
-    raw_categories = crud.raw_category.recursive_remove(db, id=category_id)
+    raw_categories = crud.raw_category.recursive_disable(db, id=category_id)
     return raw_categories
