@@ -112,11 +112,9 @@ class Raw(Base):
     category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False, comment='Категория')
     raw_category = relationship("RawCategory", back_populates="raws")
     products = relationship("ProductRawRelation", cascade="all, delete-orphan")
+    remains = relationship('RawRemainsDetail')
     name = Column(String(255), nullable=False, comment='Название')
     description = Column(String(255), comment='Описание')
-    cost = Column(Float, default=0, comment='Стоимость остатка')
-    quantity = Column(Float, default=0, comment='Общий остаток')
-    reserved = Column(Float, default=0, comment='Зарезервировано')
     per_pack = Column(Integer, default=0, comment='В упаковке')
     green_signal = Column(Integer, default=0, comment='Зеленая метка')
     yellow_signal = Column(Integer, default=0, comment='Желтая метка')
@@ -131,7 +129,7 @@ class RawRemainsDetail(Base):
     invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
     price = Column(Float, default=0, comment='Цена за ед.')
     quantity = Column(Float, default=0, comment='Количество')
-    total = Column(Float, default=0, comment='Сумма')
+    reserved = Column(Float, default=0, comment='Зарезервировано')
 
 
 class Inventory(Base):

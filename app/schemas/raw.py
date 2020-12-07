@@ -1,6 +1,7 @@
 from typing import Optional, Union, List
 from pydantic import BaseModel
 from uuid import UUID
+from .raw_remains_detail import RawRemainsDetail
 
 
 # Shared properties
@@ -9,8 +10,7 @@ class RawBase(BaseModel):
     category_id: Union[UUID, str]
     shop_id: Union[UUID, str]
     unit: Optional[str] = None
-    cost: Optional[float] = 0
-    quantity: Optional[int] = 0
+    remains: Optional[List[RawRemainsDetail]] = []
     per_pack: Optional[int] = 0
     green_signal: Optional[int] = 0
     yellow_signal: Optional[int] = 0
