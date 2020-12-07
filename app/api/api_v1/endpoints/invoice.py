@@ -38,9 +38,7 @@ def read_invoice_by_id(*, db: Session = Depends(deps.get_db),
 @router.post("/", response_model=schemas.Invoice)
 def create_invoice(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
-                   invoice_in: schemas.InvoiceCreate,
-                   invoice_record_create: List[schemas.InvoiceRecordCreate],
-                   raw_remains_create: List[schemas.RawRemainsDetailCreate] = []) -> Any:
+                   invoice_in: schemas.InvoiceCreate) -> Any:
     """
     Create new invoice.
     """
