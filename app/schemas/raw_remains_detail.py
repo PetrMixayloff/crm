@@ -10,7 +10,7 @@ class RawRemainsDetailBase(BaseModel):
     raw_id: Union[UUID, str]
     price: Optional[float] = 0
     quantity: Optional[float] = 0
-    total: Optional[float] = 0
+    reserved: Optional[float] = 0
 
 
 # Properties to receive via API on creation
