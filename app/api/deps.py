@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Generator
 
 from fastapi import Depends, HTTPException, status
@@ -44,6 +45,12 @@ def get_current_user(
     user = crud.user.get(db, id=token_data.sub)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    else:
+        datetime_now = datetime.utcnow()
+        setattr(user, 'last_login', datetime_now)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
     return user
 
 
