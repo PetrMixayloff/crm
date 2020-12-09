@@ -121,6 +121,7 @@ class Raw(Base):
     red_signal = Column(Integer, default=0, comment='Красная метка')
     unit = Column(String(255), comment='Ед. измерения')
     image = Column(String(255), comment='Изображение')
+    standards = relationship('RawUsageStandards')
 
 
 class RawUsageStandards(Base):
