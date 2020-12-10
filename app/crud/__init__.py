@@ -7,12 +7,13 @@ from .crud_raw_category import raw_category
 from .crud_invoice import invoice
 from .base import CRUDBase
 from app.models.models import ProductCategory, ProductRawRelation, RawCategory, RawRemainsDetail, Client,\
-    InvoiceRecord, Inventory
+    InvoiceRecord, Inventory, RawUsageStandards
 from app.schemas import ProductCategoryCreate, ProductCategoryUpdate, ProductRawRelationCreate, ProductRawRelationUpdate, \
     RawCategoryCreate, RawCategoryUpdate, ClientCreate, ClientUpdate, InvoiceRecordUpdate,\
     InvoiceRecordCreate, RawRemainsDetailCreate, RawRemainsDetailUpdate, InventoryCreate,\
-    InventoryUpdate
+    InventoryUpdate, RawUsageStandardsCreate, RawUsageStandardsUpdate
 
+raw_usage_standards = CRUDBase[RawUsageStandards, RawUsageStandardsCreate, RawUsageStandardsUpdate](RawUsageStandards)
 inventory = CRUDBase[Inventory, InventoryCreate, InventoryUpdate](Inventory)
 raw_remains_detail = CRUDBase[RawRemainsDetail, RawRemainsDetailCreate, RawRemainsDetailUpdate](RawRemainsDetail)
 invoice_record = CRUDBase[InvoiceRecord, InvoiceRecordCreate, InvoiceRecordUpdate](InvoiceRecord)
