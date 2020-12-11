@@ -5,6 +5,7 @@ from uuid import UUID
 
 # Shared properties
 class RawUsageStandardsBase(BaseModel):
+    shop_id: Union[UUID, str]
     name: Optional[str]
     quantity: Optional[float] = 0
 
