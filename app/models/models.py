@@ -125,6 +125,7 @@ class Raw(Base):
 
 
 class RawUsageStandards(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Сырье')
     name = Column(String(255), nullable=False, comment='Название стандарта')
     quantity = Column(Float, default=0, comment='Количество сырья на ед. стандарта')
