@@ -19,7 +19,7 @@ def read_standards_by_shop_id(*, db: Session = Depends(deps.get_db),
     Get raw_usage_standards by shop_id.
     """
     shop_id = str(current_user.shop_id)
-    standards = crud.raw_usage_standards.get_multi(db, id=shop_id, skip=skip, take=take, filter=filter)
+    standards = crud.raw_usage_standards.get_multi(db, shop_id=shop_id, skip=skip, take=take, filter=filter)
     return standards
 
 
