@@ -47,13 +47,12 @@ def read_product_by_id(*,
 def create_product(*,
                    db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
-                   product_in: schemas.ProductCreate,
-                   raws: List[schemas.ProductRawRelationCreate]
+                   product_in: schemas.ProductCreate
                    ) -> Any:
     """
     Create new product.
     """
-    product = crud.product.create_product(db, obj_in=product_in, raws=raws)
+    product = crud.product.create_product(db, obj_in=product_in)
     return product
 
 

@@ -16,7 +16,7 @@ def upload_file(file: UploadFile = File(...),
     Upload file.
     """
     file_ext = file.filename[-4:]
-    if file_ext not in ['.jpg', '.png']:
+    if file_ext.lower() not in ['.jpg', '.png']:
         raise HTTPException(
             status_code=400,
             detail="Not valid file extension.",

@@ -82,12 +82,12 @@ class Product(Base):
     category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'), nullable=False)
     productcategory = relationship("ProductCategory", back_populates="products")
     raw = relationship('ProductRawRelation', cascade="all, delete-orphan")
-    name = Column(String(255), nullable=False)
-    description = Column(String(255))
-    image = Column(String(255))
-    price = Column(Float, default=0)
-    old_price = Column(Float, default=0)
-    show_on_store = Column(Boolean, nullable=False, default=True)
+    name = Column(String(255), nullable=False, comment='Название')
+    description = Column(String(255), comment='Описание')
+    image = Column(String(255), comment='Изображение')
+    price = Column(Float, default=0, comment='Цена')
+    old_price = Column(Float, comment='Старая цена')
+    show_on_store = Column(Boolean, nullable=False, default=True, comment='Отображать на витрине')
 
 
 class ProductRawRelation(Base):

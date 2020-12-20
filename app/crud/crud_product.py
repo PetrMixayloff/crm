@@ -10,10 +10,10 @@ from app import crud
 
 class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate]):
 
-    def create_product(self, db: Session, *, obj_in: schemas.ProductCreate,
-                       raws: List[schemas.ProductRawRelationCreate]) -> Product:
+    def create_product(self, db: Session, *, obj_in: schemas.ProductCreate) -> Product:
 
-        obj_in_data = jsonable_encoder(obj_in)
+        raws = obj_in.raw
+        obj_in_data = jsonable_encoder(obj_in, exclude={'raw'})
         obj_in_data['id'] = uuid4()
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
