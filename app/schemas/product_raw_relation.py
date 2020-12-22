@@ -8,6 +8,7 @@ class ProductRawRelationBase(BaseModel):
     product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
     quantity: Optional[int] = 0
+    standard_id: Optional[Union[UUID, str]] = None
 
 
 # Properties to receive via API on creation
