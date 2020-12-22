@@ -4,7 +4,7 @@ import boto3
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional
-from botocore.exceptions import NoCredentialsError
+from botocore.exceptions import NoCredentialsError, ClientError
 
 import emails
 from emails.template import JinjaTemplate
@@ -13,12 +13,18 @@ from jose import jwt
 
 from app.core.config import settings
 
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.AWS_ACCESS_SECRET_KEY
+)
+
 
 def send_email(
-    email_to: str,
-    subject_template: str = "",
-    html_template: str = "",
-    environment: Dict[str, Any] = {},
+        email_to: str,
+        subject_template: str = "",
+        html_template: str = "",
+        environment: Dict[str, Any] = {},
 ) -> None:
     assert settings.EMAILS_ENABLED, "no provided configuration for email variables"
     message = emails.Message(
@@ -119,7 +125,7 @@ def save_upload_file(upload_file: UploadFile, destination: str) -> None:
 
 
 def init_s3():
-    return boto3.resource(
+    return boto3.client(
         's3',
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_ACCESS_SECRET_KEY
@@ -128,21 +134,20 @@ def init_s3():
 
 def upload_image_to_aws(upload_file: UploadFile, file_name: str):
     try:
-        s3 = init_s3()
-        s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=upload_file.file, ACL='public-read')
+        # s3 = init_s3()
+        response = s3_client.put_object(Key=file_name, Bucket=settings.AWS_BUCKET_NAME,
+                                        Body=upload_file.file, ACL='public-read')
+        # s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=upload_file.file, ACL='public-read')
         print("Upload Successful")
         return True
-    except NoCredentialsError:
-        print("Credentials not available")
+    except ClientError:
         return False
 
 
 def delete_image_from_aws(file_name: str):
     try:
-        s3 = init_s3()
-        s3.Bucket(settings.AWS_BUCKET_NAME).delete_object(Key=file_name)
+        # s3 = init_s3()
+        s3_client.delete_object(Key=file_name, Bucket=settings.AWS_BUCKET_NAME)
         return True
-    except NoCredentialsError:
-        print("Credentials not available")
+    except ClientError:
         return False
-

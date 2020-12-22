@@ -81,14 +81,12 @@ def delete_product(*, db: Session = Depends(deps.get_db),
     return product
 
 
-@router.delete("/raw_relation/{raw_id}", response_model=schemas.Product)
+@router.delete("/raw_relation/{raw_id}", response_model=schemas.ProductRawRelation)
 def delete_raw_nested_with_product(*, db: Session = Depends(deps.get_db),
                                    current_user: models.User = Depends(deps.get_current_active_user),
                                    raw_id: str) -> Any:
     """
     Delete nested raw
     """
-    obj = db.query(ProductRawRelation).get(raw_id)
-    db.delete(obj)
-    db.commit()
+    obj = crud.product_raw_relation.remove(db=db, id=raw_id)
     return obj

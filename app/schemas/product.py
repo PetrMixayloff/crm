@@ -24,7 +24,7 @@ class ProductCreate(ProductBase):
 
 class ProductUpdate(ProductBase):
     id: str
-    raw: Optional[List[Union[ProductRawRelationCreate, ProductRawRelationUpdate]]] = []
+    raw: Optional[List[Union[ProductRawRelationUpdate, ProductRawRelationCreate]]] = []
 
 
 # Properties to receive via API on update

@@ -6,6 +6,7 @@ from app.crud.base import CRUDBase
 from app.models.models import Product, ProductRawRelation
 from app import schemas
 from app import crud
+from app.schemas import ProductRawRelationUpdate
 
 
 class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate]):
@@ -36,7 +37,7 @@ class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate
                 setattr(db_obj, field, update_data[field])
 
         for raw in obj_in.raw:
-            if raw.id is not None:
+            if isinstance(raw, ProductRawRelationUpdate):
                 product_raw_relation = crud.product_raw_relation.get(db, id=raw.id)
                 setattr(product_raw_relation, 'quantity', raw.quantity)
                 setattr(product_raw_relation, 'raw_id', raw.raw_id)
