@@ -5,7 +5,6 @@ from typing import Any, Dict, Union, List
 from app.api import deps
 from app.models import models
 
-
 router = APIRouter()
 
 
@@ -46,12 +45,12 @@ def update_standards_by_id(*, db: Session = Depends(deps.get_db),
     return standards
 
 
-@router.delete("/{id}", response_model=schemas.RawUsageStandards)
+@router.delete("/{standard_id}", response_model=schemas.RawUsageStandards)
 def delete_standards(*, db: Session = Depends(deps.get_db),
                      current_user: models.User = Depends(deps.get_current_active_user),
-                     standards_id: str) -> Any:
+                     standard_id: str) -> Any:
     """
     Delete raw usage standards
     """
-    standards = crud.raw_usage_standards.remove(db, id=standards_id)
-    return standards
+    standard = crud.raw_usage_standards.remove(db, id=standard_id)
+    return standard
