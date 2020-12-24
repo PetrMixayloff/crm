@@ -173,7 +173,6 @@ class InvoiceRecord(Base):
     invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
     invoice = relationship("Invoice", back_populates="records")
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Id сырья')
-    raw = relationship("Raw", primaryjoin="InvoiceRecord.raw_id==Raw.id")
     price = Column(Float, default=0, comment='Цена за ед.')
     quantity = Column(Float, default=0, comment='Количество')
 
