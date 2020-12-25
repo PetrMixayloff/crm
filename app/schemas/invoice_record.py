@@ -25,7 +25,6 @@ class InvoiceRecordUpdate(InvoiceRecordBase):
 # Properties to receive via API on update
 class InvoiceRecordInDBBase(InvoiceRecordBase):
     id: UUID
-    raw: Raw
 
     class Config:
         orm_mode = True

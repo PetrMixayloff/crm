@@ -134,16 +134,9 @@ def init_s3():
 
 def upload_image_to_aws(upload_file: UploadFile, file_name: str):
     try:
-        # s3 = init_s3()
-        # response = s3_client.put_object(Key=file_name, Bucket=settings.AWS_BUCKET_NAME,
-        #                                 Body=upload_file.file, ACL='public-read')
-        response = s3_client.generate_presigned_post(Bucket=settings.AWS_BUCKET_NAME,
-                                                     Key=file_name,
-                                                     Fields={"Content-Type": "image/jpg"},
-                                                     Conditions=["starts-with", "$Content-Type", "image/"],
-                                                     ExpiresIn=3600)
-        # s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=upload_file.file, ACL='public-read')
-        # print("Upload Successful")
+        response = s3_client.put_object(Key=file_name, Bucket=settings.AWS_BUCKET_NAME,
+                                        Body=upload_file.file, ACL='public-read')
+        print("Upload Successful")
         return True
     except ClientError:
         return False
@@ -163,7 +156,6 @@ def get_presigned_url(file_name: str, file_type: str):
 
 def delete_image_from_aws(file_name: str):
     try:
-        # s3 = init_s3()
         s3_client.delete_object(Key=file_name, Bucket=settings.AWS_BUCKET_NAME)
         return True
     except ClientError:
