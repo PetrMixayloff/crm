@@ -14,7 +14,6 @@ class Orders(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
     client_id = Column(UUID(as_uuid=True), ForeignKey('client.id'))
     products = relationship('OrdersProductsRelation', cascade="all, delete-orphan")
-    raw = relationship('OrdersRawRelation', cascade="all, delete-orphan")
     delivery = Column(Boolean, nullable=False, default=False, comment='Доставка/самовывоз')
     courier_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Курьер')
     total_cost = Column(Float, nullable=False, comment='Сумма заказа')
