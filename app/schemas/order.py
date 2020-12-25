@@ -2,6 +2,7 @@ from typing import Optional, List, Union
 import datetime
 from pydantic import BaseModel
 from uuid import UUID
+from .client import ClientCreate
 
 
 class OrdersRawRelationBase(BaseModel):
@@ -64,6 +65,7 @@ class OrderBase(BaseModel):
     make_by_id: Optional[Union[UUID, str]] = None
     shop_id: Union[UUID, str]
     client_id: Optional[Union[UUID, str]] = None
+    client: Optional[ClientCreate] = None
     products: List[OrdersProductsRelation]
     delivery: bool
     courier_id: Optional[Union[UUID, str]] = None

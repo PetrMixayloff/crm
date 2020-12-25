@@ -13,3 +13,5 @@ from .raw_remains_detail import RawRemainsDetail, RawRemainsDetailCreate, RawRem
 from .inventory import Inventory, InventoryCreate, InventoryUpdate
 from .inventory_record import InventoryRecord, InventoryRecordCreate, InventoryRecordUpdate
 from .raw_usage_standards import RawUsageStandards, RawUsageStandardsCreate, RawUsageStandardsUpdate
+from .order import OrdersRawRelation, OrdersRawRelationCreate, OrdersRawRelationUpdate, OrdersProductsRelation, \
+    OrdersProductsRelationCreate, OrdersProductsRelationUpdate, Order, OrderCreate, OrderUpdate
