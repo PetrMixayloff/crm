@@ -8,16 +8,15 @@ from sqlalchemy.orm import relationship
 
 
 class Orders(Base):
-    created_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
-    created_by = relationship("User", foreign_keys='Orders.created_by_id')
-    make_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
-    make_by = relationship("User", foreign_keys='Orders.make_by_id')
+    order_number = Column(Integer, autoincrement=True, unique=True, nullable=False, comment='№ заказа')
+    created_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Принял')
+    make_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Выполнил')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
     client_id = Column(UUID(as_uuid=True), ForeignKey('client.id'))
-    products = relationship('OrdersProductsRelation')
+    products = relationship('OrdersProductsRelation', cascade="all, delete-orphan")
+    raw = relationship('OrdersRawRelation', cascade="all, delete-orphan")
     delivery = Column(Boolean, nullable=False, default=False, comment='Доставка/самовывоз')
-    courier_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
-    courier = relationship("User", foreign_keys='Orders.courier_id')
+    courier_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Курьер')
     total_cost = Column(Float, nullable=False, comment='Сумма заказа')
     prepay = Column(Float, default=0, comment='Предоплата')
     prepay_type = Column(String(255), comment='Тип внесения предоплаты')
@@ -26,14 +25,23 @@ class Orders(Base):
     discount = Column(Float, default=0, comment='Скидка')
     rating = Column(Integer, comment='Оценка от клиента')
     status = Column(String(255), comment='Статус')
-    date_created = Column(DateTime, default=datetime.datetime.now)
-    date_of_order = Column(DateTime, nullable=False)
+    date_created = Column(DateTime, default=datetime.datetime.now, comment='Дата поступления')
+    date_of_order = Column(DateTime, nullable=False, comment='Дата заказа')
 
 
 class OrdersProductsRelation(Base):
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id', ondelete="CASCADE"))
     order_id = Column(UUID(as_uuid=True), ForeignKey('orders.id'))
     quantity = Column(Integer, nullable=False)
+    raw = relationship('OrdersRawRelation', cascade="all, delete-orphan")
+
+
+class OrdersRawRelation(Base):
+    order_id = Column(UUID(as_uuid=True), ForeignKey('orders.id'))
+    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
+    standard_id = Column(UUID(as_uuid=True), ForeignKey('rawusagestandards.id'))
+    quantity = Column(Integer, default=0)
 
 
 class Client(Base):
