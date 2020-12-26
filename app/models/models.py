@@ -32,7 +32,7 @@ class OrdersProductsRelation(Base):
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id', ondelete="CASCADE"))
     order_id = Column(UUID(as_uuid=True), ForeignKey('orders.id'))
     quantity = Column(Integer, nullable=False)
-    raw = relationship('OrdersRawRelation', cascade="all, delete-orphan")
+    raw = relationship('OrdersProductsRawRelation', cascade="all, delete-orphan")
 
 
 class OrdersProductsRawRelation(Base):

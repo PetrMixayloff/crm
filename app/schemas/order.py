@@ -35,11 +35,10 @@ class OrdersProductsRelationBase(BaseModel):
     product_id: Union[UUID, str]
     order_id: Optional[Union[UUID, str]] = None
     quantity: int
-    raw: Optional[List[OrdersProductsRawRelation]] = []
 
 
 class OrdersProductsRelationCreate(OrdersProductsRelationBase):
-    pass
+    raw: Optional[List[OrdersProductsRawRelationCreate]] = []
 
 
 class OrdersProductsRelationUpdate(OrdersProductsRelationBase):
@@ -48,6 +47,7 @@ class OrdersProductsRelationUpdate(OrdersProductsRelationBase):
 
 class OrdersProductsRelationInDBBase(OrdersProductsRelationBase):
     id: UUID
+    raw: Optional[List[OrdersProductsRawRelation]] = []
 
     class Config:
         orm_mode = True
@@ -65,7 +65,6 @@ class OrderBase(BaseModel):
     shop_id: Union[UUID, str]
     client_id: Optional[Union[UUID, str]] = None
     client: Optional[ClientCreate] = None
-    products: List[OrdersProductsRelation]
     delivery: bool
     courier_id: Optional[Union[UUID, str]] = None
     total_cost: float
@@ -81,7 +80,7 @@ class OrderBase(BaseModel):
 
 
 class OrderCreate(OrderBase):
-    pass
+    products: Optional[List[OrdersProductsRelationCreate]] = []
 
 
 class OrderUpdate(OrderBase):
@@ -90,6 +89,7 @@ class OrderUpdate(OrderBase):
 
 class OrderInDBBase(OrderBase):
     id: UUID
+    products: List[OrdersProductsRelation]
 
     class Config:
         orm_mode = True
