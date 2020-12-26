@@ -10,7 +10,7 @@ from app import crud
 
 class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
 
-    def create_order(self, db: Session, *, obj_in: schemas.OrderCreate) -> Orders:
+    def create(self, db: Session, *, obj_in: schemas.OrderCreate) -> Orders:
         try:
             if obj_in.client_id is None:
                 client = crud.client.create(db, obj_in.client)
@@ -44,4 +44,4 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
             raise
 
 
-product = CRUDOrder(Orders)
+order = CRUDOrder(Orders)
