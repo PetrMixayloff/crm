@@ -35,9 +35,8 @@ class OrdersProductsRelation(Base):
     raw = relationship('OrdersRawRelation', cascade="all, delete-orphan")
 
 
-class OrdersRawRelation(Base):
-    order_id = Column(UUID(as_uuid=True), ForeignKey('orders.id'))
-    product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
+class OrdersProductsRawRelation(Base):
+    order_product_id = Column(UUID(as_uuid=True), ForeignKey('ordersproductsrelation.id'))
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
     standard_id = Column(UUID(as_uuid=True), ForeignKey('rawusagestandards.id'))
     quantity = Column(Integer, default=0)

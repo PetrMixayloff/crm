@@ -7,12 +7,12 @@ from .crud_raw_category import raw_category
 from .crud_invoice import invoice
 from .base import CRUDBase
 from app.models.models import ProductCategory, ProductRawRelation, RawCategory, RawRemainsDetail, Client,\
-    InvoiceRecord, Inventory, RawUsageStandards, OrdersRawRelation, OrdersProductsRelation
+    InvoiceRecord, Inventory, RawUsageStandards, OrdersProductsRawRelation, OrdersProductsRelation
 from app.schemas import ProductCategoryCreate, ProductCategoryUpdate, ProductRawRelationCreate, ProductRawRelationUpdate, \
     RawCategoryCreate, RawCategoryUpdate, ClientCreate, ClientUpdate, InvoiceRecordUpdate,\
     InvoiceRecordCreate, RawRemainsDetailCreate, RawRemainsDetailUpdate, InventoryCreate,\
-    InventoryUpdate, RawUsageStandardsCreate, RawUsageStandardsUpdate, OrdersRawRelationCreate, \
-    OrdersRawRelationUpdate, OrdersProductsRelationCreate, OrdersProductsRelationUpdate, \
+    InventoryUpdate, RawUsageStandardsCreate, RawUsageStandardsUpdate, OrdersProductsRawRelationCreate, \
+    OrdersProductsRawRelationUpdate, OrdersProductsRelationCreate, OrdersProductsRelationUpdate, \
     OrderCreate, OrderUpdate
 
 raw_usage_standards = CRUDBase[RawUsageStandards, RawUsageStandardsCreate, RawUsageStandardsUpdate](RawUsageStandards)
@@ -21,7 +21,8 @@ raw_remains_detail = CRUDBase[RawRemainsDetail, RawRemainsDetailCreate, RawRemai
 invoice_record = CRUDBase[InvoiceRecord, InvoiceRecordCreate, InvoiceRecordUpdate](InvoiceRecord)
 product_raw_relation = CRUDBase[ProductRawRelation, ProductRawRelationCreate, ProductRawRelationUpdate](ProductRawRelation)
 client = CRUDBase[Client, ClientCreate, ClientUpdate](Client)
-order_raw = CRUDBase[OrdersRawRelation, OrdersRawRelationCreate, OrdersRawRelationUpdate](OrdersRawRelation)
+order_product_raw = CRUDBase[OrdersProductsRawRelation, OrdersProductsRawRelationCreate,
+                             OrdersProductsRawRelationUpdate](OrdersProductsRawRelation)
 order_product = CRUDBase[OrdersProductsRelation, OrdersProductsRelationCreate, OrdersProductsRelationUpdate]
 # product = CRUDBase[Product, ProductCreate, ProductUpdate](Product)
 

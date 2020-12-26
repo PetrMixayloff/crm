@@ -5,30 +5,29 @@ from uuid import UUID
 from .client import ClientCreate
 
 
-class OrdersRawRelationBase(BaseModel):
-    order_id: Optional[Union[UUID, str]] = None
-    product_id: Union[UUID, str]
+class OrdersProductsRawRelationBase(BaseModel):
+    order_product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
     standard_id: Union[UUID, str]
     quantity: int
 
 
-class OrdersRawRelationCreate(OrdersRawRelationBase):
+class OrdersProductsRawRelationCreate(OrdersProductsRawRelationBase):
     pass
 
 
-class OrdersRawRelationUpdate(OrdersRawRelationBase):
+class OrdersProductsRawRelationUpdate(OrdersProductsRawRelationBase):
     id: str
 
 
-class OrdersRawRelationInDBBase(OrdersRawRelationBase):
+class OrdersProductsRawRelationInDBBase(OrdersProductsRawRelationBase):
     id: UUID
 
     class Config:
         orm_mode = True
 
 
-class OrdersRawRelation(OrdersRawRelationInDBBase):
+class OrdersProductsRawRelation(OrdersProductsRawRelationInDBBase):
     pass
 
 
@@ -36,7 +35,7 @@ class OrdersProductsRelationBase(BaseModel):
     product_id: Union[UUID, str]
     order_id: Optional[Union[UUID, str]] = None
     quantity: int
-    raw: Optional[List[OrdersRawRelation]] = []
+    raw: Optional[List[OrdersProductsRawRelation]] = []
 
 
 class OrdersProductsRelationCreate(OrdersProductsRelationBase):
