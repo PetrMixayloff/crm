@@ -36,6 +36,16 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
                     order_product_raw_in_data = jsonable_encoder(raw)
                     order_product_raw_obj = OrdersProductsRawRelation(**order_product_raw_in_data)
                     db.add(order_product_raw_obj)
+                    raw_remains = crud.raw_remains_detail.get_multi(db=db,
+                                                                    shop_id=str(obj_in.shop_id),
+                                                                    filter=['raw_id', '=', str(raw.raw_id)])
+                    if len(raw_remains) > 0:
+                        if raw.standard_id is None:
+                            raw_remains[0].reserved += order_product.quantity
+                        else:
+                            usage_standard = crud.raw_usage_standards.get(db=db, id=raw.standard_id)
+                            raw_remains[0].reserved += order_product.quantity * usage_standard.quantity
+                        db.add(raw_remains[0])
             db.commit()
             db.refresh(db_obj)
             return db_obj
