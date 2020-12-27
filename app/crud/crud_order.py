@@ -32,11 +32,11 @@ def create_order_product(db: Session, order_product: schemas.OrdersProductsRelat
     db.add(order_product_obj)
     for order_product_raw in order_product.raw:
         create_order_product_raw(db=db, order_product_raw=order_product_raw, order_product_id=order_product_obj.id,
-                                 shop_id=shop_id, product_quantity=order_product.quantity)
+                                 shop_id=shop_id, product_quantity=order_product.quantity, status=status)
 
 
 def create_order_product_raw(db: Session, order_product_raw: schemas.OrdersProductsRawRelationCreate,
-                             order_product_id: UUID, shop_id: str, product_quantity: int):
+                             order_product_id: UUID, shop_id: str, product_quantity: int, status: str):
     order_product_raw.order_product_id = order_product_id
     order_product_raw_in_data = jsonable_encoder(order_product_raw)
     order_product_raw_obj = OrdersProductsRawRelation(**order_product_raw_in_data)
@@ -46,15 +46,21 @@ def create_order_product_raw(db: Session, order_product_raw: schemas.OrdersProdu
                                                     filter=['raw_id', '=', str(order_product_raw.raw_id)])
     if len(raw_remains) > 0:
         if order_product_raw.standard_id is None:
-            raw_remains[0].reserved += product_quantity
+            if status == Status.new.value:
+                raw_remains[0].reserved += product_quantity
+            else:
+                raw_remains[0].quantity -= product_quantity
         else:
             usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
-            raw_remains[0].reserved += product_quantity * usage_standard.quantity
+            if status == Status.new.value:
+                raw_remains[0].reserved += product_quantity * usage_standard.quantity
+            else:
+                raw_remains[0].quantity -= product_quantity * usage_standard.quantity
         db.add(raw_remains[0])
 
 
 def update_order_product(db: Session, order_product: schemas.OrdersProductsRelationUpdate,
-                         db_obj: OrdersProductsRelation, old_status: str, new_status: str):
+                         db_obj: OrdersProductsRelation, old_status: str, new_status: str, shop_id: str):
     obj_data = jsonable_encoder(db_obj)
     update_data = order_product.dict(exclude_unset=True)
     for field in obj_data:
@@ -63,28 +69,41 @@ def update_order_product(db: Session, order_product: schemas.OrdersProductsRelat
     for order_product_raw in order_product.raw:
         order_product_raw_obj = crud.order_product_raw.get(db=db, id=order_product_raw.id)
         update_order_product_raw(db=db, order_product_raw=order_product_raw,
-                                 db_obj=order_product_raw_obj, product_quantity=order_product.quantity)
+                                 db_obj=order_product_raw_obj, product_quantity=order_product.quantity,
+                                 old_status=old_status, new_status=new_status, shop_id=shop_id)
     db.add(db_obj)
 
 
 def update_order_product_raw(db: Session, order_product_raw: schemas.OrdersProductsRawRelationUpdate,
-                             db_obj: OrdersProductsRawRelation, product_quantity: int):
+                             db_obj: OrdersProductsRawRelation, product_quantity: int, old_status: str,
+                             new_status: str, shop_id: str):
     obj_data = jsonable_encoder(db_obj)
     update_data = order_product_raw.dict(exclude_unset=True)
     for field in obj_data:
         if field in update_data:
             setattr(db_obj, field, update_data[field])
     db.add(db_obj)
-    # raw_remains = crud.raw_remains_detail.get_multi(db=db,
-    #                                                 shop_id=shop_id,
-    #                                                 filter=['raw_id', '=', str(order_product_raw.raw_id)])
-    # if len(raw_remains) > 0:
-    #     if order_product_raw.standard_id is None:
-    #         raw_remains[0].reserved += product_quantity
-    #     else:
-    #         usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
-    #         raw_remains[0].reserved += product_quantity * usage_standard.quantity
-    #     db.add(raw_remains[0])
+    raw_remains = crud.raw_remains_detail.get_multi(db=db,
+                                                    shop_id=shop_id,
+                                                    filter=['raw_id', '=', str(order_product_raw.raw_id)])
+    if len(raw_remains) > 0:
+        if old_status == Status.new.value and new_status in [Status.prepared.value,
+                                                             Status.completed.value,
+                                                             Status.on_delivery.value]:
+            if order_product_raw.standard_id is None:
+                raw_remains[0].reserved -= product_quantity
+                raw_remains[0].quantity -= product_quantity
+            else:
+                usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
+                raw_remains[0].reserved -= product_quantity * usage_standard.quantity
+                raw_remains[0].quantity -= product_quantity * usage_standard.quantity
+        elif old_status == Status.new.value and new_status == Status.canceled.value:
+            if order_product_raw.standard_id is None:
+                raw_remains[0].reserved -= product_quantity
+            else:
+                usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
+                raw_remains[0].reserved -= product_quantity * usage_standard.quantity
+        db.add(raw_remains[0])
 
 
 class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
@@ -100,7 +119,7 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
             db.add(db_obj)
             for order_product in obj_in.products:
                 create_order_product(db=db, order_product=order_product,
-                                     order_id=db_obj.id, shop_id=str(obj_in.shop_id))
+                                     order_id=db_obj.id, shop_id=str(obj_in.shop_id), status=obj_in.status)
             db.commit()
             db.refresh(db_obj)
             return db_obj
@@ -114,25 +133,29 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
             db_obj: Orders,
             obj_in: schemas.OrderUpdate
     ) -> Orders:
-        old_status = db_obj.status
-        new_status = obj_in.status
-        obj_data = jsonable_encoder(db_obj)
-        update_data = obj_in.dict(exclude_unset=True)
-        for field in obj_data:
-            if field in update_data:
-                setattr(db_obj, field, update_data[field])
-        for order_product in obj_in.products:
-            if isinstance(order_product, schemas.OrdersProductsRelationUpdate):
-                order_product_obj = crud.order_product.get(db=db, id=order_product.id)
-                update_order_product(db=db, order_product=order_product, db_obj=order_product_obj,
-                                     old_status=old_status, new_status=new_status)
-            else:
-                create_order_product(db=db, order_product=order_product,
-                                     order_id=db_obj.id, shop_id=str(obj_in.shop_id), status=new_status)
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        try:
+            old_status = db_obj.status
+            new_status = obj_in.status
+            obj_data = jsonable_encoder(db_obj)
+            update_data = obj_in.dict(exclude_unset=True)
+            for field in obj_data:
+                if field in update_data:
+                    setattr(db_obj, field, update_data[field])
+            for order_product in obj_in.products:
+                if isinstance(order_product, schemas.OrdersProductsRelationUpdate):
+                    order_product_obj = crud.order_product.get(db=db, id=order_product.id)
+                    update_order_product(db=db, order_product=order_product, db_obj=order_product_obj,
+                                         old_status=old_status, new_status=new_status, shop_id=str(obj_in.shop_id))
+                else:
+                    create_order_product(db=db, order_product=order_product,
+                                         order_id=db_obj.id, shop_id=str(obj_in.shop_id), status=new_status)
+            db.add(db_obj)
+            db.commit()
+            db.refresh(db_obj)
+            return db_obj
+        except Exception:
+            db.rollback()
+            raise
 
 
 order = CRUDOrder(Orders)

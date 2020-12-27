@@ -36,6 +36,7 @@ def create_order(
     order = crud.order.create(db=db, obj_in=order_in)
     return order
 
+
 @router.get("/{order_id}", response_model=schemas.Order)
 def get_order_by_id(
         order_id: str,
@@ -46,4 +47,32 @@ def get_order_by_id(
     Get a specific order by id.
     """
     order = crud.order.get(db, id=order_id)
+    return order
+
+
+@router.put("/{order_id}", response_model=schemas.Order)
+def update_user(
+        *,
+        db: Session = Depends(deps.get_db),
+        order_id: str,
+        order_in: schemas.OrderUpdate,
+        current_user: models.User = Depends(deps.get_current_active_admin_user),
+) -> Any:
+    """
+    Update an order.
+    """
+    order = crud.order.get(db, id=order_id)
+    order = crud.order.update(db, db_obj=order, obj_in=order_in)
+    return order
+
+
+@router.delete("/{order_id}", response_model=schemas.Order)
+def delete_user(order_id: str,
+                db: Session = Depends(deps.get_db),
+                current_user: models.User = Depends(deps.get_current_active_admin_user)
+                ) -> None:
+    """
+    Delete order.
+    """
+    order = crud.user.remove(db, id=order_id)
     return order
