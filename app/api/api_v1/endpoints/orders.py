@@ -35,3 +35,15 @@ def create_order(
     """
     order = crud.order.create(db=db, obj_in=order_in)
     return order
+
+@router.get("/{order_id}", response_model=schemas.Order)
+def get_order_by_id(
+        order_id: str,
+        current_user: models.User = Depends(deps.get_current_active_user),
+        db: Session = Depends(deps.get_db),
+) -> Any:
+    """
+    Get a specific order by id.
+    """
+    order = crud.order.get(db, id=order_id)
+    return order

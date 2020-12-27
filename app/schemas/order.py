@@ -43,6 +43,7 @@ class OrdersProductsRelationCreate(OrdersProductsRelationBase):
 
 class OrdersProductsRelationUpdate(OrdersProductsRelationBase):
     id: str
+    raw: Optional[List[Union[OrdersProductsRawRelationUpdate, OrdersProductsRawRelationCreate]]] = []
 
 
 class OrdersProductsRelationInDBBase(OrdersProductsRelationBase):
@@ -64,7 +65,6 @@ class OrderBase(BaseModel):
     make_by_id: Optional[Union[UUID, str]] = None
     shop_id: Union[UUID, str]
     client_id: Optional[Union[UUID, str]] = None
-    client: Optional[ClientCreate] = None
     delivery: bool
     courier_id: Optional[Union[UUID, str]] = None
     total_cost: float
@@ -80,11 +80,13 @@ class OrderBase(BaseModel):
 
 
 class OrderCreate(OrderBase):
+    client: Optional[ClientCreate] = None
     products: Optional[List[OrdersProductsRelationCreate]] = []
 
 
 class OrderUpdate(OrderBase):
     id: str
+    products: Optional[List[Union[OrdersProductsRelationUpdate, OrdersProductsRelationCreate]]] = []
 
 
 class OrderInDBBase(OrderBase):
