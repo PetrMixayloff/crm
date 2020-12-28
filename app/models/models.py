@@ -183,6 +183,25 @@ class InvoiceRecord(Base):
     quantity = Column(Float, default=0, comment='Количество')
 
 
+class Cancelation(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    number = Column(String(255), comment='Номер')
+    date = Column(DateTime, comment='Дата')
+    supplier = Column(String(255), comment='Поставщик')
+    remark = Column(String(255), comment='Примечание')
+    payment_method = Column(String(255), comment='Способ оплаты')
+    records = relationship('CancelationRecord', back_populates="cancelation", cascade="all, delete-orphan")
+
+
+class CancelationRecord(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    cancelation_id = Column(UUID(as_uuid=True), ForeignKey('cancelation.id'), nullable=False, comment='Списание')
+    cancelation = relationship("Cancelation", back_populates="records")
+    rawremainsdetail_id = Column(UUID(as_uuid=True), ForeignKey('rawremainsdetail.id'),
+                                 nullable=False, comment='Id сырья в остатках')
+    quantity = Column(Float, default=not 0, comment='Количество')
+
+
 class BlacklistToken(Base):
     """
     Token Model for storing JWT tokens

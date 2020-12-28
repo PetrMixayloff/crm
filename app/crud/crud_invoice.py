@@ -22,9 +22,10 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
             invoice_records['invoice_id'] = db_obj.id
             invoice_records_obj = InvoiceRecord(**invoice_records)  # type: ignore
             db.add(invoice_records_obj)
-            raw_remains_detail_obj = RawRemainsDetail(**invoice_records)  # type: ignore
-            db.add(raw_remains_detail_obj)
-            db.commit()
+            if invoice_records['quantity'] > 0:
+                raw_remains_detail_obj = RawRemainsDetail(**invoice_records)  # type: ignore
+                db.add(raw_remains_detail_obj)
+                db.commit()
         db.refresh(db_obj)
         return db_obj
 
