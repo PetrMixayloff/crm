@@ -3,7 +3,7 @@ from uuid import uuid4, UUID
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
-from app.models.models import Orders, OrdersProductsRelation, OrdersProductsRawRelation
+from app.models.models import Orders, OrdersProductsRelation, OrdersProductsRawRelation, RawRemainsDetail
 from app import schemas
 from app import crud
 from enum import Enum
@@ -42,7 +42,7 @@ def create_order_product(db: Session, order_product: schemas.OrdersProductsRelat
 
 
 def create_order_product_raw(db: Session, order_product_raw: schemas.OrdersProductsRawRelationCreate,
-                             order_product_id: UUID, shop_id: str, quantity: int, status: str):
+                             order_product_id: UUID, shop_id: str, quantity: float, status: str):
     order_product_raw.order_product_id = order_product_id
     order_product_raw_in_data = jsonable_encoder(order_product_raw)
     order_product_raw_obj = OrdersProductsRawRelation(**order_product_raw_in_data)
@@ -58,21 +58,7 @@ def create_order_product_raw(db: Session, order_product_raw: schemas.OrdersProdu
                                                             ['quantity', '>', 0]])
     if len(raw_remains) > 0:
         if status != Status.new.value:
-            total_raw_quantity = reduce(lambda x, y: x + y, [remain.quantity for remain in raw_remains])
-            if total_raw_quantity < quantity:
-                for remain in raw_remains:
-                    remain.quantity = 0
-                    db.add(remain)
-            else:
-                for remain in raw_remains:
-                    if remain.quantity > quantity:
-                        remain.quantity -= quantity
-                        db.add(remain)
-                        break
-                    else:
-                        quantity -= remain.quantity
-                        remain.quantity = 0
-                        db.add(remain)
+            calc_raw_quantity(db=db, raw_remains=raw_remains, quantity=quantity)
 
 
 def update_order_product(db: Session, order_product: schemas.OrdersProductsRelationUpdate,
@@ -84,14 +70,19 @@ def update_order_product(db: Session, order_product: schemas.OrdersProductsRelat
             setattr(db_obj, field, update_data[field])
     for order_product_raw in order_product.raw:
         order_product_raw_obj = crud.order_product_raw.get(db=db, id=order_product_raw.id)
+        if order_product_raw.standard_id is None:
+            quantity = order_product.quantity * order_product_raw.quantity
+        else:
+            usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
+            quantity = order_product.quantity * order_product_raw.quantity * usage_standard.quantity
         update_order_product_raw(db=db, order_product_raw=order_product_raw,
-                                 db_obj=order_product_raw_obj, product_quantity=order_product.quantity,
+                                 db_obj=order_product_raw_obj, quantity=quantity,
                                  old_status=old_status, new_status=new_status, shop_id=shop_id)
     db.add(db_obj)
 
 
 def update_order_product_raw(db: Session, order_product_raw: schemas.OrdersProductsRawRelationUpdate,
-                             db_obj: OrdersProductsRawRelation, product_quantity: int, old_status: str,
+                             db_obj: OrdersProductsRawRelation, quantity: float, old_status: str,
                              new_status: str, shop_id: str):
     obj_data = jsonable_encoder(db_obj)
     update_data = order_product_raw.dict(exclude_unset=True)
@@ -102,27 +93,35 @@ def update_order_product_raw(db: Session, order_product_raw: schemas.OrdersProdu
     raw_remains = crud.raw_remains_detail.get_multi(db=db,
                                                     shop_id=shop_id,
                                                     filter=['raw_id', '=', str(order_product_raw.raw_id)])
+    raw = crud.raw.get(db=db, id=order_product_raw.raw_id)
+    if old_status == Status.new.value and new_status in [Status.prepared.value,
+                                                         Status.completed.value,
+                                                         Status.on_delivery.value] or old_status == Status.new.value and new_status == Status.canceled.value:
+        raw.reserved -= quantity
+        db.add(raw)
     if len(raw_remains) > 0:
-        raw = crud.raw.get(db=db, id=order_product_raw.raw_id)
         if old_status == Status.new.value and new_status in [Status.prepared.value,
                                                              Status.completed.value,
                                                              Status.on_delivery.value]:
-            if order_product_raw.standard_id is None:
-                raw.reserved -= product_quantity * order_product_raw.quantity
-                db.add(raw)
-                raw_remains[0].quantity -= product_quantity * order_product_raw.quantity
+            calc_raw_quantity(db=db, raw_remains=raw_remains, quantity=quantity)
+
+
+def calc_raw_quantity(db: Session, raw_remains: List[RawRemainsDetail], quantity: float):
+    total_raw_quantity = reduce(lambda x, y: x + y, [remain.quantity for remain in raw_remains])
+    if total_raw_quantity < quantity:
+        for remain in raw_remains:
+            remain.quantity = 0
+            db.add(remain)
+    else:
+        for remain in raw_remains:
+            if remain.quantity > quantity:
+                remain.quantity -= quantity
+                db.add(remain)
+                break
             else:
-                usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
-                raw.reserved -= product_quantity * usage_standard.quantity * order_product_raw.quantity
-                raw_remains[0].quantity -= product_quantity * usage_standard.quantity * order_product_raw.quantity
-        elif old_status == Status.new.value and new_status == Status.canceled.value:
-            if order_product_raw.standard_id is None:
-                raw.reserved -= product_quantity * order_product_raw.quantity
-            else:
-                usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
-                raw.reserved -= product_quantity * usage_standard.quantity * order_product_raw.quantity
-        db.add(raw)
-        db.add(raw_remains[0])
+                quantity -= remain.quantity
+                remain.quantity = 0
+                db.add(remain)
 
 
 class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
