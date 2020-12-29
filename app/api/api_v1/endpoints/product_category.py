@@ -10,13 +10,16 @@ router = APIRouter()
 
 @router.get("/", response_model=Dict[str, Union[int, List[schemas.ProductCategory]]])
 def read_product_categories(db: Session = Depends(deps.get_db),
-                            current_user: models.User = Depends(deps.get_current_active_user)
+                            current_user: models.User = Depends(deps.get_current_active_user),
+                            skip: int = 0,
+                            take: int = 100,
+                            filter: str = None
                             ) -> Any:
     """
     Get product categories for current user.
     """
     shop_id = str(current_user.shop_id)
-    product_category = crud.product_category.get_multi(db, shop_id=shop_id)
+    product_category = crud.product_category.get_multi(db, shop_id=shop_id, skip=skip, take=take, filter=filter)
     return product_category
 
 
