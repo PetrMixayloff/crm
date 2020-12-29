@@ -47,13 +47,17 @@ def create_order_product_raw(db: Session, order_product_raw: schemas.OrdersProdu
     if len(raw_remains) > 0:
         if order_product_raw.standard_id is None:
             if status == Status.new.value:
-                raw_remains[0].reserved += product_quantity
+                raw = crud.raw.get(db=db, id=order_product_raw.raw_id)
+                raw.reserved += product_quantity
+                db.add(raw)
             else:
                 raw_remains[0].quantity -= product_quantity
         else:
             usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
             if status == Status.new.value:
-                raw_remains[0].reserved += product_quantity * usage_standard.quantity
+                raw = crud.raw.get(db=db, id=order_product_raw.raw_id)
+                raw.reserved += product_quantity * usage_standard.quantity
+                db.add(raw)
             else:
                 raw_remains[0].quantity -= product_quantity * usage_standard.quantity
         db.add(raw_remains[0])
@@ -87,22 +91,25 @@ def update_order_product_raw(db: Session, order_product_raw: schemas.OrdersProdu
                                                     shop_id=shop_id,
                                                     filter=['raw_id', '=', str(order_product_raw.raw_id)])
     if len(raw_remains) > 0:
+        raw = crud.raw.get(db=db, id=order_product_raw.raw_id)
         if old_status == Status.new.value and new_status in [Status.prepared.value,
                                                              Status.completed.value,
                                                              Status.on_delivery.value]:
             if order_product_raw.standard_id is None:
-                raw_remains[0].reserved -= product_quantity
+                raw.reserved -= product_quantity
+                db.add(raw)
                 raw_remains[0].quantity -= product_quantity
             else:
                 usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
-                raw_remains[0].reserved -= product_quantity * usage_standard.quantity
+                raw.reserved -= product_quantity * usage_standard.quantity
                 raw_remains[0].quantity -= product_quantity * usage_standard.quantity
         elif old_status == Status.new.value and new_status == Status.canceled.value:
             if order_product_raw.standard_id is None:
-                raw_remains[0].reserved -= product_quantity
+                raw.reserved -= product_quantity
             else:
                 usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
-                raw_remains[0].reserved -= product_quantity * usage_standard.quantity
+                raw.reserved -= product_quantity * usage_standard.quantity
+        db.add(raw)
         db.add(raw_remains[0])
 
 

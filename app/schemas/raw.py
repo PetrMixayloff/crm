@@ -12,6 +12,7 @@ class RawBase(BaseModel):
     shop_id: Union[UUID, str]
     unit: Optional[str] = None
     remains: Optional[List[RawRemainsDetail]] = []
+    reserved: Optional[float] = 0
     per_pack: Optional[int] = 0
     green_signal: Optional[int] = 0
     yellow_signal: Optional[int] = 0
