@@ -175,5 +175,22 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
             db.rollback()
             raise
 
+    def remove(self, db: Session, id: str) -> Orders:
+        order = super().remove(db=db, id=id)
+        if order.status == Status.new.value:
+            for order_product in order.products:
+                for order_product_raw in order_product.raw:
+                    if order_product_raw.standard_id is None:
+                        quantity = order_product.quantity * order_product_raw.quantity
+                    else:
+                        usage_standard = crud.raw_usage_standards.get(db=db, id=order_product_raw.standard_id)
+                        quantity = order_product.quantity * order_product_raw.quantity * usage_standard.quantity
+                    raw = crud.raw.get(db=db, id=order_product_raw.raw_id)
+                    raw.reserved -= quantity
+                    db.add(raw)
+            db.commit()
+        return order
+
+
 
 order = CRUDOrder(Orders)
