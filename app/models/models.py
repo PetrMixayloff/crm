@@ -189,7 +189,6 @@ class Cancelation(Base):
     date = Column(DateTime, comment='Дата')
     supplier = Column(String(255), comment='Поставщик')
     remark = Column(String(255), comment='Примечание')
-    payment_method = Column(String(255), comment='Способ оплаты')
     records = relationship('CancelationRecord', back_populates="cancelation", cascade="all, delete-orphan")
 
 
