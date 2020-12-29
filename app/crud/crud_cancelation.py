@@ -22,9 +22,11 @@ class CRUDCancelation(CRUDBase[Cancelation, schemas.CancelationCreate, schemas.C
             cancelation_records['cancelation_id'] = db_obj.id
             cancelation_records_obj = CancelationRecord(**cancelation_records)  # type: ignore
             db.add(cancelation_records_obj)
-            raw_remains_detail = crud.raw_remains_detail.get(db, id=cancelation_records_obj['id'])
-            setattr(raw_remains_detail, 'quantity', (raw_remains_detail['quantity'] - cancelation_records['quantity']))
-            db.add(raw_remains_detail)
+            db.commit()
+            raw_remains = crud.raw_remains_detail.get(db, id=cancelation_records['rawremainsdetail_id'])
+            raw_remains_data = jsonable_encoder(raw_remains)
+            setattr(raw_remains, 'quantity', raw_remains_data['quantity'] - cancelation_records['quantity'])
+            db.add(raw_remains)
             db.commit()
         db.refresh(db_obj)
         return db_obj

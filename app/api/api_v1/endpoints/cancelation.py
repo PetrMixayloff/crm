@@ -24,7 +24,7 @@ def read_cancelation_by_shop_id(*, db: Session = Depends(deps.get_db),
     return cancelation
 
 
-@router.get("/{cancelation_id}", response_model=schemas.Invoice)
+@router.get("/{cancelation_id}", response_model=schemas.Cancelation)
 def read_cancelation_by_id(*, db: Session = Depends(deps.get_db),
                            current_user: models.User = Depends(deps.get_current_active_user),
                            cancelation_id: str) -> Any:
@@ -46,23 +46,7 @@ def create_cancelation(*, db: Session = Depends(deps.get_db),
     return cancelation
 
 
-@router.put("/{cancelation_id}", response_model=schemas.Cancelation)
-def update_cancelation(*, db: Session = Depends(deps.get_db),
-                       current_user: models.User = Depends(deps.get_current_active_user),
-                       cancelation_record_update: List[schemas.CancelationRecordUpdate],
-                       raw_remains_update: List[schemas.RawRemainsDetailUpdate],
-                       cancelation_update_in: schemas.CancelationUpdate) -> Any:
-    """
-    Update cancelation.
-    """
-    cancelation = crud.cancelation.get(db, id=cancelation_update_in.id)
-    cancelation = crud.cancelation.update_cancelation(db, obj_in=cancelation_update_in, db_obj=cancelation,
-                                                      invoice_record_update=cancelation_record_update,
-                                                      raw_remains_update=raw_remains_update)
-    return cancelation
-
-
-@router.delete("/{cancelation_id}", response_model=schemas.Invoice)
+@router.delete("/{cancelation_id}", response_model=schemas.Cancelation)
 def delete_cancelation(*, db: Session = Depends(deps.get_db),
                        current_user: models.User = Depends(deps.get_current_active_user),
                        cancelation_id: str) -> Any:
