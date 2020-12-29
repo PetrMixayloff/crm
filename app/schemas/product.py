@@ -1,7 +1,7 @@
 from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
-from .product_raw_relation import ProductRawRelation
+from .product_raw_relation import ProductRawRelation, ProductRawRelationCreate, ProductRawRelationUpdate
 
 
 # Shared properties
@@ -11,20 +11,20 @@ class ProductBase(BaseModel):
     name: str
     is_active: Optional[bool] = True
     description: Optional[str] = None
-    url: Optional[str] = None
     price: Optional[float] = 0
     old_price: Optional[float] = 0
     show_on_store: Optional[bool] = True
-    images: Optional[List[str]] = []
+    image: Optional[str] = None
 
 
 # Properties to receive via API on creation
 class ProductCreate(ProductBase):
-    pass
+    raw: Optional[List[ProductRawRelationCreate]] = []
 
 
 class ProductUpdate(ProductBase):
     id: str
+    raw: Optional[List[Union[ProductRawRelationUpdate, ProductRawRelationCreate]]] = []
 
 
 # Properties to receive via API on update

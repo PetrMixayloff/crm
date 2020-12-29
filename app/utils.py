@@ -4,7 +4,7 @@ import boto3
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional
-from botocore.exceptions import NoCredentialsError
+from botocore.exceptions import NoCredentialsError, ClientError
 
 import emails
 from emails.template import JinjaTemplate
@@ -13,12 +13,18 @@ from jose import jwt
 
 from app.core.config import settings
 
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.AWS_ACCESS_SECRET_KEY
+)
+
 
 def send_email(
-    email_to: str,
-    subject_template: str = "",
-    html_template: str = "",
-    environment: Dict[str, Any] = {},
+        email_to: str,
+        subject_template: str = "",
+        html_template: str = "",
+        environment: Dict[str, Any] = {},
 ) -> None:
     assert settings.EMAILS_ENABLED, "no provided configuration for email variables"
     message = emails.Message(
@@ -119,28 +125,38 @@ def save_upload_file(upload_file: UploadFile, destination: str) -> None:
 
 
 def init_s3():
-    return boto3.resource(
+    return boto3.client(
         's3',
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_ACCESS_SECRET_KEY
     )
 
 
-def upload_image_to_aws(upload_file: UploadFile, file_name: str, s3=Depends(init_s3)):
+def upload_image_to_aws(upload_file: UploadFile, file_name: str):
     try:
-        s3.Bucket(settings.AWS_BUCKET_NAME).put_object(Key=file_name, Body=upload_file.file, ACL='public-read')
+        response = s3_client.put_object(Key=file_name, Bucket=settings.AWS_BUCKET_NAME,
+                                        Body=upload_file.file, ACL='public-read')
         print("Upload Successful")
         return True
-    except NoCredentialsError:
-        print("Credentials not available")
+    except ClientError:
         return False
 
 
-def delete_image_from_aws(file_name: str, s3=Depends(init_s3)):
+def get_presigned_url(file_name: str, file_type: str):
     try:
-        s3.Bucket(settings.AWS_BUCKET_NAME).delete_object(Key=file_name)
-        return True
-    except NoCredentialsError:
-        print("Credentials not available")
-        return False
+        response = s3_client.generate_presigned_url('put_object', Params={'Bucket': settings.AWS_BUCKET_NAME,
+                                                                          "Key": file_name,
+                                                                          "ContentType": file_type,
+                                                                          "ACL": 'public-read'},
+                                                    ExpiresIn=60)
+        return response
+    except ClientError:
+        raise
 
+
+def delete_image_from_aws(file_name: str):
+    try:
+        s3_client.delete_object(Key=file_name, Bucket=settings.AWS_BUCKET_NAME)
+        return True
+    except ClientError:
+        return False

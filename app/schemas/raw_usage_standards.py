@@ -4,31 +4,31 @@ from uuid import UUID
 
 
 # Shared properties
-class RawRemainsDetailBase(BaseModel):
+class RawUsageStandardsBase(BaseModel):
     shop_id: Union[UUID, str]
-    invoice_id: Optional[Union[UUID, str]]
-    raw_id: Union[UUID, str]
-    price: Optional[float] = 0
+    name: Optional[str]
     quantity: Optional[float] = 0
 
 
 # Properties to receive via API on creation
-class RawRemainsDetailCreate(RawRemainsDetailBase):
-    pass
+class RawUsageStandardsCreate(RawUsageStandardsBase):
+    raw_id: str
 
 
-class RawRemainsDetailUpdate(RawRemainsDetailBase):
+class RawUsageStandardsUpdate(RawUsageStandardsBase):
+    raw_id: str
     id: str
 
 
 # Properties to receive via API on update
-class RawRemainsDetailInDBBase(RawRemainsDetailBase):
+class RawUsageStandardsInDBBase(RawUsageStandardsBase):
     id: UUID
+    raw_id: UUID
 
     class Config:
         orm_mode = True
 
 
 # Additional properties to return via API
-class RawRemainsDetail(RawRemainsDetailInDBBase):
+class RawUsageStandards(RawUsageStandardsInDBBase):
     pass

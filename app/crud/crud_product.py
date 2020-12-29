@@ -6,14 +6,15 @@ from app.crud.base import CRUDBase
 from app.models.models import Product, ProductRawRelation
 from app import schemas
 from app import crud
+from app.schemas import ProductRawRelationUpdate
 
 
 class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate]):
 
-    def create_product(self, db: Session, *, obj_in: schemas.ProductCreate,
-                       raws: List[schemas.ProductRawRelationCreate]) -> Product:
+    def create_product(self, db: Session, *, obj_in: schemas.ProductCreate) -> Product:
 
-        obj_in_data = jsonable_encoder(obj_in)
+        raws = obj_in.raw
+        obj_in_data = jsonable_encoder(obj_in, exclude={'raw'})
         obj_in_data['id'] = uuid4()
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
@@ -27,10 +28,7 @@ class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate
         return db_obj
 
     def update_product(self, db: Session, *, db_obj: Product,
-                       obj_in: schemas.ProductUpdate,
-                       raw_relation_create: List[schemas.ProductRawRelationCreate] = [],
-                       raw_relation_update: List[schemas.ProductRawRelationUpdate] = [],
-                       raw_relation_delete: List[schemas.ProductRawRelation] = []
+                       obj_in: schemas.ProductUpdate
                        ) -> Product:
         obj_data = jsonable_encoder(db_obj)
         update_data = obj_in.dict(exclude_unset=True)
@@ -38,19 +36,17 @@ class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
 
-        for raw in raw_relation_create:
-            raw.product_id = update_data['id']
-            raw_in_data = jsonable_encoder(raw)
-            raw_obj = ProductRawRelation(**raw_in_data)
-            db.add(raw_obj)
-
-        for raw in raw_relation_update:
-            product_raw_relation = crud.product_raw_relation.get(db, id=raw.id)
-            setattr(product_raw_relation, 'quantity', raw.quantity)
-            setattr(product_raw_relation, 'raw_id', raw.raw_id)
-
-        for raw in raw_relation_delete:
-            crud.product_raw_relation.remove(db, id=raw.id)
+        for raw in obj_in.raw:
+            if isinstance(raw, ProductRawRelationUpdate):
+                product_raw_relation = crud.product_raw_relation.get(db, id=raw.id)
+                setattr(product_raw_relation, 'quantity', raw.quantity)
+                setattr(product_raw_relation, 'raw_id', raw.raw_id)
+                setattr(product_raw_relation, 'standard_id', raw.standard_id)
+            else:
+                raw.product_id = update_data['id']
+                raw_in_data = jsonable_encoder(raw)
+                raw_obj = ProductRawRelation(**raw_in_data)
+                db.add(raw_obj)
 
         db.add(db_obj)
         db.commit()

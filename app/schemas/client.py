@@ -15,7 +15,7 @@ class ClientBase(BaseModel):
             raise ValueError('Not valid phone number')
         return v.title()
     name: str
-    address: Optional[str]
+    address: Optional[str] = None
     discount: Optional[str] = None
     comment: Optional[str] = None
 

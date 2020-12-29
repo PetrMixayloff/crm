@@ -2,37 +2,36 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
-from .invoice_record import InvoiceRecord, InvoiceRecordCreate
+from .cancelation_record import CancelationRecord, CancelationRecordCreate
 
 
 # Shared properties
-class InvoiceBase(BaseModel):
+class CancelationBase(BaseModel):
     shop_id: Union[UUID, str]
     number: str
     date: datetime = datetime.utcnow()
     supplier: Optional[str]
     remark: Optional[str]
-    payment_method: Optional[str] = "Наличные"
 
 
 # Properties to receive via API on creation
-class InvoiceCreate(InvoiceBase):
-    records: Optional[List[InvoiceRecordCreate]] = []
+class CancelationCreate(CancelationBase):
+    records: Optional[List[CancelationRecordCreate]] = []
 
 
-class InvoiceUpdate(InvoiceBase):
+class CancelationUpdate(CancelationBase):
     id: str
 
 
 # Properties to receive via API on update
-class InvoiceInDBBase(InvoiceBase):
+class CancelationInDBBase(CancelationBase):
     id: UUID
-    records: Optional[List[InvoiceRecord]] = []
+    records: Optional[List[CancelationRecord]] = []
 
     class Config:
         orm_mode = True
 
 
 # Additional properties to return via API
-class Invoice(InvoiceInDBBase):
+class Cancelation(CancelationInDBBase):
     pass
