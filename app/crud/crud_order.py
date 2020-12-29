@@ -176,7 +176,7 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
             raise
 
     def remove(self, db: Session, id: str) -> Orders:
-        order = super().remove(db=db, id=id)
+        order = db.query(self.model).get(id)
         if order.status == Status.new.value:
             for order_product in order.products:
                 for order_product_raw in order_product.raw:
@@ -188,9 +188,9 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
                     raw = crud.raw.get(db=db, id=order_product_raw.raw_id)
                     raw.reserved -= quantity
                     db.add(raw)
-            db.commit()
+        db.delete(order)
+        db.commit()
         return order
-
 
 
 order = CRUDOrder(Orders)
