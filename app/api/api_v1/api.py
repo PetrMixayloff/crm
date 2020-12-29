@@ -3,13 +3,14 @@ from app.api import deps
 from fastapi import APIRouter, Depends
 
 from app.api.api_v1.endpoints import login, users, shop, product, product_category, raw, \
-    raw_category, files, clients, invoice, rawusagestandards, inventory, inventory_record, \
+    raw_category, files, clients, invoice, rawusagestandards, inventory, inventory_record, orders, \
     cancelation
 from app.models import models
 
 api_router = APIRouter()
 api_router.include_router(login.router, tags=["login"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
+api_router.include_router(orders.router, prefix="/orders", tags=["orders"])
 api_router.include_router(shop.router, prefix="/shop", tags=["shop"])
 api_router.include_router(product.router, prefix="/product", tags=["product"])
 api_router.include_router(product_category.router, prefix="/product_category", tags=["product_category"])
