@@ -2,11 +2,11 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
-from .cancelation_record import CancelationRecord, CancelationRecordCreate
+from .cancellation_record import CancellationRecord, CancellationRecordCreate
 
 
 # Shared properties
-class CancelationBase(BaseModel):
+class CancellationBase(BaseModel):
     shop_id: Union[UUID, str]
     number: str
     date: datetime = datetime.utcnow()
@@ -15,23 +15,23 @@ class CancelationBase(BaseModel):
 
 
 # Properties to receive via API on creation
-class CancelationCreate(CancelationBase):
-    records: Optional[List[CancelationRecordCreate]] = []
+class CancellationCreate(CancellationBase):
+    records: Optional[List[CancellationRecordCreate]] = []
 
 
-class CancelationUpdate(CancelationBase):
+class CancellationUpdate(CancellationBase):
     id: str
 
 
 # Properties to receive via API on update
-class CancelationInDBBase(CancelationBase):
+class CancellationInDBBase(CancellationBase):
     id: UUID
-    records: Optional[List[CancelationRecord]] = []
+    records: Optional[List[CancellationRecord]] = []
 
     class Config:
         orm_mode = True
 
 
 # Additional properties to return via API
-class Cancelation(CancelationInDBBase):
+class Cancellation(CancellationInDBBase):
     pass

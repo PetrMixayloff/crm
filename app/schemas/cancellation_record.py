@@ -4,24 +4,24 @@ from uuid import UUID
 
 
 # Shared properties
-class CancelationRecordBase(BaseModel):
+class CancellationRecordBase(BaseModel):
     shop_id: Union[UUID, str]
-    cancelation_id: Optional[Union[UUID, str]]
+    cancellation_id: Optional[Union[UUID, str]]
     rawremainsdetail_id: Union[UUID, str]
     quantity: Optional[float] = 0
 
 
 # Properties to receive via API on creation
-class CancelationRecordCreate(CancelationRecordBase):
+class CancellationRecordCreate(CancellationRecordBase):
     pass
 
 
-class CancelationRecordUpdate(CancelationRecordBase):
+class CancellationRecordUpdate(CancellationRecordBase):
     id: str
 
 
 # Properties to receive via API on update
-class CancelationRecordInDBBase(CancelationRecordBase):
+class CancellationRecordInDBBase(CancellationRecordBase):
     id: UUID
 
     class Config:
@@ -29,5 +29,5 @@ class CancelationRecordInDBBase(CancelationRecordBase):
 
 
 # Additional properties to return via API
-class CancelationRecord(CancelationRecordInDBBase):
+class CancellationRecord(CancellationRecordInDBBase):
     pass
