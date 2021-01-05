@@ -211,6 +211,7 @@ class CancellationRecord(Base):
     rawremainsdetail_id = Column(UUID(as_uuid=True), ForeignKey('rawremainsdetail.id'),
                                  nullable=False, comment='Id сырья в остатках')
     quantity = Column(Float, default=not 0, comment='Количество')
+    raw_remains_detail = relationship('RawRemainsDetail')
 
 
 class BlacklistToken(Base):
