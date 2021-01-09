@@ -11,7 +11,6 @@ class RawBase(BaseModel):
     category_id: Union[UUID, str]
     shop_id: Union[UUID, str]
     unit: Optional[str] = None
-    remains: Optional[List[RawRemainsDetail]] = []
     reserved: Optional[float] = 0
     per_pack: Optional[int] = 0
     green_signal: Optional[int] = 0
@@ -34,6 +33,7 @@ class RawUpdate(RawBase):
 class RawInDBBase(RawBase):
     id: UUID
     standards: Optional[List[RawUsageStandards]] = []
+    remains: Optional[List[RawRemainsDetail]] = []
 
     class Config:
         orm_mode = True

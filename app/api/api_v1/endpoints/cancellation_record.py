@@ -32,7 +32,6 @@ def create_cancellation_record(*, db: Session = Depends(deps.get_db),
     """
     Create new cancellation record.
     """
-    cancellation_record = crud.cancellation_record.create_cancellation_record(db, obj_in=cancellation_in,
-                                                                              raw_remains_update=raw_remains_update
-                                                                              )
+    cancellation_record = crud.cancellation_record.create(db, obj_in=cancellation_in,
+                                                          raw_remains_update=raw_remains_update)
     return cancellation_record

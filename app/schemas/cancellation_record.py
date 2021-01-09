@@ -10,7 +10,6 @@ class CancellationRecordBase(BaseModel):
     cancellation_id: Optional[Union[UUID, str]]
     rawremainsdetail_id: Union[UUID, str]
     quantity: Optional[float] = 0
-    raw_remains_detail: Optional[List[RawRemainsDetail]] = []
 
 
 # Properties to receive via API on creation
@@ -25,6 +24,7 @@ class CancellationRecordUpdate(CancellationRecordBase):
 # Properties to receive via API on update
 class CancellationRecordInDBBase(CancellationRecordBase):
     id: UUID
+    raw_remains_detail: Optional[RawRemainsDetail] = []
 
     class Config:
         orm_mode = True
