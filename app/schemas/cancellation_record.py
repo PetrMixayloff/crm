@@ -1,6 +1,7 @@
-from typing import Optional, Union
+from typing import Optional, Union, List
 from pydantic import BaseModel
 from uuid import UUID
+from .raw_remains_detail import RawRemainsDetail
 
 
 # Shared properties
@@ -9,6 +10,7 @@ class CancellationRecordBase(BaseModel):
     cancellation_id: Optional[Union[UUID, str]]
     rawremainsdetail_id: Union[UUID, str]
     quantity: Optional[float] = 0
+    raw_remains_detail: Optional[List[RawRemainsDetail]] = []
 
 
 # Properties to receive via API on creation

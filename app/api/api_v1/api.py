@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.api_v1.endpoints import login, users, shop, product, product_category, raw, \
     raw_category, files, clients, invoice, rawusagestandards, inventory, inventory_record, orders, \
-    cancellation
+    cancellation, cancellation_record
 from app.models import models
 
 api_router = APIRouter()
@@ -23,6 +23,7 @@ api_router.include_router(inventory.router, prefix="/inventory", tags=["inventor
 api_router.include_router(inventory_record.router, prefix="/inventory_record", tags=["inventory_record"])
 api_router.include_router(rawusagestandards.router, prefix="/rawusagestandards", tags=["rawusagestandards"])
 api_router.include_router(cancellation.router, prefix="/cancellation", tags=["cancellation"])
+api_router.include_router(cancellation_record.router, prefix="/cancellation_record", tags=["cancellation_record"])
 
 
 @api_router.get("/meta")
