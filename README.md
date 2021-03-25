@@ -26,6 +26,6 @@ Run server `python3 server.py`
 
 To see docs open in browser http://127.0.0.1:8000/docs
 
-Create migration `alembic revision --autogenerate -m 'some commit'`
+Create migration `alembic revision --autogenerate -m 'some commit text'`
 
 DB upgrade `alembic upgrade head`
