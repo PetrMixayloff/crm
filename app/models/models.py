@@ -32,6 +32,7 @@ class Orders(Base):
     status = Column(String(255), comment='Статус')
     date_created = Column(DateTime, default=datetime.datetime.now, comment='Дата поступления')
     date_of_order = Column(DateTime, nullable=False, comment='Дата заказа')
+    remark = Column(String(255), comment='Примечание к заказу')
 
 
 class OrdersProductsRelation(Base):
@@ -66,7 +67,6 @@ class Address(Base):
     entrance = Column(String(255), comment='Подъезд')
     floor = Column(String(255), comment='Этаж')
     flat = Column(String(255), comment='Кв/офис')
-
 
 
 class User(Base):
