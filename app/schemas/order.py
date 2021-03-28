@@ -35,6 +35,7 @@ class OrdersProductsRelationBase(BaseModel):
     product_id: Union[UUID, str]
     order_id: Optional[Union[UUID, str]] = None
     quantity: int
+    price: float
 
 
 class OrdersProductsRelationCreate(OrdersProductsRelationBase):

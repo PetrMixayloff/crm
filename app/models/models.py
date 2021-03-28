@@ -38,6 +38,7 @@ class Orders(Base):
 class OrdersProductsRelation(Base):
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id', ondelete="CASCADE"))
     order_id = Column(UUID(as_uuid=True), ForeignKey('orders.id'))
+    price = Column(Float, nullable=False, comment='Цена')
     quantity = Column(Integer, nullable=False)
     raw = relationship('OrdersProductsRawRelation', cascade="all, delete-orphan")
 
