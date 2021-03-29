@@ -33,6 +33,7 @@ def create_order(
     """
     Create new order.
     """
+    order_in.created_by_id = current_user.id
     order = crud.order.create(db=db, obj_in=order_in)
     return order
 

@@ -9,11 +9,11 @@ class ClientBase(BaseModel):
     shop_id: Union[UUID, str]
     phone: str
 
-    @validator('phone')
-    def valid_phone(cls, v):
-        if re.match(r'(\+)(7)(9)(\d{9})', v) is None:
-            raise ValueError('Not valid phone number')
-        return v.title()
+    # @validator('phone')
+    # def valid_phone(cls, v):
+    #     if re.match(r'(\+)(7)(9)(\d{9})', v) is None:
+    #         raise ValueError('Not valid phone number')
+    #     return v.title()
     name: str
     address: Optional[str] = None
     discount: Optional[str] = None

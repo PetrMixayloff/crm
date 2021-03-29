@@ -8,7 +8,7 @@ from .client import ClientCreate
 class OrdersProductsRawRelationBase(BaseModel):
     order_product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
-    standard_id: Union[UUID, str]
+    standard_id: Optional[Union[UUID, str]] = None
     quantity: int
 
 
@@ -62,7 +62,6 @@ class OrdersProductsRelation(OrdersProductsRelationInDBBase):
 # Shared properties
 class OrderBase(BaseModel):
     order_number: Optional[int] = None
-    created_by_id: Union[UUID, str]
     make_by_id: Optional[Union[UUID, str]] = None
     shop_id: Union[UUID, str]
     client_id: Optional[Union[UUID, str]] = None
@@ -72,7 +71,7 @@ class OrderBase(BaseModel):
     prepay: Optional[float] = 0
     prepay_type: str
     amount: float
-    amount_type: str
+    amount_type: Optional[str] = None
     discount: Optional[float] = 0
     rating: Optional[int] = None
     status: str
@@ -81,17 +80,20 @@ class OrderBase(BaseModel):
 
 
 class OrderCreate(OrderBase):
+    created_by_id: Optional[UUID] = None
     client: Optional[ClientCreate] = None
     products: Optional[List[OrdersProductsRelationCreate]] = []
 
 
 class OrderUpdate(OrderBase):
     id: str
+    created_by_id: str
     products: Optional[List[Union[OrdersProductsRelationUpdate, OrdersProductsRelationCreate]]] = []
 
 
 class OrderInDBBase(OrderBase):
     id: UUID
+    created_by_id: UUID
     products: List[OrdersProductsRelation]
 
     class Config:
