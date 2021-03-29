@@ -23,6 +23,19 @@ def read_clients(
     return clients
 
 
+@router.post("/", response_model=schemas.Client)
+def create_client(*,
+                  db: Session = Depends(deps.get_db),
+                  current_user: models.User = Depends(deps.get_current_active_user),
+                  client_in: schemas.ClientCreate
+                  ) -> Any:
+    """
+    Create new product.
+    """
+    client = crud.client.create(db, obj_in=client_in)
+    return client
+
+
 @router.get("/{client_id}", response_model=schemas.Client)
 def read_client_by_id(
         db: Session = Depends(deps.get_db),
@@ -33,4 +46,17 @@ def read_client_by_id(
     Get client by id.
     """
     client = crud.client.get(db, id=client_id)
+    return client
+
+
+@router.put("/{client_id}", response_model=schemas.Client)
+def update_client(*, db: Session = Depends(deps.get_db),
+                   current_user: models.User = Depends(deps.get_current_active_user),
+                   client_update_in: schemas.ClientUpdate
+                   ) -> Any:
+    """
+    Update product.
+    """
+    client = crud.client.get(db, id=client_update_in.id)
+    client = crud.client.update(db, obj_in=client_update_in, db_obj=client)
     return client

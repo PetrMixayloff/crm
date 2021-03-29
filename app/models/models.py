@@ -56,7 +56,8 @@ class Client(Base):
     name = Column(String(255), comment='Имя')
     sex = Column(String(255), comment='Пол')
     age = Column(Integer, comment='Возраст')
-    address = Column(UUID(as_uuid=True), ForeignKey('address.id'))
+    address_id = Column(UUID(as_uuid=True), ForeignKey('address.id'))
+    address = relationship('Address', back_populates="client", cascade="all, delete-orphan")
     orders = relationship("Orders")
     discount_card = Column(String(255), comment='Дисконтная карта')
     comment = Column(String(255), comment='Примечание')
@@ -68,6 +69,7 @@ class Address(Base):
     entrance = Column(String(255), comment='Подъезд')
     floor = Column(String(255), comment='Этаж')
     flat = Column(String(255), comment='Кв/офис')
+    client = relationship("Client", uselist=False, back_populates="address")
 
 
 class User(Base):
