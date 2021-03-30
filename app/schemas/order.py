@@ -2,7 +2,7 @@ from typing import Optional, List, Union
 import datetime
 from pydantic import BaseModel
 from uuid import UUID
-from .client import ClientCreate
+from .client import ClientCreate, ClientUpdate, Client
 
 
 class OrdersProductsRawRelationBase(BaseModel):
@@ -64,7 +64,6 @@ class OrderBase(BaseModel):
     order_number: Optional[int] = None
     make_by_id: Optional[Union[UUID, str]] = None
     shop_id: Union[UUID, str]
-    client_id: Optional[Union[UUID, str]] = None
     delivery: bool
     courier_id: Optional[Union[UUID, str]] = None
     total_cost: float
@@ -88,12 +87,14 @@ class OrderCreate(OrderBase):
 class OrderUpdate(OrderBase):
     id: str
     created_by_id: str
+    client: Optional[ClientUpdate] = None
     products: Optional[List[Union[OrdersProductsRelationUpdate, OrdersProductsRelationCreate]]] = []
 
 
 class OrderInDBBase(OrderBase):
     id: UUID
     created_by_id: UUID
+    client: Optional[Client] = None
     products: List[OrdersProductsRelation]
 
     class Config:

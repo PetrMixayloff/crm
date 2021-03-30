@@ -1,11 +1,10 @@
 from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
-from .order import Order
 
 
 class Address(BaseModel):
-    id: Optional[str, UUID] = None
+    id: Optional[Union[str, UUID]] = None
     street: Optional[str] = None
     house: Optional[str] = None
     entrance: Optional[str] = None
@@ -21,7 +20,7 @@ class ClientBase(BaseModel):
     sex: Optional[str] = None
     age: Optional[str] = None
     address: Optional[Address] = None
-    address_id: Optional[str, UUID] = None
+    address_id: Optional[Union[str, UUID]] = None
     discount_card: Optional[str] = None
     comment: Optional[str] = None
 
@@ -38,7 +37,6 @@ class ClientUpdate(ClientBase):
 # Properties to receive via API on update
 class ClientInDBBase(ClientBase):
     id: UUID
-    orders: Optional[List[Order]] = []
 
     class Config:
         orm_mode = True
