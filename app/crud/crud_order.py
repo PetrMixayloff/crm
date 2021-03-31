@@ -129,8 +129,11 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
     def create(self, db: Session, *, obj_in: schemas.OrderCreate) -> Orders:
         try:
             if obj_in.client_id is None:
-                client = crud.client.create(db, obj_in.client)
+                client = crud.client.create(db=db, obj_in=obj_in.client)
                 obj_in.client_id = client.id
+            else:
+                crud.client.update_client(client_id=obj_in.client_id, obj_in=obj_in)
+
             obj_in_data = jsonable_encoder(obj_in, exclude={'products', 'client'})
             db_obj = self.model(**obj_in_data)  # type: ignore
             db_obj.id = uuid4()

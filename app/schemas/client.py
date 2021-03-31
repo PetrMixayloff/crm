@@ -20,7 +20,6 @@ class ClientBase(BaseModel):
     sex: Optional[str] = None
     age: Optional[str] = None
     address: Optional[Address] = None
-    address_id: Optional[Union[str, UUID]] = None
     discount_card: Optional[str] = None
     comment: Optional[str] = None
 

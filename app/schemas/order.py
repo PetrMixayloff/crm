@@ -63,6 +63,7 @@ class OrdersProductsRelation(OrdersProductsRelationInDBBase):
 class OrderBase(BaseModel):
     order_number: Optional[int] = None
     make_by_id: Optional[Union[UUID, str]] = None
+    client_id: Optional[Union[UUID, str]] = None
     shop_id: Union[UUID, str]
     delivery: bool
     courier_id: Optional[Union[UUID, str]] = None

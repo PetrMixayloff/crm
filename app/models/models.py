@@ -13,6 +13,7 @@ class Orders(Base):
     make_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Выполнил')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
     client_id = Column(UUID(as_uuid=True), ForeignKey('client.id'))
+    client = relationship("Client", back_populates="orders")
     products = relationship('OrdersProductsRelation', cascade="all, delete-orphan")
     delivery = Column(Boolean, nullable=False, default=False, comment='Доставка/самовывоз')
     delivery_cost = Column(Float, comment='Стоимость доставки')
@@ -57,7 +58,7 @@ class Client(Base):
     sex = Column(String(255), comment='Пол')
     age = Column(Integer, comment='Возраст')
     address = relationship('Address', uselist=False, cascade="all, delete-orphan")
-    orders = relationship("Orders")
+    orders = relationship("Orders", back_populates="client")
     discount_card = Column(String(255), comment='Дисконтная карта')
     comment = Column(String(255), comment='Примечание')
 
