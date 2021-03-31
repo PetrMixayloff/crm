@@ -8,7 +8,8 @@ from sqlalchemy.orm import relationship
 
 
 class Orders(Base):
-    order_number = Column(Integer, autoincrement=True, unique=True, nullable=False, comment='№ заказа')
+    order_number = Column(Integer, autoincrement=True, unique=True, nullable=False,
+                          primary_key=True, comment='№ заказа')
     created_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Принял')
     make_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Выполнил')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
