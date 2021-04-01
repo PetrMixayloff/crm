@@ -1,15 +1,13 @@
 import datetime
-from uuid import uuid4
-
 from app.db.base_class import Base
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, Float, ARRAY
+from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, Float, ARRAY, Sequence
 from sqlalchemy.orm import relationship
 
 
 class Orders(Base):
-    order_number = Column(Integer, autoincrement=True, unique=True, nullable=False,
-                          primary_key=True, comment='№ заказа')
+    number_seq = Sequence('number_seq')
+    order_number = Column(Integer, nullable=False, server_default=number_seq.next_value(), comment='№ заказа')
     created_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Принял')
     make_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Выполнил')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
