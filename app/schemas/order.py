@@ -1,5 +1,5 @@
 from typing import Optional, List, Union
-import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel
 from uuid import UUID
 from .client import ClientCreate, ClientUpdate, Client
@@ -75,8 +75,13 @@ class OrderBase(BaseModel):
     discount: Optional[float] = 0
     rating: Optional[int] = None
     status: str
-    date_created: Optional[datetime.datetime] = datetime.datetime.now()
-    date_of_order: Optional[datetime.datetime]
+    date_created: Optional[datetime] = datetime.utcnow()
+    date_of_order: Optional[datetime]
+
+    class Config:
+        json_encoders = {
+            datetime: lambda dt: dt.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+        }
 
 
 class OrderCreate(OrderBase):

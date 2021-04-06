@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel, validator
@@ -14,6 +14,11 @@ class UserBase(BaseModel):
         if re.match(r'(\+)(7)(9)(\d{9})', v) is None:
             raise ValueError('Not valid phone number')
         return v.title()
+
+    class Config:
+        json_encoders = {
+            datetime: lambda dt: dt.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+        }
 
 
 class UserLogin(UserBase):

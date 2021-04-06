@@ -1,7 +1,7 @@
 from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timezone
 from .cancellation_record import CancellationRecord, CancellationRecordCreate
 
 
@@ -12,6 +12,11 @@ class CancellationBase(BaseModel):
     date: datetime = datetime.utcnow()
     supplier: Optional[str]
     remark: Optional[str]
+
+    class Config:
+        json_encoders = {
+            datetime: lambda dt: dt.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+        }
 
 
 # Properties to receive via API on creation
