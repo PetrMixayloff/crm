@@ -12,6 +12,13 @@ class Address(BaseModel):
     flat: Optional[str] = None
 
 
+class AddressInDB(Address):
+    id: UUID
+
+    class Config:
+        orm_mode = True
+
+
 # Shared properties
 class ClientBase(BaseModel):
     shop_id: Union[UUID, str]
@@ -36,6 +43,7 @@ class ClientUpdate(ClientBase):
 # Properties to receive via API on update
 class ClientInDBBase(ClientBase):
     id: UUID
+    address: Optional[AddressInDB] = None
 
     class Config:
         orm_mode = True
