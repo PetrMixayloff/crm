@@ -8,6 +8,7 @@ from .client import ClientCreate, ClientUpdate, Client
 class OrdersProductsRawRelationBase(BaseModel):
     order_product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
+    image: Optional[str] = None
     standard_id: Optional[Union[UUID, str]] = None
     quantity: int
 
@@ -34,6 +35,7 @@ class OrdersProductsRawRelation(OrdersProductsRawRelationInDBBase):
 class OrdersProductsRelationBase(BaseModel):
     product_id: Union[UUID, str]
     order_id: Optional[Union[UUID, str]] = None
+    image: Optional[str] = None
     quantity: int
     price: float
 
