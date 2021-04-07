@@ -9,6 +9,7 @@ class OrdersProductsRawRelationBase(BaseModel):
     order_product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
     image: Optional[str] = None
+    name: Optional[str] = ''
     standard_id: Optional[Union[UUID, str]] = None
     quantity: int
 
@@ -36,6 +37,7 @@ class OrdersProductsRelationBase(BaseModel):
     product_id: Union[UUID, str]
     order_id: Optional[Union[UUID, str]] = None
     image: Optional[str] = None
+    name: Optional[str] = ''
     quantity: int
     price: float
 
