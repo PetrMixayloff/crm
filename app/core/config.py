@@ -81,6 +81,11 @@ class Settings(BaseSettings):
     # EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
     FIRST_SUPERUSER: str = '+79005555555'
     FIRST_SUPERUSER_PASSWORD: str = 'super'
+
+    DEVELOP_ADMIN: str = '+79000000000'
+    DEVELOP_ADMIN_PASSWORD: str = 'admin'
+    DEVELOP_SHOP_NAME: str = 'develop shop'
+
     # USERS_OPEN_REGISTRATION: bool = False
     AWS_ACCESS_KEY_ID: str = ''
     AWS_ACCESS_SECRET_KEY: str = ''
