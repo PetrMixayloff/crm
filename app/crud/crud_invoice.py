@@ -14,10 +14,10 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
                        ) -> Invoice:
         obj_in_data = jsonable_encoder(obj_in)
         records = obj_in_data.pop('records')
-        obj_in_data['id'] = uuid4()
+        # obj_in_data['id'] = uuid4()
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
-        db.commit()
+        db.flush()
         for invoice_records in records:
             invoice_records['invoice_id'] = db_obj.id
             invoice_records_obj = InvoiceRecord(**invoice_records)  # type: ignore
@@ -25,7 +25,7 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
             if invoice_records['quantity'] > 0:
                 raw_remains_detail_obj = RawRemainsDetail(**invoice_records)  # type: ignore
                 db.add(raw_remains_detail_obj)
-                db.commit()
+        db.commit()
         db.refresh(db_obj)
         return db_obj
 

@@ -14,10 +14,10 @@ class CRUDCancellation(CRUDBase[Cancellation, schemas.CancellationCreate, schema
 
         obj_in_data = jsonable_encoder(obj_in)
         records = obj_in_data.pop('records')
-        obj_in_data['id'] = uuid4()
+        # obj_in_data['id'] = uuid4()
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
-        db.commit()
+        db.flush()
         for cancellation_records in records:
             cancellation_records['cancellation_id'] = db_obj.id
             cancellation_records_obj = CancellationRecord(**cancellation_records)  # type: ignore
@@ -27,7 +27,7 @@ class CRUDCancellation(CRUDBase[Cancellation, schemas.CancellationCreate, schema
             raw_remains_data = jsonable_encoder(raw_remains)
             setattr(raw_remains, 'quantity', raw_remains_data['quantity'] - cancellation_records['quantity'])
             db.add(raw_remains)
-            db.commit()
+        db.commit()
         db.refresh(db_obj)
         return db_obj
 

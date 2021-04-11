@@ -29,8 +29,9 @@ def create_order_product(db: Session, order_product: schemas.OrdersProductsRelat
                                                                              quantity=raw.quantity))
     order_product_in_data = jsonable_encoder(order_product, exclude={'raw'})
     order_product_obj = OrdersProductsRelation(**order_product_in_data)
-    order_product_obj.id = uuid4()
+    # order_product_obj.id = uuid4()
     db.add(order_product_obj)
+    db.flush()
     for order_product_raw in order_product.raw:
         if order_product_raw.standard_id is None:
             quantity = order_product.quantity * order_product_raw.quantity
@@ -136,8 +137,9 @@ class CRUDOrder(CRUDBase[Orders, schemas.OrderCreate, schemas.OrderUpdate]):
 
             obj_in_data = jsonable_encoder(obj_in, exclude={'products', 'client'})
             db_obj = self.model(**obj_in_data)  # type: ignore
-            db_obj.id = uuid4()
+            # db_obj.id = uuid4()
             db.add(db_obj)
+            db.flush()
             for order_product in obj_in.products:
                 create_order_product(db=db, order_product=order_product,
                                      order_id=db_obj.id, shop_id=str(obj_in.shop_id), status=obj_in.status)

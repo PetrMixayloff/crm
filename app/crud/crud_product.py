@@ -15,9 +15,10 @@ class CRUDProduct(CRUDBase[Product, schemas.ProductCreate, schemas.ProductUpdate
 
         raws = obj_in.raw
         obj_in_data = jsonable_encoder(obj_in, exclude={'raw'})
-        obj_in_data['id'] = uuid4()
+        # obj_in_data['id'] = uuid4()
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
+        db.flush()
         for raw in raws:
             raw.product_id = db_obj.id
             raw_in_data = jsonable_encoder(raw)
