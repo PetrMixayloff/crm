@@ -37,9 +37,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                                             self.model.shop_id == shop_id)
         if filter is not None:
             users = self.filter_query(users, filter)
+        total = users.count()
         users = users.offset(skip).limit(take).all()
         data = {
-            'totalCount': len(users),
+            'totalCount': total,
             'data': users
         }
         return data

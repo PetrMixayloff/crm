@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel, validator
 import re
@@ -31,8 +31,16 @@ class SuperUserCreate(UserLogin):
 
 class AdminCreate(UserLogin):
     full_name: str
-    position: str = 'Владелец'
-    is_staff: bool = False
+    position: Optional[str] = 'Владелец'
+    is_staff: Optional[bool] = False
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "full_name": "admin",
+                "password": "admin"
+            }
+        }
 
 
 # Properties to receive via API on creation
@@ -51,12 +59,12 @@ class UserUpdate(UserCreate):
 
 # Properties to receive via API on update
 class UserInDBBase(UserBase):
-    id: Optional[UUID] = None
+    id: UUID
     full_name: str
     position: str
     description: Optional[str] = None
     avatar: Optional[str] = None
-    shop_id: Optional[UUID] = None
+    shop_id: UUID
     last_login: Optional[datetime] = None
     is_superuser: Optional[bool] = False
     is_staff: Optional[bool] = True
@@ -73,3 +81,8 @@ class User(UserInDBBase):
 # Additional properties stored in DB
 class UserInDB(UserInDBBase):
     password: str
+
+
+class UsersResponse(BaseModel):
+    totalCount: int
+    data: List[User]

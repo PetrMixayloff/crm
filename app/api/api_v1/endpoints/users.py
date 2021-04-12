@@ -17,14 +17,14 @@ from uuid import uuid4
 router = APIRouter()
 
 
-@router.get("/", response_model=Dict[str, Union[int, List[schemas.User]]])
+@router.get("/", response_model=schemas.UsersResponse)
 def read_users(
         db: Session = Depends(deps.get_db),
         current_user: models.User = Depends(deps.get_current_active_user),
         skip: int = 0,
         take: int = 100,
         filter: str = None
-) -> Any:
+):
     """
     Retrieve users.
     """
@@ -38,7 +38,7 @@ def create_user(
         db: Session = Depends(deps.get_db),
         user_in: schemas.UserCreate,
         current_user: models.User = Depends(deps.get_current_active_admin_user),
-) -> Any:
+):
     """
     Create new user.
     """
@@ -60,7 +60,7 @@ def create_user(
 def read_user_me(
         db: Session = Depends(deps.get_db),
         current_user: models.User = Depends(deps.get_current_active_user),
-) -> Any:
+):
     """
     Get current user.
     """
@@ -72,7 +72,7 @@ def read_user_by_id(
         user_id: str,
         current_user: models.User = Depends(deps.get_current_active_user),
         db: Session = Depends(deps.get_db),
-) -> Any:
+):
     """
     Get a specific user by id.
     """
@@ -93,7 +93,7 @@ def update_user(
         user_id: str,
         user_in: schemas.UserUpdate,
         current_user: models.User = Depends(deps.get_current_active_admin_user),
-) -> Any:
+):
     """
     Update a user.
     """
@@ -108,7 +108,7 @@ def update_user(
 
 
 @router.post("/init_superuser")
-def create_super_user(db: Session = Depends(deps.get_db)) -> Any:
+def create_super_user(db: Session = Depends(deps.get_db)):
     """
     Create super user.
     """
@@ -131,7 +131,7 @@ def create_super_user(db: Session = Depends(deps.get_db)) -> Any:
 @router.post("/create_admin")
 def create_admin(
         user_in: schemas.AdminCreate,
-        db: Session = Depends(deps.get_db)) -> Any:
+        db: Session = Depends(deps.get_db)):
     """
     Create admin.
     """
@@ -146,11 +146,11 @@ def create_admin(
         )
 
 
-@router.delete("/{user_id}", response_model=schemas.User)
+@router.delete("/{user_id}")
 def delete_user(user_id: str,
                 db: Session = Depends(deps.get_db),
                 current_user: models.User = Depends(deps.get_current_active_admin_user)
-                ) -> None:
+                ) -> str:
     """
     Delete user.
     """
@@ -160,3 +160,4 @@ def delete_user(user_id: str,
             status_code=404,
             detail="The user does not exist in the system",
         )
+    return 'ok'

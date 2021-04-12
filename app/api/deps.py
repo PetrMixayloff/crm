@@ -22,11 +22,13 @@ reusable_oauth2 = OAuth2PasswordBearer(
 
 
 def get_db() -> Generator:
+    db = None
     try:
         db = SessionLocal()
         yield db
     finally:
-        db.close()
+        if db is not None:
+            db.close()
 
 
 def get_current_user(
