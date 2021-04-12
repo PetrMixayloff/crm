@@ -8,8 +8,6 @@ from .client import ClientCreate, ClientUpdate, Client
 class OrdersProductsRawRelationBase(BaseModel):
     order_product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
-    image: Optional[str] = None
-    name: Optional[str] = ''
     standard_id: Optional[Union[UUID, str]] = None
     quantity: int
 
