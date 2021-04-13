@@ -1,11 +1,11 @@
-from typing import Any, Dict, Optional, Union
+from typing import Optional
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-
 from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase
+from app.crud import permissions
 from app.models.models import User
-from app.schemas import UserCreate, UserUpdate
+from app.schemas import UserCreate, UserUpdate, PermissionsCreate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -14,7 +14,14 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
     def create(self, db: Session, *, obj_in: UserCreate) -> User:
         obj_in.password = get_password_hash(obj_in.password)
-        return super().create(db, obj_in=obj_in)
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data)  # type: ignore
+        db.add(db_obj)
+        db.flush()
+        user_permissions = PermissionsCreate(user_id=db_obj.id)
+        permissions.create(db=db, obj_in=user_permissions)
+        db.refresh(db_obj)
+        return db_obj
 
     def update(
         self, db: Session, *, db_obj: User, obj_in: UserUpdate
