@@ -66,7 +66,7 @@ class UserInDBBase(UserBase):
     description: Optional[str] = None
     avatar: Optional[str] = None
     shop_id: UUID
-    permissions: Permissions
+    permissions: Optional[Permissions] = None
     last_login: Optional[datetime] = None
     is_superuser: Optional[bool] = False
     is_staff: Optional[bool] = True

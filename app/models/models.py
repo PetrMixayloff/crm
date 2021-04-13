@@ -83,7 +83,7 @@ class User(Base):
     is_staff = Column(Boolean, nullable=False, default=True, comment='Владелец магазина')
     position = Column(String(255), comment='Должность сотрудника')
     description = Column(String(255), comment='Данные')
-    permissions = relationship('Permissions', uselist=False)
+    permissions = relationship('Permissions', uselist=False, cascade="all, delete-orphan")
     avatar = Column(String(255))
 
 

@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase
-from app.crud import permissions
+from app import crud
 from app.models.models import User
 from app.schemas import UserCreate, UserUpdate, PermissionsCreate
 
@@ -19,7 +19,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         db.add(db_obj)
         db.flush()
         user_permissions = PermissionsCreate(user_id=db_obj.id)
-        permissions.create(db=db, obj_in=user_permissions)
+        crud.permissions.create(db=db, obj_in=user_permissions)
         db.refresh(db_obj)
         return db_obj
 
