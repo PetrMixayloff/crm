@@ -83,7 +83,18 @@ class User(Base):
     is_staff = Column(Boolean, nullable=False, default=True, comment='Владелец магазина')
     position = Column(String(255), comment='Должность сотрудника')
     description = Column(String(255), comment='Данные')
+    permissions = relationship('Permissions', uselist=False)
     avatar = Column(String(255))
+
+
+class Permissions(Base):
+    user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'))
+    orders = Column(String(255), comment='Права на работу с заказами')
+    products = Column(String(255), comment='Права на работу с продуктами')
+    raw = Column(String(255), comment='Права на работу с сырьем')
+    clients = Column(String(255), comment='Права на работу с клиентами')
+    staff = Column(String(255), comment='Права на работу с персоналом')
+    warehouse = Column(String(255), comment='Права на работу со складом')
 
 
 class Shop(Base):

@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Generator
+from enum import Enum
+from typing import Generator, Callable, List, Tuple, Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -21,6 +22,11 @@ reusable_oauth2 = OAuth2PasswordBearer(
 )
 
 
+class PermissionsEnum(Enum):
+    read = 'read'
+    edit = 'edit'
+
+
 def get_db() -> Generator:
     db = None
     try:
@@ -32,7 +38,7 @@ def get_db() -> Generator:
 
 
 def get_current_user(
-    db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
+        db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> models.User:
     try:
         payload = jwt.decode(
@@ -56,8 +62,20 @@ def get_current_user(
     return user
 
 
+def check_permissions(key: str, value: Optional[PermissionsEnum.value]) -> Callable:
+
+    async def user_has_permission(user: models.User = Depends(get_current_user)) -> models.User:
+        if user.is_superuser or not user.is_staff or value is None:
+            return user
+        code_lookup = ('read', 'edit')
+        if code_lookup.index(value) > code_lookup.index(user.permissions[key]):
+            raise HTTPException(status_code=403, detail="Permission denied")
+        return user
+    return user_has_permission
+
+
 def get_current_active_user(
-    current_user: models.User = Depends(get_current_user),
+        current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if not crud.user.is_active(current_user):
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -65,7 +83,7 @@ def get_current_active_user(
 
 
 def get_current_active_admin_user(
-    current_user: models.User = Depends(get_current_user),
+        current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if crud.user.is_staff(current_user) or crud.user.is_superuser(current_user):
         raise HTTPException(
@@ -75,7 +93,7 @@ def get_current_active_admin_user(
 
 
 def get_current_active_superuser(
-    current_user: models.User = Depends(get_current_user),
+        current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if not crud.user.is_superuser(current_user):
         raise HTTPException(
@@ -85,7 +103,6 @@ def get_current_active_superuser(
 
 
 def get_all_schemas_models():
-
     schemas_models = dict()
 
     schemas = inspector.get_schema_names()
