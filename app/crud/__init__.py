@@ -9,13 +9,13 @@ from .crud_order import order
 from .crud_client import client
 from .crud_cancellation import cancellation
 from .base import CRUDBase
-from app.models.models import ProductRawRelation, RawRemainsDetail,InvoiceRecord, Inventory, RawUsageStandards, \
-    OrdersProductsRawRelation, OrdersProductsRelation, CancellationRecord
+from app.models.models import ProductRawRelation, RawRemainsDetail, InvoiceRecord, Inventory, RawUsageStandards, \
+    OrdersProductsRawRelation, OrdersProductsRelation, CancellationRecord, Permissions
 from app.schemas import ProductRawRelationCreate, ProductRawRelationUpdate, InvoiceRecordUpdate,\
     InvoiceRecordCreate, RawRemainsDetailCreate, RawRemainsDetailUpdate, InventoryCreate,\
     InventoryUpdate, RawUsageStandardsCreate, RawUsageStandardsUpdate, OrdersProductsRawRelationCreate, \
     OrdersProductsRawRelationUpdate, OrdersProductsRelationCreate, OrdersProductsRelationUpdate, \
-    CancellationRecordCreate, CancellationRecordUpdate
+    CancellationRecordCreate, CancellationRecordUpdate, PermissionsCreate, PermissionsUpdate
 
 raw_usage_standards = CRUDBase[RawUsageStandards, RawUsageStandardsCreate, RawUsageStandardsUpdate](RawUsageStandards)
 inventory = CRUDBase[Inventory, InventoryCreate, InventoryUpdate](Inventory)
@@ -26,6 +26,8 @@ order_product_raw = CRUDBase[OrdersProductsRawRelation, OrdersProductsRawRelatio
                              OrdersProductsRawRelationUpdate](OrdersProductsRawRelation)
 order_product = CRUDBase[OrdersProductsRelation, OrdersProductsRelationCreate, OrdersProductsRelationUpdate]
 cancellation_record = CRUDBase[CancellationRecord, CancellationRecordCreate, CancellationRecordUpdate](CancellationRecord)
+permissions = CRUDBase[Permissions, PermissionsCreate, PermissionsUpdate](Permissions)
+
 # product = CRUDBase[Product, ProductCreate, ProductUpdate](Product)
 
 # For a new basic set of CRUD operations you could just do

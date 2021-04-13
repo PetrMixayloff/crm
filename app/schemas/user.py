@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel, validator
+from .permissions import Permissions
 import re
 
 
@@ -65,6 +66,7 @@ class UserInDBBase(UserBase):
     description: Optional[str] = None
     avatar: Optional[str] = None
     shop_id: UUID
+    permissions: Permissions
     last_login: Optional[datetime] = None
     is_superuser: Optional[bool] = False
     is_staff: Optional[bool] = True
