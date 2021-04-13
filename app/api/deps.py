@@ -62,7 +62,7 @@ def get_current_user(
     return user
 
 
-def check_permissions(key: str, value: Optional[PermissionsEnum.value]) -> Callable:
+def check_permissions(key: str, value: Optional[str]) -> Callable:
 
     async def user_has_permission(user: models.User = Depends(get_current_user)) -> models.User:
         if user.is_superuser or not user.is_staff or value is None:

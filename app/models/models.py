@@ -192,7 +192,8 @@ class InventoryRecord(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     inventory_id = Column(UUID(as_uuid=True), ForeignKey('inventory.id'), nullable=False, comment='ИНВ Опись')
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
-    quantity = Column(Float, default=0, comment='Количество')
+    quantity = Column(Float, default=0, comment='Остаток по факту инвентаризации')
+    old_quantity = Column(Float, default=0, comment='Остаток по программе')
     inventory = relationship('Inventory', back_populates='inventory_records')
 
 
