@@ -14,12 +14,14 @@ def read_orders(*, db: Session = Depends(deps.get_db),
                 current_user: models.User = Depends(deps.get_current_active_user),
                 skip: int = 0,
                 take: int = 100,
+                sort: str = None,
                 filter: str = None
                 ) -> Any:
     """
     Get orders by shop id.
     """
-    orders = crud.order.get_multi(db, shop_id=str(current_user.shop_id), skip=skip, take=take, filter=filter)
+    orders = crud.order.get_multi(db, shop_id=str(current_user.shop_id), skip=skip, take=take,
+                                  sort=sort, filter=filter)
     return orders
 
 
