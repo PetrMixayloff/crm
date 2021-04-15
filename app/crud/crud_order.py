@@ -57,7 +57,7 @@ def create_order_product_raw(db: Session, order_product_raw: schemas.OrdersProdu
                                                     filter=[['raw_id', '=', str(order_product_raw.raw_id)],
                                                             'and',
                                                             ['quantity', '>', 0]])
-    if len(raw_remains) > 0:
+    if len(raw_remains['data']) > 0:
         if status != Status.new.value:
             calc_raw_quantity(db=db, raw_remains=raw_remains, quantity=quantity)
 
@@ -100,7 +100,7 @@ def update_order_product_raw(db: Session, order_product_raw: schemas.OrdersProdu
                                                          Status.on_delivery.value] or old_status == Status.new.value and new_status == Status.canceled.value:
         raw.reserved -= quantity
         db.add(raw)
-    if len(raw_remains) > 0:
+    if len(raw_remains['data']) > 0:
         if old_status == Status.new.value and new_status in [Status.prepared.value,
                                                              Status.completed.value,
                                                              Status.on_delivery.value]:
