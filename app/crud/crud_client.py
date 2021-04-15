@@ -9,6 +9,9 @@ from uuid import uuid4
 
 class CRUDClient(CRUDBase[Client, ClientCreate, ClientUpdate]):
 
+    def get_by_phone(self, db: Session, phone: str) -> Optional[Client]:
+        return db.query(self.model).filter(self.model.phone == phone).first()
+
     def create(self, db: Session, obj_in: ClientCreate) -> Client:
         obj_in_data = jsonable_encoder(obj_in, exclude={'address'})
         db_obj = self.model(**obj_in_data)  # type: ignore
