@@ -7,12 +7,13 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud, schemas
 from app.models import models
 from app.core import security
 from app.core.config import settings
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, async_session
 
 import copy
 from app.db.session import inspector
@@ -27,7 +28,7 @@ class PermissionsEnum(Enum):
     edit = 'edit'
 
 
-def get_db() -> Generator:
+def get_db() -> Session:
     db = None
     try:
         db = SessionLocal()
@@ -35,6 +36,11 @@ def get_db() -> Generator:
     finally:
         if db is not None:
             db.close()
+
+
+async def get_async_db() -> AsyncSession:
+    async with async_session() as session:
+        yield session
 
 
 def get_current_user(

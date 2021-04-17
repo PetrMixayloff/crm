@@ -6,6 +6,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, UploadFile, File
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils import save_upload_file
 from app import crud, schemas
 from app.models import models
@@ -33,26 +34,18 @@ def read_users(
 
 
 @router.post("/", response_model=schemas.User)
-def create_user(
-        *,
-        db: Session = Depends(deps.get_db),
-        user_in: schemas.UserCreate,
-        current_user: models.User = Depends(deps.get_current_active_admin_user),
-):
+async def create_user(user_in: schemas.UserCreate, async_db: AsyncSession = Depends(deps.get_async_db),
+                      current_user: models.User = Depends(deps.get_current_active_admin_user)):
     """
     Create new user.
     """
-    user = crud.user.get_by_phone(db=db, phone=user_in.phone)
+    user = await crud.user.get_by_phone_async(async_db=async_db, phone=user_in.phone)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this phone number already exists in the system.",
         )
-    user = crud.user.create(db, obj_in=user_in)
-    # if settings.EMAILS_ENABLED and user_in.email:
-    #     send_new_account_email(
-    #         email_to=user_in.email, username=user_in.email, password=user_in.password
-    #     )
+    user = await crud.user.create_async(async_db=async_db, obj_in=user_in)
     return user
 
 

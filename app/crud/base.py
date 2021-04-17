@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session, ColumnProperty, Query
 from sqlalchemy.sql import sqltypes
 from sqlalchemy import cast, String, desc
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.base_class import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -54,6 +54,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        return db_obj
+
+    async def create_async(self, async_db: AsyncSession, *, obj_in: CreateSchemaType) -> ModelType:
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data)  # type: ignore
+        async_db.add(db_obj)
+        await async_db.commit()
         return db_obj
 
     def update(
