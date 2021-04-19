@@ -19,17 +19,19 @@ router = APIRouter()
 
 
 @router.get("/", response_model=schemas.UsersResponse)
-def read_users(
-        db: Session = Depends(deps.get_db),
+async def read_users(
+        async_db: AsyncSession = Depends(deps.get_async_db),
         current_user: models.User = Depends(deps.get_current_active_user),
         skip: int = 0,
         take: int = 100,
+        sort: str = None,
         filter: str = None
 ):
     """
     Retrieve users.
     """
-    data = crud.user.get_multi(db, shop_id=str(current_user.shop_id), skip=skip, take=take, filter=filter)
+    data = await crud.user.get_multi_async(async_db=async_db, shop_id=str(current_user.shop_id),
+                                           skip=skip, take=take, sort=sort, filter=filter)
     return data
 
 
