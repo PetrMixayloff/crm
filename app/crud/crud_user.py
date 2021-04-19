@@ -61,13 +61,13 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     async def create_async(self, async_db: AsyncSession, obj_in: UserCreate) -> User:
         obj_in.password = get_password_hash(obj_in.password)
         obj_in_data = jsonable_encoder(obj_in)
-        obj_in_data['permissions'] = None
-        db_obj = self.model(**obj_in_data)
-        async_db.add(db_obj)
+        user_obj = self.model(**obj_in_data)
+        async_db.add(user_obj)
         await async_db.flush()
-        permissions_in = PermissionsCreate(user_id=db_obj.id)
-        db_obj.permissions = await crud.permissions.create_async(async_db=async_db, obj_in=permissions_in)
-        return db_obj
+        permissions_in = PermissionsCreate(user_id=user_obj.id)
+        await crud.permissions.create_async(async_db=async_db, obj_in=permissions_in)
+        await async_db.refresh(user_obj)
+        return user_obj
 
 
 user = CRUDUser(User)

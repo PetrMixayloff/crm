@@ -50,6 +50,7 @@ class UserCreate(UserLogin):
     position: str
     shop_id: str
     description: Optional[str] = None
+    permissions: Optional[Permissions] = None
 
 
 class UserUpdate(UserCreate):
