@@ -1,22 +1,33 @@
 from typing import Optional, List, Union
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 from uuid import UUID
-import re
+
+
+class Address(BaseModel):
+    id: Optional[Union[str, UUID]] = None
+    street: Optional[str] = None
+    house: Optional[str] = None
+    entrance: Optional[str] = None
+    floor: Optional[str] = None
+    flat: Optional[str] = None
+
+
+class AddressInDB(Address):
+    id: UUID
+
+    class Config:
+        orm_mode = True
 
 
 # Shared properties
 class ClientBase(BaseModel):
     shop_id: Union[UUID, str]
     phone: str
-
-    @validator('phone')
-    def valid_phone(cls, v):
-        if re.match(r'(\+)(7)(9)(\d{9})', v) is None:
-            raise ValueError('Not valid phone number')
-        return v.title()
     name: str
-    address: Optional[str] = None
-    discount: Optional[str] = None
+    sex: Optional[str] = None
+    age: Optional[str] = None
+    address: Optional[Address] = None
+    discount_card: Optional[str] = None
     comment: Optional[str] = None
 
 
@@ -26,12 +37,13 @@ class ClientCreate(ClientBase):
 
 
 class ClientUpdate(ClientBase):
-    pass
+    id: str
 
 
 # Properties to receive via API on update
 class ClientInDBBase(ClientBase):
     id: UUID
+    address: Optional[AddressInDB] = None
 
     class Config:
         orm_mode = True

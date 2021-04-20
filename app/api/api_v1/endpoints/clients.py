@@ -23,14 +23,14 @@ def read_clients(
     return clients
 
 
-@router.get("/{client_id}", response_model=schemas.Client)
-def read_client_by_id(
+@router.get("/{phone}", response_model=schemas.Client)
+def read_client_by_phone(
+        phone: str,
         db: Session = Depends(deps.get_db),
-        client_id: str = None,
         current_user: models.User = Depends(deps.get_current_active_user),
-) -> Any:
+) -> Optional[models.Client]:
     """
-    Get client by id.
+    Get client by phone number.
     """
-    client = crud.client.get(db, id=client_id)
+    client = crud.client.get_by_phone(db, phone=phone)
     return client

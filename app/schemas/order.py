@@ -1,14 +1,14 @@
 from typing import Optional, List, Union
-import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel
 from uuid import UUID
-from .client import ClientCreate
+from .client import ClientCreate, ClientUpdate, Client
 
 
 class OrdersProductsRawRelationBase(BaseModel):
     order_product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
-    standard_id: Union[UUID, str]
+    standard_id: Optional[Union[UUID, str]] = None
     quantity: int
 
 
@@ -34,7 +34,10 @@ class OrdersProductsRawRelation(OrdersProductsRawRelationInDBBase):
 class OrdersProductsRelationBase(BaseModel):
     product_id: Union[UUID, str]
     order_id: Optional[Union[UUID, str]] = None
+    image: Optional[str] = None
+    name: Optional[str] = ''
     quantity: int
+    price: float
 
 
 class OrdersProductsRelationCreate(OrdersProductsRelationBase):
@@ -61,36 +64,45 @@ class OrdersProductsRelation(OrdersProductsRelationInDBBase):
 # Shared properties
 class OrderBase(BaseModel):
     order_number: Optional[int] = None
-    created_by_id: Union[UUID, str]
     make_by_id: Optional[Union[UUID, str]] = None
-    shop_id: Union[UUID, str]
     client_id: Optional[Union[UUID, str]] = None
+    shop_id: Union[UUID, str]
     delivery: bool
     courier_id: Optional[Union[UUID, str]] = None
     total_cost: float
     prepay: Optional[float] = 0
     prepay_type: str
     amount: float
-    amount_type: str
+    amount_type: Optional[str] = None
     discount: Optional[float] = 0
     rating: Optional[int] = None
     status: str
-    date_created: Optional[datetime.datetime] = datetime.datetime.now()
-    date_of_order: Optional[datetime.datetime]
+    date_created: Optional[datetime] = datetime.utcnow()
+    date_of_order: Optional[datetime]
+
+    class Config:
+        json_encoders = {
+            datetime: lambda dt: dt.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+        }
 
 
 class OrderCreate(OrderBase):
+    created_by_id: Optional[UUID] = None
     client: Optional[ClientCreate] = None
     products: Optional[List[OrdersProductsRelationCreate]] = []
 
 
 class OrderUpdate(OrderBase):
     id: str
+    created_by_id: str
+    client: Optional[ClientUpdate] = None
     products: Optional[List[Union[OrdersProductsRelationUpdate, OrdersProductsRelationCreate]]] = []
 
 
 class OrderInDBBase(OrderBase):
     id: UUID
+    created_by_id: UUID
+    client: Optional[Client] = None
     products: List[OrdersProductsRelation]
 
     class Config:

@@ -1,7 +1,8 @@
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, timezone
+from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel, validator
+from .permissions import Permissions
 import re
 
 
@@ -15,6 +16,11 @@ class UserBase(BaseModel):
             raise ValueError('Not valid phone number')
         return v.title()
 
+    class Config:
+        json_encoders = {
+            datetime: lambda dt: dt.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+        }
+
 
 class UserLogin(UserBase):
     password: str
@@ -26,8 +32,16 @@ class SuperUserCreate(UserLogin):
 
 class AdminCreate(UserLogin):
     full_name: str
-    position: str = 'Владелец'
-    is_staff: bool = False
+    position: Optional[str] = 'Владелец'
+    is_staff: Optional[bool] = False
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "full_name": "admin",
+                "password": "admin"
+            }
+        }
 
 
 # Properties to receive via API on creation
@@ -36,6 +50,7 @@ class UserCreate(UserLogin):
     position: str
     shop_id: str
     description: Optional[str] = None
+    permissions: Optional[Permissions] = None
 
 
 class UserUpdate(UserCreate):
@@ -46,12 +61,13 @@ class UserUpdate(UserCreate):
 
 # Properties to receive via API on update
 class UserInDBBase(UserBase):
-    id: Optional[UUID] = None
+    id: UUID
     full_name: str
     position: str
     description: Optional[str] = None
     avatar: Optional[str] = None
-    shop_id: Optional[UUID] = None
+    shop_id: UUID
+    permissions: Optional[Permissions] = None
     last_login: Optional[datetime] = None
     is_superuser: Optional[bool] = False
     is_staff: Optional[bool] = True
@@ -68,3 +84,8 @@ class User(UserInDBBase):
 # Additional properties stored in DB
 class UserInDB(UserInDBBase):
     password: str
+
+
+class UsersResponse(BaseModel):
+    totalCount: int
+    data: List[User]

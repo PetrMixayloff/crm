@@ -4,9 +4,10 @@ from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy.orm import Session, ColumnProperty
-from sqlalchemy.sql import sqltypes
-from sqlalchemy import cast, String
+from sqlalchemy.orm import Session, ColumnProperty, Query
+from sqlalchemy.sql import sqltypes, Select
+from sqlalchemy import cast, String, desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.base_class import Base
 
@@ -30,17 +31,21 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def get(self, db: Session, id: Any) -> Optional[ModelType]:
         return db.query(self.model).filter(self.model.id == id).first()
 
-    def get_multi(
-            self, db: Session, shop_id: str, skip: int = 0, take: int = 1000000, filter: Union[str, list] = None
-    ) -> Dict[str, Union[int, Any]]:
-        users = db.query(self.model).filter(self.model.is_active.is_(True),
-                                            self.model.shop_id == shop_id)
+    def get_multi(self, db: Session, shop_id: str, skip: int = 0, take: int = 1000000, sort: Union[str, list] = None,
+                  filter: Union[str, list] = None) -> Dict[str, Union[int, Any]]:
+        objects = db.query(self.model).filter(self.model.is_active.is_(True),
+                                              self.model.shop_id == shop_id)
         if filter is not None:
-            users = self.filter_query(users, filter)
-        users = users.offset(skip).limit(take).all()
+            objects = self.filter_query(objects, filter)
+
+        if sort is not None and isinstance(sort, str):
+            objects = self.sort_query(objects, sort)
+
+        total = objects.count()
+        objects = objects.offset(skip).limit(take).all()
         data = {
-            'totalCount': len(users),
-            'data': users
+            'totalCount': total,
+            'data': objects
         }
         return data
 
@@ -50,6 +55,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        return db_obj
+
+    async def create_async(self, async_db: AsyncSession, obj_in: CreateSchemaType) -> ModelType:
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data)  # type: ignore
+        async_db.add(db_obj)
+        await async_db.commit()
         return db_obj
 
     def update(
@@ -91,8 +103,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         daughter_objects.extend(daughters)
         return daughter_objects
 
-
-    def filter_query(self, _query, _filter):
+    def filter_query(self, _query: Query, _filter: Union[str, list]):
         """
         разбор filter expression DevExpress Grid и фильтрация выборки
         :param _query: модифицируемый запрос (объект Query)
@@ -105,7 +116,43 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         return query_mod
 
-    def add_filter(self, _query, _filter):
+    def filter_stm(self, stm: Select, _filter: Union[str, list]):
+        """
+        разбор filter expression DevExpress Grid и фильтрация выборки
+        :param stm: объект Select sql alchemy
+        :param _filter: filter expression DevExpress Grid
+        :return: модифицированный запрос (объект Query)
+        """
+
+        filter_ = json.loads(_filter) if isinstance(_filter, str) else _filter
+        query_mod = self.add_whereclause(stm, filter_)
+
+        return query_mod
+
+    def add_whereclause(self, stm: Select, _filter: list):
+        """
+        рекурсивный разбор строки фильтра DevExtreme,
+        отдельно анализируются левая и правая часть выражения
+        :param stm: объект Select sqlalchemy
+        :param _filter: filter expression DevExpress Grid
+        :return: модифицированный запрос (объект Query)
+        """
+        if not isinstance(_filter, list):
+            return stm
+
+        if not isinstance(_filter[0], list) and len(_filter) == 3:
+            return self.add_one_whereclause(stm, _filter)
+        else:
+            _left_side = _filter[0]
+            _operator = _filter[1]
+            _right_side = _filter[2]
+            # _operator means always be 'and'
+            stm = self.add_whereclause(stm, _left_side)
+            stm = self.add_whereclause(stm, _right_side)
+
+        return stm
+
+    def add_filter(self, _query: Query, _filter: list):
         """
         рекурсивный разбор строки фильтра DevExtreme,
         отдельно анализируются левая и правая часть выражения
@@ -128,7 +175,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         return query_mod
 
-    def add_one_filter_condition(self, _query, _filter):
+    def add_one_filter_condition(self, _query: Query, _filter: list):
         """
          анализ подстроки фильтра DevExtreme, в которой не содержится составных выражений
          :param _query: модифицируемый запрос (объект Query)
@@ -150,7 +197,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         else:
             attr_ = _attr
             if (_rule == "contains" or _rule == "notcontains" or _rule == "startswith" or _rule == "endswith") and \
-                    (type(_attr.property) is not ColumnProperty or not isinstance(_attr.property.columns[0].type, sqltypes.String)):
+                    (type(_attr.property) is not ColumnProperty or not isinstance(_attr.property.columns[0].type,
+                                                                                  sqltypes.String)):
                 attr_ = cast(_attr, String)
 
             if _rule == "contains":
@@ -174,3 +222,73 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             elif _rule == "<":
                 query_mod = query_mod.filter(_attr < _value)
         return query_mod
+
+    def add_one_whereclause(self, stm: Select, _filter: list) -> Select:
+        """
+         анализ подстроки фильтра DevExtreme, в которой не содержится составных выражений
+         :param stm: объект Select sqlalchemy
+         :param _filter: строка фильтра, содежащая одно выражение вида [имя поля, правило, значение]
+         :return: модифицированный запрос (объект Select)
+         """
+
+        field = _filter[0]
+        rule = _filter[1]
+        value = _filter[2]
+        if not hasattr(self.model, field):
+            return stm
+
+        attr = getattr(self.model, field)
+
+        if (rule == "contains" or rule == "notcontains" or rule == "startswith" or rule == "endswith") and \
+                (type(attr.property) is not ColumnProperty or not isinstance(attr.property.columns[0].type,
+                                                                             sqltypes.String)):
+            attr = cast(attr, String)
+
+        if rule == "contains":
+            return stm.where(attr.ilike("%" + value + "%"))
+        if rule == "notcontains":
+            return stm.where(attr.notilike("%" + value + "%"))
+        if rule == "startswith":
+            return stm.where(attr.ilike(value + "%"))
+        if rule == "endswith":
+            return stm.where(attr.ilike("%" + value))
+        if rule == "=":
+            return stm.where(attr == value)
+        if rule == "<>":
+            return stm.where(attr != value)
+        if rule == "in":
+            return stm.where(attr.in_(value))
+        if rule == "not_in":
+            return stm.where(attr.notin_(value))
+        if rule == ">=":
+            return stm.where(attr >= value)
+        if rule == "<":
+            return stm.where(attr < value)
+        return stm
+
+    def sort_query(self, query: Query, sort: str):
+        """
+        сортировка выборки из базы по sort expression DevExpress Grid
+        :param query: модифицируемый запрос (объект Query)
+        :param sort: sort expression DevExpress Grid
+        :return: модифицированный запрос (объект Query)
+        """
+
+        try:
+            sort = json.loads(sort)
+        except json.decoder.JSONDecodeError:
+            return query
+
+        field, desc_rule = None, None
+        for sort_rule in sort:
+            field = sort_rule.get('selector')
+            desc_rule = sort_rule.get('desc')
+        if field is None or desc_rule is None:
+            return query
+        try:
+            attr = getattr(self.model, field)
+        except AttributeError:
+            return query
+        if desc_rule:
+            return query.order_by(desc(attr))
+        return query.order_by(attr)

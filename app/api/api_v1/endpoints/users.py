@@ -6,6 +6,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, UploadFile, File
 from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils import save_upload_file
 from app import crud, schemas
 from app.models import models
@@ -17,42 +18,36 @@ from uuid import uuid4
 router = APIRouter()
 
 
-@router.get("/", response_model=Dict[str, Union[int, List[schemas.User]]])
-def read_users(
-        db: Session = Depends(deps.get_db),
+@router.get("/", response_model=schemas.UsersResponse)
+async def read_users(
+        async_db: AsyncSession = Depends(deps.get_async_db),
         current_user: models.User = Depends(deps.get_current_active_user),
         skip: int = 0,
         take: int = 100,
+        sort: str = None,
         filter: str = None
-) -> Any:
+):
     """
     Retrieve users.
     """
-    data = crud.user.get_multi(db, shop_id=str(current_user.shop_id), skip=skip, take=take, filter=filter)
+    data = await crud.user.get_multi_async(async_db=async_db, shop_id=str(current_user.shop_id),
+                                           skip=skip, take=take, sort=sort, filter=filter)
     return data
 
 
 @router.post("/", response_model=schemas.User)
-def create_user(
-        *,
-        db: Session = Depends(deps.get_db),
-        user_in: schemas.UserCreate,
-        current_user: models.User = Depends(deps.get_current_active_admin_user),
-) -> Any:
+async def create_user(user_in: schemas.UserCreate, async_db: AsyncSession = Depends(deps.get_async_db),
+                      current_user: models.User = Depends(deps.get_current_active_admin_user)):
     """
     Create new user.
     """
-    user = crud.user.get_by_phone(db=db, phone=user_in.phone)
+    user = await crud.user.get_by_phone_async(async_db=async_db, phone=user_in.phone)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this phone number already exists in the system.",
         )
-    user = crud.user.create(db, obj_in=user_in)
-    # if settings.EMAILS_ENABLED and user_in.email:
-    #     send_new_account_email(
-    #         email_to=user_in.email, username=user_in.email, password=user_in.password
-    #     )
+    user = await crud.user.create_async(async_db=async_db, obj_in=user_in)
     return user
 
 
@@ -60,7 +55,7 @@ def create_user(
 def read_user_me(
         db: Session = Depends(deps.get_db),
         current_user: models.User = Depends(deps.get_current_active_user),
-) -> Any:
+):
     """
     Get current user.
     """
@@ -72,7 +67,7 @@ def read_user_by_id(
         user_id: str,
         current_user: models.User = Depends(deps.get_current_active_user),
         db: Session = Depends(deps.get_db),
-) -> Any:
+):
     """
     Get a specific user by id.
     """
@@ -93,7 +88,7 @@ def update_user(
         user_id: str,
         user_in: schemas.UserUpdate,
         current_user: models.User = Depends(deps.get_current_active_admin_user),
-) -> Any:
+):
     """
     Update a user.
     """
@@ -108,7 +103,7 @@ def update_user(
 
 
 @router.post("/init_superuser")
-def create_super_user(db: Session = Depends(deps.get_db)) -> Any:
+def create_super_user(db: Session = Depends(deps.get_db)):
     """
     Create super user.
     """
@@ -131,7 +126,7 @@ def create_super_user(db: Session = Depends(deps.get_db)) -> Any:
 @router.post("/create_admin")
 def create_admin(
         user_in: schemas.AdminCreate,
-        db: Session = Depends(deps.get_db)) -> Any:
+        db: Session = Depends(deps.get_db)):
     """
     Create admin.
     """
@@ -146,11 +141,11 @@ def create_admin(
         )
 
 
-@router.delete("/{user_id}", response_model=schemas.User)
+@router.delete("/{user_id}")
 def delete_user(user_id: str,
                 db: Session = Depends(deps.get_db),
                 current_user: models.User = Depends(deps.get_current_active_admin_user)
-                ) -> None:
+                ) -> str:
     """
     Delete user.
     """
@@ -160,3 +155,4 @@ def delete_user(user_id: str,
             status_code=404,
             detail="The user does not exist in the system",
         )
+    return 'ok'
