@@ -1,10 +1,10 @@
-from typing import Optional
+from typing import Optional, Union, Any, Dict
 from uuid import uuid4
-
+from sqlalchemy.sql.functions import count, func
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from sqlalchemy import select
 from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase
 from app import crud
@@ -58,16 +58,32 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         result = await async_db.execute(select(self.model).where(self.model.phone == phone))
         return result.scalar()
 
+    async def get_multi_async(self, async_db: AsyncSession, shop_id: str, skip: int = 0, take: int = 1000000,
+                              sort: str = None, filter: Union[str, list] = None) -> Dict[str, Union[int, Any]]:
+
+        stm = select(self.model).where(self.model.shop_id == shop_id)
+        if filter is not None:
+            stm = self.filter_stm(stm, filter)
+        total_stm = select([func.count()]).select_from(stm)
+        stm = stm.offset(skip).limit(take)
+        result = await async_db.execute(stm)
+        total = await async_db.execute(total_stm)
+        data = {
+            'totalCount': total.scalar(),
+            'data': result.scalars().all()
+        }
+        return data
+
     async def create_async(self, async_db: AsyncSession, obj_in: UserCreate) -> User:
         obj_in.password = get_password_hash(obj_in.password)
         obj_in_data = jsonable_encoder(obj_in)
-        obj_in_data['permissions'] = None
-        db_obj = self.model(**obj_in_data)
-        async_db.add(db_obj)
+        user_obj = self.model(**obj_in_data)
+        async_db.add(user_obj)
         await async_db.flush()
-        permissions_in = PermissionsCreate(user_id=db_obj.id)
-        db_obj.permissions = await crud.permissions.create_async(async_db=async_db, obj_in=permissions_in)
-        return db_obj
+        permissions_in = PermissionsCreate(user_id=user_obj.id)
+        await crud.permissions.create_async(async_db=async_db, obj_in=permissions_in)
+        await async_db.refresh(user_obj)
+        return user_obj
 
 
 user = CRUDUser(User)
