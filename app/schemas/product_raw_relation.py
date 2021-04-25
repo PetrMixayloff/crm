@@ -7,7 +7,7 @@ from uuid import UUID
 class ProductRawRelationBase(BaseModel):
     product_id: Optional[Union[UUID, str]] = None
     raw_id: Union[UUID, str]
-    quantity: Optional[int] = 0
+    quantity: Optional[float] = 0
     standard_id: Optional[Union[UUID, str]] = None
 
 

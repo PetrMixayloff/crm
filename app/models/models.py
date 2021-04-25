@@ -132,7 +132,7 @@ class ProductRawRelation(Base):
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
     standard_id = Column(UUID(as_uuid=True), ForeignKey('rawusagestandards.id'))
-    quantity = Column(Integer, default=0)
+    quantity = Column(Float, default=0)
     raw = relationship("Raw", back_populates="products")
     product = relationship("Product", back_populates="raw")
 
