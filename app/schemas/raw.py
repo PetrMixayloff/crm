@@ -11,11 +11,13 @@ class RawBase(BaseModel):
     category_id: Union[UUID, str]
     shop_id: Union[UUID, str]
     unit: Optional[str] = None
+    quantity: Optional[float] = 0
+    available_quantity: Optional[float] = 0
     reserved: Optional[float] = 0
-    per_pack: Optional[int] = 0
-    green_signal: Optional[int] = 0
-    yellow_signal: Optional[int] = 0
-    red_signal: Optional[int] = 0
+    helium_consumption: Optional[float] = 0
+    per_pack: Optional[float] = 0
+    yellow_label: Optional[float] = 0
+    red_label: Optional[float] = 0
     description: Optional[str] = None
     image: Optional[str] = None
 

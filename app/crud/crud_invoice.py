@@ -25,6 +25,11 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
             if invoice_records['quantity'] > 0:
                 raw_remains_detail_obj = RawRemainsDetail(**invoice_records)  # type: ignore
                 db.add(raw_remains_detail_obj)
+                raw = crud.raw.get(db=db, id=invoice_records.get('raw_id'))
+                if raw is not None:
+                    raw.quantity += invoice_records['quantity']
+                    raw.available_quantity += invoice_records['quantity']
+                    db.add(raw)
         db.commit()
         db.refresh(db_obj)
         return db_obj
