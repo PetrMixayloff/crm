@@ -9,3 +9,4 @@ __pycache__/
 /venv
 readme.txt
 rootkey.csv
+poetry.lock
