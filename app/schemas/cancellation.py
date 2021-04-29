@@ -21,7 +21,7 @@ class CancellationBase(BaseModel):
 
 # Properties to receive via API on creation
 class CancellationCreate(CancellationBase):
-    records: Optional[List[CancellationRecordCreate]] = []
+    records: List[CancellationRecordCreate]
 
 
 class CancellationUpdate(CancellationBase):
@@ -31,7 +31,7 @@ class CancellationUpdate(CancellationBase):
 # Properties to receive via API on update
 class CancellationInDBBase(CancellationBase):
     id: UUID
-    records: Optional[List[CancellationRecord]] = []
+    records: List[CancellationRecord]
 
     class Config:
         orm_mode = True

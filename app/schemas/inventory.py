@@ -2,7 +2,7 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime, timezone
-from .inventory_record import InventoryRecord, InventoryRecordCreate, InventoryRecordUpdate
+from .inventory_record import InventoryRecord, InventoryRecordCreate
 
 
 # Shared properties
@@ -26,7 +26,6 @@ class InventoryCreate(InventoryBase):
 
 class InventoryUpdate(InventoryBase):
     id: str
-    records: List[InventoryRecordUpdate]
 
 
 # Properties to receive via API on update
