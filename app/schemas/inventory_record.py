@@ -15,10 +15,6 @@ class InventoryRecordCreate(InventoryRecordBase):
     pass
 
 
-class InventoryRecordUpdate(InventoryRecordBase):
-    pass
-
-
 # Properties to receive via API on update
 class InventoryRecordInDBBase(InventoryRecordBase):
     id: UUID

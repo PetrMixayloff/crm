@@ -14,22 +14,21 @@ class CRUDCancellation(CRUDBase[Cancellation, schemas.CancellationCreate, schema
 
         obj_in_data = jsonable_encoder(obj_in)
         records = obj_in_data.pop('records')
-        # obj_in_data['id'] = uuid4()
-        db_obj = self.model(**obj_in_data)  # type: ignore
-        db.add(db_obj)
+        cancelation_obj = self.model(**obj_in_data)  # type: ignore
+        db.add(cancelation_obj)
         db.flush()
-        for cancellation_records in records:
-            cancellation_records['cancellation_id'] = db_obj.id
-            cancellation_records_obj = CancellationRecord(**cancellation_records)  # type: ignore
+        for record in records:
+            record['cancellation_id'] = cancelation_obj.id
+            cancellation_records_obj = CancellationRecord(**record)  # type: ignore
             db.add(cancellation_records_obj)
             db.commit()
-            raw_remains = crud.raw_remains_detail.get(db, id=cancellation_records['rawremainsdetail_id'])
+            raw_remains = crud.raw_remains_detail.get(db, id=record['rawremainsdetail_id'])
             raw_remains_data = jsonable_encoder(raw_remains)
-            setattr(raw_remains, 'quantity', raw_remains_data['quantity'] - cancellation_records['quantity'])
+            setattr(raw_remains, 'quantity', raw_remains_data['quantity'] - record['quantity'])
             db.add(raw_remains)
         db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        db.refresh(cancelation_obj)
+        return cancelation_obj
 
 
 cancellation = CRUDCancellation(Cancellation)
