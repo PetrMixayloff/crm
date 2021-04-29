@@ -190,7 +190,7 @@ class Inventory(Base):
     number = Column(String(255), comment='Номер')
     date = Column(DateTime, comment='Дата')
     remark = Column(String(255), comment='Примечание')
-    inventory_records = relationship("InventoryRecord", back_populates='inventory', cascade="all, delete-orphan")
+    records = relationship("InventoryRecord", back_populates='inventory', cascade="all, delete-orphan")
 
 
 class InventoryRecord(Base):
@@ -199,7 +199,7 @@ class InventoryRecord(Base):
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
     quantity = Column(Float, default=0, comment='Остаток по факту инвентаризации')
     old_quantity = Column(Float, default=0, comment='Остаток по программе')
-    inventory = relationship('Inventory', back_populates='inventory_records')
+    inventory = relationship('Inventory', back_populates='records')
 
 
 class Invoice(Base):
