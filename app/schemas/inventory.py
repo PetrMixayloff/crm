@@ -8,7 +8,7 @@ from .inventory_record import InventoryRecord
 # Shared properties
 class InventoryBase(BaseModel):
     shop_id: Union[UUID, str]
-    user_id: Union[UUID, str]
+    user_id: Optional[Union[UUID, str]] = None
     number: str
     date: datetime = datetime.utcnow()
     remark: str = None
@@ -31,7 +31,7 @@ class InventoryUpdate(InventoryBase):
 # Properties to receive via API on update
 class InventoryInDBBase(InventoryBase):
     id: UUID
-    inventory_records: Optional[List[InventoryRecord]] = []
+    records: Optional[List[InventoryRecord]] = []
 
     class Config:
         orm_mode = True

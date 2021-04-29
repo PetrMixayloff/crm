@@ -181,6 +181,7 @@ class RawRemainsDetail(Base):
     invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
     price = Column(Float, default=0, comment='Цена за ед.')
     quantity = Column(Float, default=0, comment='Количество')
+    remark = Column(String(255), comment='Примечание')
 
 
 class Inventory(Base):

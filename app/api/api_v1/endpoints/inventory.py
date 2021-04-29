@@ -31,5 +31,6 @@ def create_inventory(*, db: Session = Depends(deps.get_db),
     """
     Create new inventory.
     """
+    inventory_in.user_id = str(current_user.id)
     inventory = crud.inventory.create(db, obj_in=inventory_in)
     return inventory

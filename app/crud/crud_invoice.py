@@ -1,6 +1,3 @@
-from typing import Dict, Union, Any, List, Optional
-from uuid import uuid4
-
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.crud.base import CRUDBase
@@ -14,7 +11,6 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
                        ) -> Invoice:
         obj_in_data = jsonable_encoder(obj_in)
         records = obj_in_data.pop('records')
-        # obj_in_data['id'] = uuid4()
         db_obj = self.model(**obj_in_data)  # type: ignore
         db.add(db_obj)
         db.flush()
