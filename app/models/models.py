@@ -223,9 +223,10 @@ class InvoiceRecord(Base):
 
 class Cancellation(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    number = Column(String(255), comment='Номер')
+    cancel_number_seq = Sequence('number_seq')
+    number = Column(Integer, nullable=False, server_default=cancel_number_seq.next_value(), comment='Номер')
     date = Column(DateTime, comment='Дата')
-    supplier = Column(String(255), comment='Поставщик')
+    reason = Column(String(255), comment='Причина')
     remark = Column(String(255), comment='Примечание')
     records = relationship('CancellationRecord', back_populates="cancellation", cascade="all, delete-orphan")
 

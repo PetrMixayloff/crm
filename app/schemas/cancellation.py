@@ -8,9 +8,9 @@ from .cancellation_record import CancellationRecord, CancellationRecordCreate
 # Shared properties
 class CancellationBase(BaseModel):
     shop_id: Union[UUID, str]
-    number: str
+    number: Optional[int] = None
     date: datetime = datetime.utcnow()
-    supplier: Optional[str]
+    reason: Optional[str]
     remark: Optional[str]
 
     class Config:

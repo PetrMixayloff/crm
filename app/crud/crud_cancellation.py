@@ -20,9 +20,13 @@ class CRUDCancellation(CRUDBase[Cancellation, schemas.CancellationCreate, schema
             record_obj = CancellationRecord(**record)  # type: ignore
             db.add(record_obj)
             raw = crud.raw.get(db=db, id=record['raw_id'])
-            if raw is not None:
-                raw.quantity -= record['quantity']
-                raw.available_quantity -= record['quantity']
+            if raw is not None and raw.quantity > 0:
+                if raw.quantity > record['quantity']:
+                    raw.quantity -= record['quantity']
+                    raw.available_quantity -= record['quantity']
+                else:
+                    raw.available_quantity -= raw.quantity
+                    raw.quantity = 0
                 db.add(raw)
         db.commit()
         db.refresh(cancelation_obj)
