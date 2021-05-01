@@ -1,19 +1,10 @@
-import os
-import traceback
-from typing import Any, List, Dict, Optional, Union
-
-from fastapi import APIRouter, Body, Depends, HTTPException, UploadFile, File
-from fastapi.encoders import jsonable_encoder
-from pydantic.networks import EmailStr
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.utils import save_upload_file
 from app import crud, schemas
 from app.models import models
 from app.api import deps
 from app.core.config import settings
-from app.utils import send_new_account_email
-from uuid import uuid4
 
 router = APIRouter()
 

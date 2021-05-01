@@ -5,7 +5,9 @@ from uuid import UUID
 # Shared properties
 class CancellationRecordBase(BaseModel):
     raw_id: str
+    raw_remains_details_id: str
     quantity: float
+    price: float
 
 
 # Properties to receive via API on creation
@@ -17,6 +19,7 @@ class CancellationRecordCreate(CancellationRecordBase):
 class CancellationRecordInDBBase(CancellationRecordBase):
     id: UUID
     cancellation_id: UUID
+    raw_remains_details_id: UUID
     raw_id: UUID
 
     class Config:

@@ -41,3 +41,8 @@ class InvoiceInDBBase(InvoiceBase):
 # Additional properties to return via API
 class Invoice(InvoiceInDBBase):
     pass
+
+
+class InvoicesResponse(BaseModel):
+    totalCount: int
+    data: List[Invoice]

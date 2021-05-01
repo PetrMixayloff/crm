@@ -11,6 +11,8 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
 
     def create_invoice(self, db: Session, *, obj_in: schemas.InvoiceCreate
                        ) -> Invoice:
+
+        # записываем в базу сущность приходной накладной
         invoice_in_data = jsonable_encoder(obj_in)
         records = invoice_in_data.pop('records')
         invoice_obj = self.model(**invoice_in_data)  # type: ignore
@@ -24,18 +26,18 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
                     status_code=409,
                     detail="Ошибка создания приходной накладной.",
                 )
-            # save invoice record
+            # записываем в БД позицию в накладной
             record['invoice_id'] = invoice_obj.id
             record['shop_id'] = invoice_obj.shop_id
             invoice_records_obj = InvoiceRecord(**record)  # type: ignore
             db.add(invoice_records_obj)
-            # save record in raw remains details table
+            # обновляем количество в детализированной таблице остатов
             record['invoice'] = True
             record['number'] = invoice_obj.number
             record['date'] = invoice_obj.date
             raw_remains_detail_obj = RawRemainsDetail(**record)  # type: ignore
             db.add(raw_remains_detail_obj)
-            # update raw quantity
+            # обновляем количество сырья в БД
             if raw.per_pack > 0:
                 raw.quantity += record['quantity'] * raw.per_pack
                 raw.available_quantity += record['quantity'] * raw.per_pack
@@ -43,7 +45,7 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
                 raw.quantity += record['quantity']
                 raw.available_quantity += record['quantity']
             db.add(raw)
-            # add record in raw remains log
+            # делаем запись в таблицу истории остатков по сырью
             raw_remains_log_obj = RawRemainsLog(
                 shop_id=raw.shop_id,
                 raw_id=raw.id,

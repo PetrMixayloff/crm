@@ -40,3 +40,8 @@ class CancellationInDBBase(CancellationBase):
 # Additional properties to return via API
 class Cancellation(CancellationInDBBase):
     pass
+
+
+class CancellationsResponse(BaseModel):
+    totalCount: int
+    data: List[Cancellation]

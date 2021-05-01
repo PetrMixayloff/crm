@@ -249,9 +249,11 @@ class Cancellation(Base):
 class CancellationRecord(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     cancellation_id = Column(UUID(as_uuid=True), ForeignKey('cancellation.id'), nullable=False, comment='Списание')
+    raw_remains_details_id = Column(UUID(as_uuid=True), ForeignKey('raw_remains_detail.id'), nullable=False)
     cancellation = relationship("Cancellation", back_populates="records")
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Id сырья в остатках')
     quantity = Column(Float, default=0, comment='Количество')
+    price = Column(Float, default=0, comment='Цена за ед.')
 
 
 class BlacklistToken(Base):
