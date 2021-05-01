@@ -18,6 +18,8 @@ class RawBase(BaseModel):
     per_pack: Optional[float] = 0
     yellow_label: Optional[float] = 0
     red_label: Optional[float] = 0
+    article_number:  Optional[str] = None
+    manufacturer:  Optional[str] = None
     description: Optional[str] = None
     image: Optional[str] = None
 

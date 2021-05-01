@@ -6,8 +6,8 @@ from sqlalchemy.orm import relationship
 
 
 class Orders(Base):
-    number_seq = Sequence('number_seq')
-    order_number = Column(Integer, nullable=False, server_default=number_seq.next_value(), comment='№ заказа')
+    orders_number_seq = Sequence('number_seq')
+    order_number = Column(Integer, nullable=False, server_default=orders_number_seq.next_value(), comment='№ заказа')
     created_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Принял')
     make_by_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Выполнил')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'))
@@ -46,9 +46,9 @@ class OrdersProductsRelation(Base):
 
 
 class OrdersProductsRawRelation(Base):
-    order_product_id = Column(UUID(as_uuid=True), ForeignKey('ordersproductsrelation.id'))
+    order_product_id = Column(UUID(as_uuid=True), ForeignKey('orders_products_relation.id'))
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
-    standard_id = Column(UUID(as_uuid=True), ForeignKey('rawusagestandards.id'))
+    standard_id = Column(UUID(as_uuid=True), ForeignKey('raw_usage_standards.id'))
     quantity = Column(Integer, default=0)
 
 
@@ -111,14 +111,14 @@ class ProductCategory(Base):
     name = Column(String(255))
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     description = Column(String(255))
-    products = relationship('Product', back_populates="productcategory", cascade="all, delete-orphan")
+    products = relationship('Product', back_populates="product_category", cascade="all, delete-orphan")
     show_on_store = Column(Boolean, nullable=False, default=True)
 
 
 class Product(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    category_id = Column(UUID(as_uuid=True), ForeignKey('productcategory.id'), nullable=False)
-    productcategory = relationship("ProductCategory", back_populates="products")
+    category_id = Column(UUID(as_uuid=True), ForeignKey('product_category.id'), nullable=False)
+    product_category = relationship("ProductCategory", back_populates="products")
     raw = relationship('ProductRawRelation', cascade="all, delete-orphan")
     name = Column(String(255), nullable=False, comment='Название')
     description = Column(String(255), comment='Описание')
@@ -131,7 +131,7 @@ class Product(Base):
 class ProductRawRelation(Base):
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'))
-    standard_id = Column(UUID(as_uuid=True), ForeignKey('rawusagestandards.id'))
+    standard_id = Column(UUID(as_uuid=True), ForeignKey('raw_usage_standards.id'))
     quantity = Column(Float, default=0)
     raw = relationship("Raw", back_populates="products")
     product = relationship("Product", back_populates="raw")
@@ -140,16 +140,16 @@ class ProductRawRelation(Base):
 class RawCategory(Base):
     name = Column(String(255), comment='Название категории')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    parent_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), comment='Id родительской категории')
-    raws = relationship('Raw', back_populates="raw_category", cascade="all, delete-orphan")
+    parent_id = Column(UUID(as_uuid=True), ForeignKey('raw_category.id'), comment='Id родительской категории')
+    raw = relationship('Raw', back_populates="raw_category", cascade="all, delete-orphan")
     description = Column(String(255), comment='Описание')
     subcategories = relationship("RawCategory", primaryjoin="RawCategory.id==RawCategory.parent_id")
 
 
 class Raw(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    category_id = Column(UUID(as_uuid=True), ForeignKey('rawcategory.id'), nullable=False, comment='Категория')
-    raw_category = relationship("RawCategory", back_populates="raws")
+    category_id = Column(UUID(as_uuid=True), ForeignKey('raw_category.id'), nullable=False, comment='Категория')
+    raw_category = relationship("RawCategory", back_populates="raw")
     quantity = Column(Float, default=0, comment='Текущий остаток на складе')
     reserved = Column(Float, default=0, comment='Зарезервировано')
     available_quantity = Column(Float, default=0, comment='Остаток с учетом зарезервированного количества')
@@ -178,16 +178,31 @@ class RawUsageStandards(Base):
 class RawRemainsDetail(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
-    invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), nullable=False, comment='Накладная')
+    invoice_id = Column(UUID(as_uuid=True), ForeignKey('invoice.id'), comment='Id накладной')
+    inventory_id = Column(UUID(as_uuid=True), ForeignKey('inventory.id'), comment='Id инвентаризации')
+    invoice = Column(Boolean, nullable=False, comment='True: приходная накладная, False: инвентаризация')
+    number = Column(String(255), comment='Номер')
+    date = Column(DateTime, comment='Дата')
+    quantity = Column(Float, default=0, comment='Оставшееся количество')
     price = Column(Float, default=0, comment='Цена за ед.')
+
+
+class RawRemainsLog(Base):
+    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
+    raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Название')
+    arrival = Column(Boolean, nullable=False, comment='True: приход, False: расход')
+    action = Column(String(255), nullable=False, comment='Событие: приход, списание, инвентаризация, продажа')
+    number = Column(String(255), nullable=False, comment='Номер')
+    date = Column(DateTime, nullable=False, comment='Дата')
     quantity = Column(Float, default=0, comment='Количество')
-    remark = Column(String(255), comment='Примечание')
+    total = Column(Float, default=0, comment='Общее количество после события')
 
 
 class Inventory(Base):
+    inventory_number_seq = Sequence('number_seq')
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), comment='Ответственный сотрудник')
-    number = Column(String(255), comment='Номер')
+    number = Column(Integer, nullable=False, server_default=inventory_number_seq.next_value(), comment='Номер')
     date = Column(DateTime, comment='Дата')
     remark = Column(String(255), comment='Примечание')
     records = relationship("InventoryRecord", back_populates='inventory', cascade="all, delete-orphan")

@@ -75,14 +75,14 @@ def read_user_by_id(
     return user
 
 
-@router.put("/{user_id}", response_model=schemas.User)
+@router.put("/{user_id}", status_code=204)
 def update_user(
         *,
         db: Session = Depends(deps.get_db),
         user_id: str,
         user_in: schemas.UserUpdate,
         current_user: models.User = Depends(deps.get_current_active_admin_user),
-):
+) -> None:
     """
     Update a user.
     """
@@ -92,12 +92,11 @@ def update_user(
             status_code=404,
             detail="The user with this username does not exist in the system",
         )
-    user = crud.user.update(db, db_obj=user, obj_in=user_in)
-    return user
+    crud.user.update(db, db_obj=user, obj_in=user_in)
 
 
-@router.post("/init_superuser")
-def create_super_user(db: Session = Depends(deps.get_db)):
+@router.post("/init_superuser", status_code=204)
+def create_super_user(db: Session = Depends(deps.get_db)) -> None:
     """
     Create super user.
     """
@@ -109,10 +108,10 @@ def create_super_user(db: Session = Depends(deps.get_db)):
             is_superuser=True
         )
         crud.user.create(db, obj_in=user_in)
-        return 'ok'
+        return
     else:
         raise HTTPException(
-            status_code=400,
+            status_code=409,
             detail="Super user already exists in the system.",
         )
 
@@ -135,11 +134,11 @@ def create_admin(
         )
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", status_code=204)
 def delete_user(user_id: str,
                 db: Session = Depends(deps.get_db),
                 current_user: models.User = Depends(deps.get_current_active_admin_user)
-                ) -> str:
+                ) -> None:
     """
     Delete user.
     """
@@ -149,4 +148,3 @@ def delete_user(user_id: str,
             status_code=404,
             detail="The user does not exist in the system",
         )
-    return 'ok'
