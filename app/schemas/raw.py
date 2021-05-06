@@ -7,21 +7,23 @@ from .raw_usage_standards import RawUsageStandards
 
 # Shared properties
 class RawBase(BaseModel):
-    name: str
     category_id: Union[UUID, str]
+    piece_raw_id: Optional[Union[UUID, str]] = None
     shop_id: Union[UUID, str]
-    unit: Optional[str] = None
+    name: str
+    article_number: Optional[str] = None
+    manufacturer: Optional[str] = None
+    unit: str
+    piece_unit: Optional[str] = None
+    per_pack: Optional[float] = None
+    helium_consumption: Optional[float] = 0
+    description: Optional[str] = None
+    image: Optional[str] = None
+    yellow_label: Optional[float] = 0
+    red_label: Optional[float] = 0
     quantity: Optional[float] = 0
     available_quantity: Optional[float] = 0
     reserved: Optional[float] = 0
-    helium_consumption: Optional[float] = 0
-    per_pack: Optional[float] = 0
-    yellow_label: Optional[float] = 0
-    red_label: Optional[float] = 0
-    article_number:  Optional[str] = None
-    manufacturer:  Optional[str] = None
-    description: Optional[str] = None
-    image: Optional[str] = None
 
 
 # Properties to receive via API on creation
