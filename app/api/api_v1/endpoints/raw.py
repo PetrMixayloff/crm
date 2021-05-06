@@ -34,6 +34,16 @@ def read_raw_by_category_id(*, db: Session = Depends(deps.get_db),
     return raw
 
 
+@router.get("/details", response_model=Dict[str, Union[int, List[schemas.RawRemainsDetail]]])
+def raw_remains_details(db: Session = Depends(deps.get_db),
+                        current_user: models.User = Depends(deps.get_current_user)
+                        ) -> Any:
+    raw_details = crud.raw_remains_detail.get_multi(db=db,
+                                                    shop_id=str(current_user.shop_id),
+                                                    filter=['quantity', '>', 0])
+    return raw_details
+
+
 @router.get("/{raw_id}", response_model=schemas.Raw)
 def read_raw_by_id(*,
                    db: Session = Depends(deps.get_db),
@@ -85,8 +95,8 @@ def delete_raw(*, db: Session = Depends(deps.get_db),
 @router.get("/details/{raw_id}", response_model=Dict[str, Union[int, List[schemas.RawRemainsDetail]]])
 def raw_remains_details(raw_id: str,
                         db: Session = Depends(deps.get_db),
-                        current_user: models.User = Depends(deps.get_current_active_user)) -> Any:
+                        current_user: models.User = Depends(deps.get_current_user)) -> Any:
     raw_details = crud.raw_remains_detail.get_multi(db=db,
                                                     shop_id=str(current_user.shop_id),
-                                                    filter=['raw_id', '=', raw_id])
+                                                    filter=[['raw_id', '=', raw_id], 'and', ['quantity', '>', 0]])
     return raw_details

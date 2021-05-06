@@ -219,8 +219,12 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 query_mod = query_mod.filter(_attr.notin_(_value))
             elif _rule == ">=":
                 query_mod = query_mod.filter(_attr >= _value)
+            elif _rule == "<=":
+                query_mod = query_mod.filter(_attr <= _value)
             elif _rule == "<":
                 query_mod = query_mod.filter(_attr < _value)
+            elif _rule == ">":
+                query_mod = query_mod.filter(_attr > _value)
         return query_mod
 
     def add_one_whereclause(self, stm: Select, _filter: list) -> Select:
