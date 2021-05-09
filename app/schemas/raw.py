@@ -1,15 +1,14 @@
-from typing import Optional, Union, List
+from typing import Optional, List
 from pydantic import BaseModel
 from uuid import UUID
 from .raw_remains_detail import RawRemainsDetail
-from .raw_usage_standards import RawUsageStandards
 
 
 # Shared properties
 class RawBase(BaseModel):
-    category_id: Union[UUID, str]
-    piece_raw_id: Optional[Union[UUID, str]] = None
-    shop_id: Union[UUID, str]
+    category_id: str
+    piece_raw_id: Optional[str] = None
+    shop_id: str
     name: str
     article_number: Optional[str] = None
     manufacturer: Optional[str] = None
@@ -38,7 +37,9 @@ class RawUpdate(RawBase):
 # Properties to receive via API on update
 class RawInDBBase(RawBase):
     id: UUID
-    standards: Optional[List[RawUsageStandards]] = []
+    category_id: UUID
+    piece_raw_id: Optional[UUID] = None
+    shop_id: UUID
     remains: Optional[List[RawRemainsDetail]] = []
 
     class Config:

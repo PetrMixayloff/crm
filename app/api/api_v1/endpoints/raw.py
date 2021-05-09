@@ -65,7 +65,7 @@ def create_raw(*,
     """
     Create new raw.
     """
-    raw = crud.raw.create(db, obj_in=raw_in)
+    raw = crud.raw.create_raw(db=db, raw_in=raw_in)
     return raw
 
 
@@ -77,7 +77,7 @@ def update_raw(*, db: Session = Depends(deps.get_db),
     Update raw.
     """
     raw = crud.raw.get(db, id=raw_update_in.id)
-    raw = crud.raw.update(db, obj_in=raw_update_in, db_obj=raw)
+    raw = crud.raw.update_raw(db, raw_in=raw_update_in, raw_obj=raw)
     return raw
 
 

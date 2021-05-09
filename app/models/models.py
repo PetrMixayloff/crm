@@ -148,8 +148,9 @@ class RawCategory(Base):
 
 class Raw(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    category_id = Column(UUID(as_uuid=True), ForeignKey('raw_category.id'), nullable=False, comment='Категория')
-    piece_raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), comment='Id разборного сырья')
+    category_id = Column(UUID(as_uuid=True), ForeignKey('raw_category.id'),
+                         nullable=False, comment='Категория')
+    piece_raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id', ondelete="SET NULL"), comment='Id разборного сырья')
     name = Column(String(255), nullable=False, comment='Название')
     article_number = Column(String(255), comment='Артикул')
     manufacturer = Column(String(255), comment='Производитель')
