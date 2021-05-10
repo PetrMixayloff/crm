@@ -15,7 +15,7 @@ class CRUDClient(CRUDBase[Client, ClientCreate, ClientUpdate]):
     def create(self, db: Session, obj_in: ClientCreate) -> Client:
         obj_in_data = jsonable_encoder(obj_in, exclude={'address'})
         db_obj = self.model(**obj_in_data)  # type: ignore
-        # db_obj.id = uuid4()
+        db.add(db_obj)
         db.flush()
         if obj_in.address is not None:
             address_data = jsonable_encoder(obj_in.address)

@@ -5,30 +5,26 @@ from .crud_product_category import product_category
 from .crud_raw import raw
 from .crud_raw_category import raw_category
 from .crud_invoice import invoice
+from .crud_inventory import inventory
 from .crud_order import order
 from .crud_client import client
 from .crud_cancellation import cancellation
 from .base import CRUDBase
-from app.models.models import ProductRawRelation, RawRemainsDetail, InvoiceRecord, Inventory, RawUsageStandards, \
-    OrdersProductsRawRelation, OrdersProductsRelation, CancellationRecord, Permissions
-from app.schemas import ProductRawRelationCreate, ProductRawRelationUpdate, InvoiceRecordUpdate, \
-    InvoiceRecordCreate, RawRemainsDetailCreate, RawRemainsDetailUpdate, InventoryCreate, \
-    InventoryUpdate, RawUsageStandardsCreate, RawUsageStandardsUpdate, OrdersProductsRawRelationCreate, \
+from app.models.models import ProductRawRelation, RawRemainsDetail, RawUsageStandards, \
+    OrdersProductsRawRelation, OrdersProductsRelation, Permissions
+from app.schemas import ProductRawRelationCreate, ProductRawRelationUpdate, RawRemainsDetailCreate, \
+    RawRemainsDetailUpdate, RawUsageStandardsCreate, RawUsageStandardsUpdate, OrdersProductsRawRelationCreate, \
     OrdersProductsRawRelationUpdate, OrdersProductsRelationCreate, OrdersProductsRelationUpdate, \
-    CancellationRecordCreate, CancellationRecordUpdate, PermissionsCreate, PermissionsUpdate
+    PermissionsCreate, PermissionsUpdate
 
 raw_usage_standards = CRUDBase[RawUsageStandards, RawUsageStandardsCreate, RawUsageStandardsUpdate](RawUsageStandards)
-inventory = CRUDBase[Inventory, InventoryCreate, InventoryUpdate](Inventory)
 raw_remains_detail = CRUDBase[RawRemainsDetail, RawRemainsDetailCreate, RawRemainsDetailUpdate](RawRemainsDetail)
-invoice_record = CRUDBase[InvoiceRecord, InvoiceRecordCreate, InvoiceRecordUpdate](InvoiceRecord)
 product_raw_relation = CRUDBase[ProductRawRelation, ProductRawRelationCreate, ProductRawRelationUpdate](
     ProductRawRelation)
 order_product_raw = CRUDBase[OrdersProductsRawRelation, OrdersProductsRawRelationCreate,
                              OrdersProductsRawRelationUpdate](OrdersProductsRawRelation)
 order_product = CRUDBase[OrdersProductsRelation, OrdersProductsRelationCreate, OrdersProductsRelationUpdate](
     OrdersProductsRelation)
-cancellation_record = CRUDBase[CancellationRecord, CancellationRecordCreate, CancellationRecordUpdate](
-    CancellationRecord)
 permissions = CRUDBase[Permissions, PermissionsCreate, PermissionsUpdate](Permissions)
 
 # product = CRUDBase[Product, ProductCreate, ProductUpdate](Product)

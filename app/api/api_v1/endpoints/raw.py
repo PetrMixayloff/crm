@@ -34,6 +34,16 @@ def read_raw_by_category_id(*, db: Session = Depends(deps.get_db),
     return raw
 
 
+@router.get("/details", response_model=Dict[str, Union[int, List[schemas.RawRemainsDetail]]])
+def raw_remains_details(db: Session = Depends(deps.get_db),
+                        current_user: models.User = Depends(deps.get_current_user)
+                        ) -> Any:
+    raw_details = crud.raw_remains_detail.get_multi(db=db,
+                                                    shop_id=str(current_user.shop_id),
+                                                    filter=['quantity', '>', 0])
+    return raw_details
+
+
 @router.get("/{raw_id}", response_model=schemas.Raw)
 def read_raw_by_id(*,
                    db: Session = Depends(deps.get_db),
@@ -55,7 +65,7 @@ def create_raw(*,
     """
     Create new raw.
     """
-    raw = crud.raw.create(db, obj_in=raw_in)
+    raw = crud.raw.create_raw(db=db, raw_in=raw_in)
     return raw
 
 
@@ -67,7 +77,7 @@ def update_raw(*, db: Session = Depends(deps.get_db),
     Update raw.
     """
     raw = crud.raw.get(db, id=raw_update_in.id)
-    raw = crud.raw.update(db, obj_in=raw_update_in, db_obj=raw)
+    raw = crud.raw.update_raw(db, raw_in=raw_update_in, raw_obj=raw)
     return raw
 
 
@@ -85,8 +95,8 @@ def delete_raw(*, db: Session = Depends(deps.get_db),
 @router.get("/details/{raw_id}", response_model=Dict[str, Union[int, List[schemas.RawRemainsDetail]]])
 def raw_remains_details(raw_id: str,
                         db: Session = Depends(deps.get_db),
-                        current_user: models.User = Depends(deps.get_current_active_user)) -> Any:
+                        current_user: models.User = Depends(deps.get_current_user)) -> Any:
     raw_details = crud.raw_remains_detail.get_multi(db=db,
                                                     shop_id=str(current_user.shop_id),
-                                                    filter=['raw_id', '=', raw_id])
+                                                    filter=[['raw_id', '=', raw_id], 'and', ['quantity', '>', 0]])
     return raw_details

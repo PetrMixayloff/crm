@@ -8,9 +8,9 @@ from .cancellation_record import CancellationRecord, CancellationRecordCreate
 # Shared properties
 class CancellationBase(BaseModel):
     shop_id: Union[UUID, str]
-    number: str
+    number: Optional[int] = None
     date: datetime = datetime.utcnow()
-    supplier: Optional[str]
+    reason: Optional[str]
     remark: Optional[str]
 
     class Config:
@@ -21,7 +21,7 @@ class CancellationBase(BaseModel):
 
 # Properties to receive via API on creation
 class CancellationCreate(CancellationBase):
-    records: Optional[List[CancellationRecordCreate]] = []
+    records: List[CancellationRecordCreate]
 
 
 class CancellationUpdate(CancellationBase):
@@ -31,7 +31,7 @@ class CancellationUpdate(CancellationBase):
 # Properties to receive via API on update
 class CancellationInDBBase(CancellationBase):
     id: UUID
-    records: Optional[List[CancellationRecord]] = []
+    records: List[CancellationRecord]
 
     class Config:
         orm_mode = True
@@ -40,3 +40,8 @@ class CancellationInDBBase(CancellationBase):
 # Additional properties to return via API
 class Cancellation(CancellationInDBBase):
     pass
+
+
+class CancellationsResponse(BaseModel):
+    totalCount: int
+    data: List[Cancellation]

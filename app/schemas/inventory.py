@@ -2,13 +2,13 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime, timezone
-from .inventory_record import InventoryRecord
+from .inventory_record import InventoryRecord, InventoryRecordCreate
 
 
 # Shared properties
 class InventoryBase(BaseModel):
     shop_id: Union[UUID, str]
-    user_id: Union[UUID, str]
+    user_id: Optional[Union[UUID, str]] = None
     number: str
     date: datetime = datetime.utcnow()
     remark: str = None
@@ -21,7 +21,7 @@ class InventoryBase(BaseModel):
 
 # Properties to receive via API on creation
 class InventoryCreate(InventoryBase):
-    pass
+    records: List[InventoryRecordCreate]
 
 
 class InventoryUpdate(InventoryBase):
@@ -31,7 +31,7 @@ class InventoryUpdate(InventoryBase):
 # Properties to receive via API on update
 class InventoryInDBBase(InventoryBase):
     id: UUID
-    inventory_records: Optional[List[InventoryRecord]] = []
+    records: List[InventoryRecord]
 
     class Config:
         orm_mode = True
