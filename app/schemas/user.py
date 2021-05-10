@@ -57,6 +57,7 @@ class UserUpdate(UserCreate):
     id: Optional[str] = None
     password: Optional[str] = None
     is_active: Optional[bool] = True
+    permissions: Optional[Permissions] = None
 
 
 # Properties to receive via API on update

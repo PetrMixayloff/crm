@@ -9,7 +9,7 @@ from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase
 from app import crud
 from app.models.models import User, Permissions
-from app.schemas import UserCreate, UserUpdate, PermissionsCreate
+from app.schemas import UserCreate, UserUpdate, PermissionsCreate, PermissionsUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -34,7 +34,25 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             obj_in.password = get_password_hash(obj_in.password)
         else:
             obj_in.password = db_obj.password
-        return super().update(db, db_obj=db_obj, obj_in=obj_in)
+
+        obj_data = jsonable_encoder(db_obj)
+        update_data = obj_in.dict(exclude_unset=True)
+        permissions = update_data.pop('permissions')
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+        permissions_in_base = crud.permissions.get(db, id=permissions['id'])
+        setattr(permissions_in_base, 'orders', permissions['orders'])
+        setattr(permissions_in_base, 'products', permissions['products'])
+        setattr(permissions_in_base, 'raw', permissions['raw'])
+        setattr(permissions_in_base, 'clients', permissions['clients'])
+        setattr(permissions_in_base, 'clients', permissions['clients'])
+        setattr(permissions_in_base, 'staff', permissions['staff'])
+        setattr(permissions_in_base, 'warehouse', permissions['warehouse'])
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
 
     def authenticate(self, db: Session, *, phone: str, password: str) -> Optional[User]:
         user = self.get_by_phone(db, phone=phone)
