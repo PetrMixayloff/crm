@@ -16,3 +16,4 @@ from .raw_usage_standards import RawUsageStandards, RawUsageStandardsCreate, Raw
 from .order import OrdersProductsRawRelation, OrdersProductsRawRelationCreate, OrdersProductsRawRelationUpdate, \
     OrdersProductsRelation, OrdersProductsRelationCreate, OrdersProductsRelationUpdate, Order, OrderCreate, OrderUpdate
 from .cancellation import Cancellation, CancellationCreate, CancellationUpdate, CancellationsResponse
+from .opening import Opening, OpeningCreate, OpeningUpdate, OpeningResponse

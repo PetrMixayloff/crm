@@ -6,3 +6,4 @@ class RawRemainsActions(Enum):
     cancel = 'Списание'
     inventory = 'Инвентаризация'
     sale = 'Продажа'
+    opening = 'Разборка'
