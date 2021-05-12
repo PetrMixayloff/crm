@@ -45,6 +45,14 @@ class CRUDOpening(CRUDBase[Opening, schemas.OpeningCreate, schemas.OpeningUpdate
             total=raw.quantity
         )
         db.add(raw_remains_log_obj)
+        if raw.piece_raw_id is None:
+            raw_in = schemas.Raw.from_orm(raw)
+            piece_raw_obj = crud.raw.create_piece(raw_in)
+        else:
+            piece_raw_obj = crud.raw.get(db=db, id=raw.piece_raw_id)
+        piece_raw_obj.quantity += piece_raw_obj.per_pack
+        piece_raw_obj.available_quantity += piece_raw_obj.per_pack
+        db.add(piece_raw_obj)
         db.commit()
         return opening_obj
 
