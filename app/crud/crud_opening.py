@@ -11,7 +11,7 @@ class CRUDOpening(CRUDBase[Opening, schemas.OpeningCreate, schemas.OpeningUpdate
 
     def create_opening(self, db: Session, raw_id: str) -> Opening:
         raw = crud.raw.get(db=db, id=raw_id)
-        raw_remains_detail_obj = db.query(RawRemainsDetail)\
+        raw_remains_detail_obj = db.query(RawRemainsDetail) \
             .filter(RawRemainsDetail.raw_id == raw_id,
                     RawRemainsDetail.quantity > 0).first()
         if raw_remains_detail_obj is None:
@@ -19,8 +19,10 @@ class CRUDOpening(CRUDBase[Opening, schemas.OpeningCreate, schemas.OpeningUpdate
                 status_code=409,
                 detail="Ошибка создания документа разборки. Нет сырья для создания документа.",
             )
-        opening_obj = self.model(raw_remains_details_id=raw_remains_detail_obj.id,
-                                 raw_id=raw_id)
+        opening_obj = self.model(
+            shop_id=raw.shop_id,
+            raw_remains_details_id=raw_remains_detail_obj.id,
+            raw_id=raw_id)
         db.add(opening_obj)
         db.flush()
         # обновляем количество в детализированной таблице остатов
@@ -53,7 +55,7 @@ class CRUDOpening(CRUDBase[Opening, schemas.OpeningCreate, schemas.OpeningUpdate
         else:
             piece_raw_obj = crud.raw.get(db=db, id=raw.piece_raw_id)
         # обновляем количество в детализированной таблице остатков
-        piece_raw_remains_detail_obj = db.query(RawRemainsDetail)\
+        piece_raw_remains_detail_obj = db.query(RawRemainsDetail) \
             .filter(RawRemainsDetail.price == round(raw_remains_detail_obj.price / raw.per_pack, 2)).first()
         if piece_raw_remains_detail_obj is None:
             piece_raw_remains_detail_obj = RawRemainsDetail(
@@ -69,8 +71,8 @@ class CRUDOpening(CRUDBase[Opening, schemas.OpeningCreate, schemas.OpeningUpdate
             piece_raw_remains_detail_obj.quantity += raw.per_pack
         db.add(piece_raw_remains_detail_obj)
         # обновляем количество штучного сырья в БД
-        piece_raw_obj.quantity += piece_raw_obj.per_pack
-        piece_raw_obj.available_quantity += piece_raw_obj.per_pack
+        piece_raw_obj.quantity += raw.per_pack
+        piece_raw_obj.available_quantity += raw.per_pack
         db.add(piece_raw_obj)
         # делаем запись в таблицу истории остатков по сырью
         piece_raw_remains_log_obj = RawRemainsLog(

@@ -264,7 +264,7 @@ class Opening(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     opening_number_seq = Sequence('number_seq')
     number = Column(Integer, nullable=False, server_default=opening_number_seq.next_value(), comment='Номер')
-    date = Column(DateTime, comment='Дата')
+    date = Column(DateTime, comment='Дата', default=datetime.datetime.utcnow())
     remark = Column(String(255), comment='Примечание')
     raw_remains_details_id = Column(UUID(as_uuid=True), ForeignKey('raw_remains_detail.id'), nullable=False)
     raw_id = Column(UUID(as_uuid=True), ForeignKey('raw.id'), nullable=False, comment='Id сырья в остатках')
