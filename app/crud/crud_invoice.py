@@ -38,12 +38,8 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
             raw_remains_detail_obj = RawRemainsDetail(**record)  # type: ignore
             db.add(raw_remains_detail_obj)
             # обновляем количество сырья в БД
-            if raw.per_pack > 0:
-                raw.quantity += record['quantity'] * raw.per_pack
-                raw.available_quantity += record['quantity'] * raw.per_pack
-            else:
-                raw.quantity += record['quantity']
-                raw.available_quantity += record['quantity']
+            raw.quantity += record['quantity']
+            raw.available_quantity += record['quantity']
             db.add(raw)
             # делаем запись в таблицу истории остатков по сырью
             raw_remains_log_obj = RawRemainsLog(

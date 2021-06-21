@@ -8,7 +8,7 @@ from app.models import models
 router = APIRouter()
 
 
-@router.get("/", response_model=Dict[str, Union[int, List[schemas.Raw]]])
+@router.get("/", response_model=schemas.RawResponse)
 def read_raw_by_shop_id(*, db: Session = Depends(deps.get_db),
                         current_user: models.User = Depends(deps.get_current_active_user),
                         skip: int = 0,
@@ -23,7 +23,7 @@ def read_raw_by_shop_id(*, db: Session = Depends(deps.get_db),
     return raw
 
 
-@router.get("/raw_by/{category_id}", response_model=Dict[str, Union[int, List[schemas.Raw]]])
+@router.get("/raw_by/{category_id}", response_model=schemas.RawResponse)
 def read_raw_by_category_id(*, db: Session = Depends(deps.get_db),
                             current_user: models.User = Depends(deps.get_current_active_user),
                             category_id: str) -> Any:
@@ -34,7 +34,7 @@ def read_raw_by_category_id(*, db: Session = Depends(deps.get_db),
     return raw
 
 
-@router.get("/details", response_model=Dict[str, Union[int, List[schemas.RawRemainsDetail]]])
+@router.get("/details", response_model=schemas.RawRemainsDetailsResponse)
 def raw_remains_details(db: Session = Depends(deps.get_db),
                         current_user: models.User = Depends(deps.get_current_user)
                         ) -> Any:
@@ -92,7 +92,7 @@ def delete_raw(*, db: Session = Depends(deps.get_db),
     return raw
 
 
-@router.get("/details/{raw_id}", response_model=Dict[str, Union[int, List[schemas.RawRemainsDetail]]])
+@router.get("/details/{raw_id}", response_model=schemas.RawRemainsDetailsResponse)
 def raw_remains_details(raw_id: str,
                         db: Session = Depends(deps.get_db),
                         current_user: models.User = Depends(deps.get_current_user)) -> Any:

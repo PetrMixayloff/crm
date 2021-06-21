@@ -55,8 +55,8 @@ class CRUDRaw(CRUDBase[Raw, RawCreate, RawUpdate]):
     def create_piece(self, raw_in: Union[RawCreate, RawUpdate]) -> Raw:
         return self.model(shop_id=raw_in.shop_id,
                           category_id=raw_in.category_id,
-                          name=raw_in.name + '(разб.)',
-                          article_number=raw_in.article_number + '-Р'
+                          name=raw_in.name + '(штучн.)',
+                          article_number=raw_in.article_number + '-Ш'
                           if raw_in.article_number is not None else None,
                           manufacturer=raw_in.manufacturer,
                           unit=raw_in.piece_unit,

@@ -49,3 +49,8 @@ class RawInDBBase(RawBase):
 # Additional properties to return via API
 class Raw(RawInDBBase):
     pass
+
+
+class RawResponse(BaseModel):
+    totalCount: int
+    data: List[Raw]

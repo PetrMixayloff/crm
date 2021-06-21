@@ -40,3 +40,8 @@ class InventoryInDBBase(InventoryBase):
 # Additional properties to return via API
 class Inventory(InventoryInDBBase):
     pass
+
+
+class InventoriesResponse(BaseModel):
+    totalCount: int
+    data: List[Inventory]

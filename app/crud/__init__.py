@@ -5,6 +5,7 @@ from .crud_product_category import product_category
 from .crud_raw import raw
 from .crud_raw_category import raw_category
 from .crud_invoice import invoice
+from .crud_opening import opening
 from .crud_inventory import inventory
 from .crud_order import order
 from .crud_client import client
