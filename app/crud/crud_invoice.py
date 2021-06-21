@@ -32,7 +32,7 @@ class CRUDInvoice(CRUDBase[Invoice, schemas.InvoiceCreate, schemas.InvoiceUpdate
             invoice_records_obj = InvoiceRecord(**record)  # type: ignore
             db.add(invoice_records_obj)
             # обновляем количество в детализированной таблице остатов
-            record['invoice'] = True
+            # record['invoice'] = True
             record['number'] = invoice_obj.number
             record['date'] = invoice_obj.date
             raw_remains_detail_obj = RawRemainsDetail(**record)  # type: ignore
