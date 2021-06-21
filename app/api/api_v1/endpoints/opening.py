@@ -34,13 +34,13 @@ def read_opening_by_id(opening_id: str,
     return opening
 
 
-@router.post("/", response_model=schemas.Opening)
-def create_opening(opening_in: schemas.OpeningCreate,
+@router.post("/{raw_id}", response_model=schemas.Opening)
+def create_opening(raw_id: str,
                    db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    ) -> schemas.Opening:
     """
     Создание нового документа разборки.
     """
-    opening = crud.opening.create_opening(db, obj_in=opening_in)
+    opening = crud.opening.create_opening(db, raw_id=raw_id)
     return opening

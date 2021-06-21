@@ -9,17 +9,18 @@ from app.core.constants import RawRemainsActions
 
 class CRUDOpening(CRUDBase[Opening, schemas.OpeningCreate, schemas.OpeningUpdate]):
 
-    def create_opening(self, db: Session, obj_in: schemas.OpeningCreate) -> Opening:
-        raw = crud.raw.get(db=db, id=obj_in.raw_id)
+    def create_opening(self, db: Session, raw_id: str) -> Opening:
+        raw = crud.raw.get(db=db, id=raw_id)
         raw_remains_detail_obj = db.query(RawRemainsDetail)\
-            .filter(RawRemainsDetail.id == obj_in.raw_remains_details_id).first()
-        if raw is None or raw_remains_detail_obj is None or raw.quantity <= 0:
+            .filter(RawRemainsDetail.raw_id == raw_id,
+                    RawRemainsDetail.quantity > 0).first()
+        if raw_remains_detail_obj is None:
             raise HTTPException(
                 status_code=409,
                 detail="Ошибка создания документа разборки. Нет сырья для создания документа.",
             )
-        opening_in_data = jsonable_encoder(obj_in)
-        opening_obj = self.model(**opening_in_data)  # type: ignore
+        opening_obj = self.model(raw_remains_details_id=raw_remains_detail_obj.id,
+                                 raw_id=raw_id)
         db.add(opening_obj)
         db.flush()
         # обновляем количество в детализированной таблице остатов
@@ -53,8 +54,7 @@ class CRUDOpening(CRUDBase[Opening, schemas.OpeningCreate, schemas.OpeningUpdate
             piece_raw_obj = crud.raw.get(db=db, id=raw.piece_raw_id)
         # обновляем количество в детализированной таблице остатков
         piece_raw_remains_detail_obj = db.query(RawRemainsDetail)\
-            .filter(RawRemainsDetail.id == obj_in.raw_remains_details_id,
-                    RawRemainsDetail.price == round(raw_remains_detail_obj.price / raw.per_pack, 2)).first()
+            .filter(RawRemainsDetail.price == round(raw_remains_detail_obj.price / raw.per_pack, 2)).first()
         if piece_raw_remains_detail_obj is None:
             piece_raw_remains_detail_obj = RawRemainsDetail(
                 shop_id=piece_raw_obj.shop_id,
