@@ -2,6 +2,7 @@ import copy
 import json
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.orm import Session, ColumnProperty, Query
@@ -83,12 +84,22 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def remove(self, db: Session, *, id: str) -> ModelType:
         obj = db.query(self.model).get(id)
+        if obj is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Object not found",
+            )
         db.delete(obj)
         db.commit()
         return obj
 
     def disable(self, db: Session, *, id: str) -> ModelType:
         obj = db.query(self.model).get(id)
+        if obj is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Object not found",
+            )
         obj.is_active = False
         db.add(obj)
         db.commit()

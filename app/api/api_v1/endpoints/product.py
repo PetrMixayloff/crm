@@ -9,7 +9,7 @@ from app.models.models import ProductRawRelation
 router = APIRouter()
 
 
-@router.get("/", response_model=Dict[str, Union[int, List[schemas.Product]]])
+@router.get("/", response_model=schemas.ProductResponse)
 def read_product_by_shop_id(*, db: Session = Depends(deps.get_db),
                             current_user: models.User = Depends(deps.get_current_active_user),
                             skip: int = 0,
@@ -24,14 +24,15 @@ def read_product_by_shop_id(*, db: Session = Depends(deps.get_db),
     return product
 
 
-@router.get("/product_by/{category_id}", response_model=Dict[str, Union[int, List[schemas.Product]]])
+@router.get("/by_category/{category_id}", response_model=schemas.ProductResponse)
 def read_product_by_category_id(*, db: Session = Depends(deps.get_db),
                                 current_user: models.User = Depends(deps.get_current_active_user),
                                 category_id: str) -> Any:
     """
     Get current product by category id.
     """
-    product = crud.product.get_multi_by_category_id(db, category_id=category_id)
+    filter_options = ['category_id', '=', category_id]
+    product = crud.product.get_multi(db, filter=filter_options)
     return product
 
 
@@ -47,11 +48,11 @@ def read_product_by_id(*,
     return product
 
 
-@router.post("/", response_model=schemas.Product)
+@router.post("/", response_model=Union[schemas.Product, schemas.ProductSet])
 def create_product(*,
                    db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
-                   product_in: schemas.ProductCreate
+                   product_in: Union[schemas.ProductCreate, schemas.ProductSetCreate]
                    ) -> Any:
     """
     Create new product.
@@ -60,36 +61,36 @@ def create_product(*,
     return product
 
 
-@router.put("/{product_id}", response_model=schemas.Product)
+@router.put("/{product_id}", status_code=204)
 def update_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
-                   product_update_in: schemas.ProductUpdate
+                   product_update_in: Union[schemas.ProductUpdate, schemas.ProductSetUpdate]
                    ) -> Any:
     """
     Update product.
     """
-    product = crud.product.get(db, id=product_update_in.id)
-    product = crud.product.update_product(db, obj_in=product_update_in, db_obj=product)
-    return product
+    if isinstance(product_update_in, schemas.ProductUpdate):
+        product = crud.product.get(db, id=product_update_in.id)
+    else:
+        product = crud.product.get_product_set(db=db, product_set_id=product_update_in.id)
+    crud.product.update_product(db, obj_in=product_update_in, db_obj=product)
 
 
-@router.delete("/{product_id}", response_model=schemas.Product)
+@router.delete("/{product_id}", status_code=204)
 def delete_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
                    product_id: str) -> Any:
     """
     Delete product
     """
-    product = crud.product.disable(db, id=product_id)
-    return product
+    crud.product.disable(db, id=product_id)
 
 
-@router.delete("/raw_relation/{raw_id}", response_model=schemas.ProductRawRelation)
+@router.delete("/raw_relation/{raw_id}", status_code=204)
 def delete_raw_nested_with_product(*, db: Session = Depends(deps.get_db),
                                    current_user: models.User = Depends(deps.get_current_active_user),
                                    raw_id: str) -> Any:
     """
     Delete nested raw
     """
-    obj = crud.product_raw_relation.remove(db=db, id=raw_id)
-    return obj
+    crud.product_raw_relation.remove(db=db, id=raw_id)
