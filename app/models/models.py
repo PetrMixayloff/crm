@@ -1,4 +1,5 @@
 import datetime
+
 from app.db.base_class import Base
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Boolean, Column, DateTime, String, ForeignKey, Integer, Float, ARRAY, Sequence
@@ -112,7 +113,6 @@ class ProductCategory(Base):
     shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
     description = Column(String(255))
     products = relationship('Product', back_populates="product_category", cascade="all, delete-orphan")
-    product_sets = relationship('ProductSet', back_populates="product_category", cascade="all, delete-orphan")
     show_on_store = Column(Boolean, nullable=False, default=True)
 
 
@@ -121,31 +121,23 @@ class Product(Base):
     category_id = Column(UUID(as_uuid=True), ForeignKey('product_category.id'), nullable=False)
     product_category = relationship("ProductCategory", back_populates="products")
     raw = relationship('ProductRawRelation', cascade="all, delete-orphan")
+    base = Column(Boolean, nullable=False, default=True, comment='Базовый товар')
     name = Column(String(255), nullable=False, comment='Название')
     description = Column(String(255), comment='Описание')
     image = Column(String(255), comment='Изображение')
     price = Column(Float, default=0, comment='Цена')
     old_price = Column(Float, comment='Старая цена')
     show_on_store = Column(Boolean, nullable=False, default=True, comment='Отображать на витрине')
+    product_set_id = Column(UUID(as_uuid=True), index=True, unique=True, nullable=True)
+    products = relationship('ProductSetRelation',
+                            primaryjoin="Product.product_set_id==ProductSetRelation.product_set_id",
+                            cascade="all, delete-orphan")
 
 
 class ProductSetRelation(Base):
     product_id = Column(UUID(as_uuid=True), ForeignKey('product.id'))
-    product_set_id = Column(UUID(as_uuid=True), ForeignKey('product_set.id'))
+    product_set_id = Column(UUID(as_uuid=True), ForeignKey('product.product_set_id'))
     quantity = Column(Float, default=0)
-
-
-class ProductSet(Base):
-    shop_id = Column(UUID(as_uuid=True), ForeignKey('shop.id'), nullable=False)
-    category_id = Column(UUID(as_uuid=True), ForeignKey('product_category.id'), nullable=False)
-    product_category = relationship("ProductCategory", back_populates="product_sets")
-    products = relationship('ProductSetRelation', cascade="all, delete-orphan")
-    name = Column(String(255), nullable=False, comment='Название')
-    description = Column(String(255), comment='Описание')
-    image = Column(String(255), comment='Изображение')
-    price = Column(Float, default=0, comment='Цена')
-    old_price = Column(Float, comment='Старая цена')
-    show_on_store = Column(Boolean, nullable=False, default=True, comment='Отображать на витрине')
 
 
 class ProductRawRelation(Base):

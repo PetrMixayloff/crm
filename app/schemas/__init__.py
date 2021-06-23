@@ -2,8 +2,8 @@ from .token import Token, TokenPayload
 from .user import User, UserCreate, UserUpdate, UserLogin, AdminCreate, SuperUserCreate, UsersResponse
 from .permissions import Permissions, PermissionsCreate, PermissionsUpdate
 from .shop import Shop, ShopCreate, ShopUpdate
-from .product import Product, ProductCreate, ProductUpdate, ProductResponse, ProductSetCreate, ProductSetUpdate,\
-    ProductSetRelation, ProductSet
+from .product import Product, ProductCreate, ProductUpdate, ProductResponse, ProductSetRelationCreateUpdate, \
+    ProductSetRelation
 from .product_category import ProductCategory, ProductCategoryCreate, ProductCategoryUpdate
 from .raw_category import RawCategory, RawCategoryCreate, RawCategoryUpdate
 from .raw import Raw, RawCreate, RawUpdate, RawResponse

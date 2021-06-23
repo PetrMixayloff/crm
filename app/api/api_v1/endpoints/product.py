@@ -10,14 +10,14 @@ router = APIRouter()
 
 
 @router.get("/", response_model=schemas.ProductResponse)
-def read_product_by_shop_id(*, db: Session = Depends(deps.get_db),
-                            current_user: models.User = Depends(deps.get_current_active_user),
-                            skip: int = 0,
-                            take: int = 100,
-                            filter: str = None
-                            ) -> Any:
+def read_products(*, db: Session = Depends(deps.get_db),
+                  current_user: models.User = Depends(deps.get_current_active_user),
+                  skip: int = 0,
+                  take: int = 100,
+                  filter: str = None
+                  ) -> Any:
     """
-    Get current product by shop id.
+    Get products by shop id.
     """
     shop_id = str(current_user.shop_id)
     product = crud.product.get_multi(db, shop_id=shop_id, skip=skip, take=take, filter=filter)
@@ -64,15 +64,12 @@ def create_product(*,
 @router.put("/{product_id}", status_code=204)
 def update_product(*, db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
-                   product_update_in: Union[schemas.ProductUpdate, schemas.ProductSetUpdate]
+                   product_update_in: schemas.ProductUpdate
                    ) -> Any:
     """
     Update product.
     """
-    if isinstance(product_update_in, schemas.ProductUpdate):
-        product = crud.product.get(db, id=product_update_in.id)
-    else:
-        product = crud.product.get_product_set(db=db, product_set_id=product_update_in.id)
+    product = crud.product.get(db, id=product_update_in.id)
     crud.product.update_product(db, obj_in=product_update_in, db_obj=product)
 
 
