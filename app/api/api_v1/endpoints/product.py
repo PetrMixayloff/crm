@@ -1,10 +1,9 @@
 from app import crud, schemas
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import Any, Dict, Union, List, Optional
+from typing import Any
 from app.api import deps
 from app.models import models
-from app.models.models import ProductRawRelation
 
 router = APIRouter()
 
@@ -32,8 +31,8 @@ def read_product_by_category_id(*, db: Session = Depends(deps.get_db),
     Get current product by category id.
     """
     filter_options = ['category_id', '=', category_id]
-    product = crud.product.get_multi(db, filter=filter_options)
-    return product
+    products = crud.product.get_multi(db, filter=filter_options)
+    return products
 
 
 @router.get("/{product_id}", response_model=schemas.Product)
@@ -48,11 +47,11 @@ def read_product_by_id(*,
     return product
 
 
-@router.post("/", response_model=Union[schemas.Product, schemas.ProductSet])
+@router.post("/", response_model=schemas.Product)
 def create_product(*,
                    db: Session = Depends(deps.get_db),
                    current_user: models.User = Depends(deps.get_current_active_user),
-                   product_in: Union[schemas.ProductCreate, schemas.ProductSetCreate]
+                   product_in: schemas.ProductCreate
                    ) -> Any:
     """
     Create new product.
@@ -81,13 +80,3 @@ def delete_product(*, db: Session = Depends(deps.get_db),
     Delete product
     """
     crud.product.disable(db, id=product_id)
-
-
-@router.delete("/raw_relation/{raw_id}", status_code=204)
-def delete_raw_nested_with_product(*, db: Session = Depends(deps.get_db),
-                                   current_user: models.User = Depends(deps.get_current_active_user),
-                                   raw_id: str) -> Any:
-    """
-    Delete nested raw
-    """
-    crud.product_raw_relation.remove(db=db, id=raw_id)

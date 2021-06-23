@@ -38,6 +38,8 @@ class ProductCreate(ProductBase):
 
 class ProductUpdate(ProductBase):
     id: str
+    raw_to_delete: Optional[List[str]] = []
+    products_to_delete: Optional[List[str]] = []
     raw: Optional[List[Union[ProductRawRelationUpdate, ProductRawRelationCreate]]] = []
     products: Optional[List[ProductSetRelationCreateUpdate]] = []
 
